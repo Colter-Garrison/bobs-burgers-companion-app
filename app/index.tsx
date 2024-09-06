@@ -187,12 +187,33 @@ export default function Index() {
 						<H1>UH OH...</H1>
 					</YStack>
 				)} */}
-				{episodes.length > 0 ? (
+				{/* {episodes.length > 0 ? (
 					episodes.map((episode) => (
 						<SizableText key={episode.id} size='$5'>
 							Name: {episode.name}, Description: {episode.description}, Air
 							Date: {episode.airDate}, Season: {episode.season}, Episode:{' '}
 							{episode.episode}, Total Viewers: {episode.totalViewers}
+						</SizableText>
+					))
+				) : (
+					<YStack flex={1} justifyContent='center' alignItems='center'>
+						<H1>UH OH...</H1>
+					</YStack>
+				)} */}
+				{trucks.length > 0 ? (
+					trucks.map((truck) => (
+						<SizableText key={truck.id} size='$5'>
+							{truck.image ? (
+								<Image
+									source={{ uri: truck.image }}
+									style={{
+										width: 100,
+										height: 100,
+									}}
+								/>
+							) : null}
+							Name: {truck.name}, Season: {truck.season}, Episode:{' '}
+							{truck.episode}
 						</SizableText>
 					))
 				) : (
