@@ -200,7 +200,7 @@ export default function Index() {
 						<H1>UH OH...</H1>
 					</YStack>
 				)} */}
-				{trucks.length > 0 ? (
+				{/* {trucks.length > 0 ? (
 					trucks.map((truck) => (
 						<SizableText key={truck.id} size='$5'>
 							{truck.image ? (
@@ -214,6 +214,27 @@ export default function Index() {
 							) : null}
 							Name: {truck.name}, Season: {truck.season}, Episode:{' '}
 							{truck.episode}
+						</SizableText>
+					))
+				) : (
+					<YStack flex={1} justifyContent='center' alignItems='center'>
+						<H1>UH OH...</H1>
+					</YStack>
+				)} */}
+				{stores.length > 0 ? (
+					stores.map((store) => (
+						<SizableText key={store.id} size='$5'>
+							{store.image ? (
+								<Image
+									source={{ uri: store.image }}
+									style={{
+										width: 100,
+										height: 100,
+									}}
+								/>
+							) : null}
+							Name: {store.name}, Season: {store.season}, Episode:{' '}
+							{store.episode}
 						</SizableText>
 					))
 				) : (
