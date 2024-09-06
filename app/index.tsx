@@ -50,7 +50,7 @@ export default function Index() {
 		airDate: string;
 		season: number;
 		episode: number;
-		totalViews: string;
+		totalViewers: string;
 		url: string;
 		wikiUrl: string;
 	}
@@ -75,10 +75,10 @@ export default function Index() {
 
 	const [burgers, setBurgers] = useState<Burger[]>([]);
 	const [characters, setCharacters] = useState<Character[]>([]);
-	const [EndCredits, setEndCredits] = useState<EndCredit[]>([]);
-	const [Episodes, setEpisodes] = useState<Episode[]>([]);
-	const [Trucks, setTrucks] = useState<Truck[]>([]);
-	const [Stores, setStores] = useState<Store[]>([]);
+	const [endCredits, setEndCredits] = useState<EndCredit[]>([]);
+	const [episodes, setEpisodes] = useState<Episode[]>([]);
+	const [trucks, setTrucks] = useState<Truck[]>([]);
+	const [stores, setStores] = useState<Store[]>([]);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
@@ -167,8 +167,8 @@ export default function Index() {
 						<H1>UH OH...</H1>
 					</YStack>
 				)} */}
-				{EndCredits.length > 0 ? (
-					EndCredits.map((credits) => (
+				{/* {endCredits.length > 0 ? (
+					endCredits.map((credits) => (
 						<SizableText key={credits.id} size='$5'>
 							{credits.image ? (
 								<Image
@@ -180,6 +180,19 @@ export default function Index() {
 								/>
 							) : null}
 							Season: {credits.season}, Episode: {credits.episode}
+						</SizableText>
+					))
+				) : (
+					<YStack flex={1} justifyContent='center' alignItems='center'>
+						<H1>UH OH...</H1>
+					</YStack>
+				)} */}
+				{episodes.length > 0 ? (
+					episodes.map((episode) => (
+						<SizableText key={episode.id} size='$5'>
+							Name: {episode.name}, Description: {episode.description}, Air
+							Date: {episode.airDate}, Season: {episode.season}, Episode:{' '}
+							{episode.episode}, Total Viewers: {episode.totalViewers}
 						</SizableText>
 					))
 				) : (
