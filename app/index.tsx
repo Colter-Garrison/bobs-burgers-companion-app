@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { H1, ScrollView, SizableText, YStack } from 'tamagui';
+import { H1, Image, ScrollView, SizableText, YStack } from 'tamagui';
 import { getBurgersOfTheDay } from '../hooks/fetchBurgersOfTheDay';
 import { getCharacters } from '../hooks/fetchCharacters';
 import { getEndCreditsSequences } from '../hooks/fetchEndCreditsSequences';
@@ -17,10 +17,13 @@ export default function Index() {
 		episodeUrl: string;
 		url: string;
 	}
+	interface Relative {
+		name: string;
+	}
 	interface Character {
 		id: number;
 		name: string;
-		relatives: string[];
+		relatives: Relative[];
 		wikiUrl: string;
 		image: string;
 		gender: string;
@@ -114,7 +117,7 @@ export default function Index() {
 	return (
 		<ScrollView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
 			<YStack gap='$2' alignItems='center'>
-				{burgers.length > 0 ? (
+				{/* {burgers.length > 0 ? (
 					burgers.map((burger) => (
 						<SizableText key={burger.id} size='$5'>
 							Name: {burger.name}, Price:{burger.price}, Season: {burger.season}
@@ -125,18 +128,45 @@ export default function Index() {
 					<YStack flex={1} justifyContent='center' alignItems='center'>
 						<H1>UH OH...</H1>
 					</YStack>
-				)}
-				{/* {characters.length > 0 ? (
-					characters.map((character) => (
-						<SizableText key={character.id} size='$5'>
-							{character.name} - {character.occupation}
-						</SizableText>
-					))
+				)} */}
+				{characters.length > 0 ? (
+					characters.map((character) => {
+						return (
+							<SizableText key={character.id} size='$5'>
+								{character.image ? (
+									<Image
+										source={{ uri: character.image }}
+										style={{
+											width: 100,
+											height: 100,
+										}}
+									/>
+								) : null}
+								Name: {character.name},{' '}
+								{character.relatives.length > 0 && (
+									<SizableText size='$5'>
+										Relatives:{' '}
+										{character.relatives
+											.map((relative) => relative.name)
+											.join(', ')}
+										,
+									</SizableText>
+								)}{' '}
+								{character.occupation && (
+									<SizableText size='$5'>
+										Occupation: {character.occupation},
+									</SizableText>
+								)}{' '}
+								First Episode: {character.firstEpisode}, Voiced By:{' '}
+								{character.voicedBy}
+							</SizableText>
+						);
+					})
 				) : (
 					<YStack flex={1} justifyContent='center' alignItems='center'>
 						<H1>UH OH...</H1>
 					</YStack>
-				)} */}
+				)}
 			</YStack>
 		</ScrollView>
 	);
