@@ -129,7 +129,7 @@ export default function Index() {
 						<H1>UH OH...</H1>
 					</YStack>
 				)} */}
-				{characters.length > 0 ? (
+				{/* {characters.length > 0 ? (
 					characters.map((character) => {
 						return (
 							<SizableText key={character.id} size='$5'>
@@ -162,6 +162,26 @@ export default function Index() {
 							</SizableText>
 						);
 					})
+				) : (
+					<YStack flex={1} justifyContent='center' alignItems='center'>
+						<H1>UH OH...</H1>
+					</YStack>
+				)} */}
+				{EndCredits.length > 0 ? (
+					EndCredits.map((credits) => (
+						<SizableText key={credits.id} size='$5'>
+							{credits.image ? (
+								<Image
+									source={{ uri: credits.image }}
+									style={{
+										width: 100,
+										height: 100,
+									}}
+								/>
+							) : null}
+							Season: {credits.season}, Episode: {credits.episode}
+						</SizableText>
+					))
 				) : (
 					<YStack flex={1} justifyContent='center' alignItems='center'>
 						<H1>UH OH...</H1>
