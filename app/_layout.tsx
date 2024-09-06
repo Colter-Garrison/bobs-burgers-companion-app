@@ -10,6 +10,7 @@ export default function RootLayout() {
 	const [fontLoaded] = useFonts({
 		BobsBurgers: require('../assets/fonts/BobsBurgers.ttf'),
 		BobsBurgers2: require('../assets/fonts/BobsBurgers2.ttf'),
+		Chewy: require('../assets/fonts/Chewy.ttf'),
 		Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
 		InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
 	});

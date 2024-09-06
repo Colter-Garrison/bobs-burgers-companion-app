@@ -6,7 +6,7 @@ const tamaguiConfig = createTamagui({
 	fonts: {
 		...config.fonts,
 		heading: {
-			family: 'BobsBurgers',
+			family: 'chewy',
 			size: {
 				...config.fonts.heading.size,
 			},
@@ -21,7 +21,7 @@ const tamaguiConfig = createTamagui({
 			},
 		},
 		body: {
-			family: 'BobsBurgers',
+			family: 'chewy',
 			size: {
 				...config.fonts.body.size,
 			},

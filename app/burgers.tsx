@@ -45,8 +45,8 @@ export default function Burgers() {
 				{burgers.length > 0 ? (
 					burgers.map((burger) => (
 						<SizableText key={burger.id} size='$5'>
-							Name: {burger.name}, Price:{burger.price}, Season: {burger.season}
-							, Episode: {burger.episode}.
+							Name: {burger.name}, Price: {burger.price}, Season:{' '}
+							{burger.season}, Episode: {burger.episode}.
 						</SizableText>
 					))
 				) : (
