@@ -72,10 +72,10 @@ export default function Index() {
 
 	const [burgers, setBurgers] = useState<Burger[]>([]);
 	const [characters, setCharacters] = useState<Character[]>([]);
-	const [EndCredit, setEndCredits] = useState<EndCredit[]>([]);
-	const [Episode, setEpisodes] = useState<Episode[]>([]);
-	const [Truck, setTrucks] = useState<Truck[]>([]);
-	const [Store, setStores] = useState<Store[]>([]);
+	const [EndCredits, setEndCredits] = useState<EndCredit[]>([]);
+	const [Episodes, setEpisodes] = useState<Episode[]>([]);
+	const [Trucks, setTrucks] = useState<Truck[]>([]);
+	const [Stores, setStores] = useState<Store[]>([]);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
@@ -117,7 +117,8 @@ export default function Index() {
 				{burgers.length > 0 ? (
 					burgers.map((burger) => (
 						<SizableText key={burger.id} size='$5'>
-							{burger.name}
+							Name: {burger.name}, Price:{burger.price}, Season: {burger.season}
+							, Episode: {burger.episode}.
 						</SizableText>
 					))
 				) : (
@@ -125,7 +126,7 @@ export default function Index() {
 						<H1>UH OH...</H1>
 					</YStack>
 				)}
-				{characters.length > 0 ? (
+				{/* {characters.length > 0 ? (
 					characters.map((character) => (
 						<SizableText key={character.id} size='$5'>
 							{character.name} - {character.occupation}
@@ -135,7 +136,7 @@ export default function Index() {
 					<YStack flex={1} justifyContent='center' alignItems='center'>
 						<H1>UH OH...</H1>
 					</YStack>
-				)}
+				)} */}
 			</YStack>
 		</ScrollView>
 	);
