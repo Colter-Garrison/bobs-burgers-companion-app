@@ -1,53 +1,119 @@
 import React from 'react';
 import { useRouter } from 'expo-router';
-import { Button, H1, View } from 'tamagui';
+import { Button, Text, View } from 'tamagui';
 
 export default function Index() {
 	const router = useRouter();
 
 	return (
-		<View gap={10} padding={10} flex={1} backgroundColor={'#F8DF24'}>
+		<View gap={10} padding={10} flex={1} backgroundColor={'#BDFB73'}>
 			<Button
-				fontSize={20}
-				backgroundColor={'#E8242F'}
+				backgroundColor={'#F8DF24'}
+				borderWidth={4}
+				borderColor={'#E8242F'}
+				borderRadius={8}
 				onPress={() => router.push('/burgers')}
 			>
-				Burgers of the Day
+				<Text
+					style={{
+						fontSize: 20,
+						color: '#E8242F',
+						textShadowColor: 'black',
+						textShadowRadius: 1,
+					}}
+				>
+					Burgers of the Day
+				</Text>
 			</Button>
 			<Button
-				fontSize={20}
-				backgroundColor={'#E8242F'}
+				backgroundColor={'#F8DF24'}
+				borderWidth={4}
+				borderColor={'#E8242F'}
+				borderRadius={8}
 				onPress={() => router.push('/characters')}
 			>
-				Characters
+				<Text
+					style={{
+						fontSize: 20,
+						color: '#E8242F',
+						textShadowColor: 'black',
+						textShadowRadius: 1,
+					}}
+				>
+					Characters
+				</Text>
 			</Button>
 			<Button
-				fontSize={20}
-				backgroundColor={'#E8242F'}
+				backgroundColor={'#F8DF24'}
+				borderWidth={4}
+				borderColor={'#E8242F'}
+				borderRadius={8}
 				onPress={() => router.push('/endCredits')}
 			>
-				End Credits
+				<Text
+					style={{
+						fontSize: 20,
+						color: '#E8242F',
+						textShadowColor: 'black',
+						textShadowRadius: 1,
+					}}
+				>
+					End Credits
+				</Text>
 			</Button>
 			<Button
-				fontSize={20}
-				backgroundColor={'#E8242F'}
+				backgroundColor={'#F8DF24'}
+				borderWidth={4}
+				borderColor={'#E8242F'}
+				borderRadius={8}
 				onPress={() => router.push('/episodes')}
 			>
-				Episodes
+				<Text
+					style={{
+						fontSize: 20,
+						color: '#E8242F',
+						textShadowColor: 'black',
+						textShadowRadius: 1,
+					}}
+				>
+					Episodes
+				</Text>
 			</Button>
 			<Button
-				fontSize={20}
-				backgroundColor={'#E8242F'}
+				backgroundColor={'#F8DF24'}
+				borderWidth={4}
+				borderColor={'#E8242F'}
+				borderRadius={8}
 				onPress={() => router.push('/pestControl')}
 			>
-				Pest Control Trucks
+				<Text
+					style={{
+						fontSize: 20,
+						color: '#E8242F',
+						textShadowColor: 'black',
+						textShadowRadius: 1,
+					}}
+				>
+					Pest Control Trucks
+				</Text>
 			</Button>
 			<Button
-				fontSize={20}
-				backgroundColor={'#E8242F'}
+				backgroundColor={'#F8DF24'}
+				borderWidth={4}
+				borderColor={'#E8242F'}
+				borderRadius={8}
 				onPress={() => router.push('/stores')}
 			>
-				Stores Next Door
+				<Text
+					style={{
+						fontSize: 20,
+						color: '#E8242F',
+						textShadowColor: 'black',
+						textShadowRadius: 1,
+					}}
+				>
+					Stores Next Door
+				</Text>
 			</Button>
 		</View>
 	);
