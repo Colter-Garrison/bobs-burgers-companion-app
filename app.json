@@ -23,7 +23,7 @@
 			"package": "coltergarrison.bobsburgerscompanion"
 		},
 		"web": {
-			"bundler": "webpack",
+			"bundler": "metro",
 			"output": "static",
 			"favicon": "./assets/images/bob-favicon.png"
 		},
