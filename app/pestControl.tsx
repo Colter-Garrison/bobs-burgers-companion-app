@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { H1, Image, ScrollView, SizableText, XStack, YStack } from 'tamagui';
+import { Image } from 'react-native';
+import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
 import { getPestControlTrucks } from '../hooks/fetchPestControlTrucks';
 
 export default function PestControl() {
@@ -70,10 +71,10 @@ export default function PestControl() {
 						>
 							{truck.image ? (
 								<Image
-									source={{ uri: truck.image }}
+									source={{ width: 100, height: 100, uri: truck.image }}
 									width={100}
 									height={100}
-									objectFit='contain'
+									resizeMode='contain'
 								/>
 							) : null}
 							<YStack maxWidth='70%'>

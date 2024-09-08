@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { H1, Image, ScrollView, SizableText, XStack, YStack } from 'tamagui';
+import { Image } from 'react-native';
+import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
 import { getCharacters } from '../hooks/fetchCharacters';
 
 export default function Characters() {
@@ -82,10 +83,10 @@ export default function Characters() {
 							>
 								{character.image ? (
 									<Image
-										source={{ uri: character.image }}
+										source={{ width: 100, height: 100, uri: character.image }}
 										width={100}
 										height={100}
-										objectFit='contain'
+										resizeMode='contain'
 									/>
 								) : null}
 								<YStack maxWidth='70%'>

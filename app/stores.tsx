@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { H1, Image, ScrollView, SizableText, XStack, YStack } from 'tamagui';
+import { Image } from 'tamagui';
+import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
 import { getStoresNextDoor } from '../hooks/fetchStoresNextDoor';
 
 export default function Stores() {
@@ -70,10 +71,10 @@ export default function Stores() {
 						>
 							{store.image ? (
 								<Image
-									source={{ uri: store.image }}
+									source={{ width: 100, height: 100, uri: store.image }}
 									width={100}
 									height={100}
-									objectFit='contain'
+									resizeMode='contain'
 								/>
 							) : null}
 							<YStack maxWidth='70%'>
