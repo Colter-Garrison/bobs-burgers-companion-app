@@ -54,23 +54,38 @@ export default function Stores() {
 	}
 
 	return (
-		<ScrollView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-			<YStack gap='$2' alignItems='center'>
+		<ScrollView backgroundColor='#BDFB73'>
+			<YStack padding='$2' gap='$2'>
 				{stores.length > 0 ? (
 					stores.map((store) => (
-						<SizableText key={store.id} size='$5'>
+						<XStack
+							key={store.id}
+							gap='$2'
+							backgroundColor={'#F8DF24'}
+							borderWidth={4}
+							borderColor={'#E8242F'}
+							borderRadius={8}
+							padding='$2'
+							alignItems='center'
+						>
 							{store.image ? (
 								<Image
 									source={{ uri: store.image }}
-									style={{
-										width: 100,
-										height: 100,
-									}}
+									width={100}
+									height={100}
+									objectFit='contain'
 								/>
 							) : null}
-							Name: {store.name}, Season: {store.season}, Episode:{' '}
-							{store.episode}
-						</SizableText>
+							<YStack maxWidth='70%'>
+								<SizableText color='#E8242F'>Name: {store.name}</SizableText>
+								<SizableText color='#E8242F'>
+									Season: {store.season}
+								</SizableText>
+								<SizableText color='#E8242F'>
+									Episode: {store.episode}
+								</SizableText>
+							</YStack>
+						</XStack>
 					))
 				) : (
 					<YStack flex={1} justifyContent='center' alignItems='center'>
