@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { H1, Image, ScrollView, SizableText, YStack } from 'tamagui';
+import {
+	H1,
+	Image,
+	ScrollView,
+	SizableText,
+	Text,
+	XStack,
+	YStack,
+} from 'tamagui';
 import { getCharacters } from '../hooks/fetchCharacters';
 
 export default function Characters() {
@@ -41,46 +49,93 @@ export default function Characters() {
 
 	if (loading) {
 		return (
-			<YStack flex={1} justifyContent='center' alignItems='center'>
-				<H1>Loading...</H1>
+			<YStack
+				flex={1}
+				justifyContent='center'
+				alignItems='center'
+				backgroundColor='#BDFB73'
+			>
+				<XStack
+					backgroundColor={'#F8DF24'}
+					borderWidth={4}
+					borderColor={'#E8242F'}
+					borderRadius={8}
+					padding='$2'
+					alignItems='center'
+				>
+					<H1 color='#E8242F'>Loading...</H1>
+				</XStack>
 			</YStack>
 		);
 	}
 
 	return (
-		<ScrollView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-			<YStack gap='$2' alignItems='center'>
+		<ScrollView backgroundColor='#BDFB73'>
+			<YStack padding='$2' gap='$2'>
 				{characters.length > 0 ? (
 					characters.map((character) => {
 						return (
-							<SizableText key={character.id} size='$5'>
+							<XStack
+								key={character.id}
+								gap='$2'
+								backgroundColor={'#F8DF24'}
+								borderWidth={4}
+								borderColor={'#E8242F'}
+								borderRadius={8}
+								padding='$2'
+								alignItems='center'
+							>
 								{character.image ? (
 									<Image
 										source={{ uri: character.image }}
-										style={{
-											width: 100,
-											height: 100,
-										}}
+										width={100}
+										height={100}
+										objectFit='contain'
 									/>
 								) : null}
-								Name: {character.name},{' '}
-								{character.relatives.length > 0 && (
-									<SizableText size='$5'>
-										Relatives:{' '}
-										{character.relatives
-											.map((relative) => relative.name)
-											.join(', ')}
-										,
+								<YStack maxWidth='70%'>
+									<SizableText color='#E8242F'>
+										Name: {character.name}
 									</SizableText>
-								)}{' '}
-								{character.occupation && (
-									<SizableText size='$5'>
-										Occupation: {character.occupation},
+									<SizableText>
+										{character.relatives.length > 0 ? (
+											<SizableText color='#E8242F'>
+												Relatives:{' '}
+												{character.relatives
+													.map((relative) => relative.name)
+													.join(', ')}
+											</SizableText>
+										) : (
+											<SizableText color='#E8242F'>Relatives: None</SizableText>
+										)}
 									</SizableText>
-								)}{' '}
-								First Episode: {character.firstEpisode}, Voiced By:{' '}
-								{character.voicedBy}
-							</SizableText>
+									<SizableText>
+										{character.occupation ? (
+											<SizableText color='#E8242F'>
+												Occupation: {character.occupation}
+											</SizableText>
+										) : (
+											<SizableText color='#E8242F'>
+												Occupation: None
+											</SizableText>
+										)}
+									</SizableText>
+									<SizableText color='#E8242F'>
+										First Episode: {character.firstEpisode}
+									</SizableText>
+									<SizableText>
+										{character.voicedBy ? (
+											<SizableText color='#E8242F'>
+												Voiced By: {character.voicedBy}
+											</SizableText>
+										) : (
+											<SizableText color='#E8242F'>
+												Voiced By: Unknown
+											</SizableText>
+										)}
+									</SizableText>
+								</YStack>
+							</XStack>
 						);
 					})
 				) : (

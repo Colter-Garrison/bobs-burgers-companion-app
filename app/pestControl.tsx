@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { H1, Image, ScrollView, SizableText, YStack } from 'tamagui';
+import { H1, Image, ScrollView, SizableText, XStack, YStack } from 'tamagui';
 import { getPestControlTrucks } from '../hooks/fetchPestControlTrucks';
 
 export default function PestControl() {
@@ -33,8 +33,22 @@ export default function PestControl() {
 
 	if (loading) {
 		return (
-			<YStack flex={1} justifyContent='center' alignItems='center'>
-				<H1>Loading...</H1>
+			<YStack
+				flex={1}
+				justifyContent='center'
+				alignItems='center'
+				backgroundColor='#BDFB73'
+			>
+				<XStack
+					backgroundColor={'#F8DF24'}
+					borderWidth={4}
+					borderColor={'#E8242F'}
+					borderRadius={8}
+					padding='$2'
+					alignItems='center'
+				>
+					<H1 color='#E8242F'>Loading...</H1>
+				</XStack>
 			</YStack>
 		);
 	}
