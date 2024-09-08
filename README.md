@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="./assets/images/banner-image.png" width="576px" height="324px" />
+</div>
+
 # Bob's Burgers Companion App
 
 The Bob's Burgers Companion App is a React Native project using Expo Router, the [Bob's Burgers API](https://www.bobsburgersapi.com/) and styled with Tamagui. The site's hosted on Netlify if you'd like to check it out:
