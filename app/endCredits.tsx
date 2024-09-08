@@ -53,22 +53,37 @@ export default function EndCredits() {
 	}
 
 	return (
-		<ScrollView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-			<YStack gap='$2' alignItems='center'>
+		<ScrollView backgroundColor='#BDFB73'>
+			<YStack padding='$2' gap='$2'>
 				{endCredits.length > 0 ? (
 					endCredits.map((credits) => (
-						<SizableText key={credits.id} size='$5'>
+						<XStack
+							key={credits.id}
+							gap='$2'
+							backgroundColor={'#F8DF24'}
+							borderWidth={4}
+							borderColor={'#E8242F'}
+							borderRadius={8}
+							padding='$2'
+							alignItems='center'
+						>
 							{credits.image ? (
 								<Image
 									source={{ uri: credits.image }}
-									style={{
-										width: 100,
-										height: 100,
-									}}
+									width={100}
+									height={100}
+									objectFit='contain'
 								/>
 							) : null}
-							Season: {credits.season}, Episode: {credits.episode}
-						</SizableText>
+							<YStack maxWidth='70%'>
+								<SizableText color='#E8242F'>
+									Season: {credits.season}
+								</SizableText>
+								<SizableText color='#E8242F'>
+									Episode: {credits.episode}
+								</SizableText>
+							</YStack>
+						</XStack>
 					))
 				) : (
 					<YStack flex={1} justifyContent='center' alignItems='center'>
