@@ -57,15 +57,35 @@ export default function Episodes() {
 	}
 
 	return (
-		<ScrollView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-			<YStack gap='$2' alignItems='center'>
+		<ScrollView backgroundColor='#BDFB73'>
+			<YStack padding='$2' gap='$2'>
 				{episodes.length > 0 ? (
 					episodes.map((episode) => (
-						<SizableText key={episode.id} size='$5'>
-							Name: {episode.name}, Description: {episode.description}, Air
-							Date: {episode.airDate}, Season: {episode.season}, Episode:{' '}
-							{episode.episode}, Total Viewers: {episode.totalViewers}
-						</SizableText>
+						<YStack
+							key={episode.id}
+							backgroundColor={'#F8DF24'}
+							borderWidth={4}
+							borderColor={'#E8242F'}
+							borderRadius={8}
+							padding='$2'
+						>
+							<SizableText color='#E8242F'>Name: {episode.name}</SizableText>
+							<SizableText color='#E8242F'>
+								Description: {episode.description}
+							</SizableText>
+							<SizableText color='#E8242F'>
+								Air Date: {episode.airDate}
+							</SizableText>
+							<SizableText color='#E8242F'>
+								Season: {episode.season}
+							</SizableText>
+							<SizableText color='#E8242F'>
+								Episode: {episode.episode}
+							</SizableText>
+							<SizableText color='#E8242F'>
+								Total Viewers: {episode.totalViewers}
+							</SizableText>
+						</YStack>
 					))
 				) : (
 					<YStack flex={1} justifyContent='center' alignItems='center'>
