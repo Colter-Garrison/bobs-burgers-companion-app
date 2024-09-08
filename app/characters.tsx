@@ -1,19 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import {
-	H1,
-	Image,
-	ScrollView,
-	SizableText,
-	Text,
-	XStack,
-	YStack,
-} from 'tamagui';
+import { H1, Image, ScrollView, SizableText, XStack, YStack } from 'tamagui';
 import { getCharacters } from '../hooks/fetchCharacters';
 
 export default function Characters() {
-	interface Relative {
-		name: string;
-	}
 	interface Character {
 		id: number;
 		name: string;
@@ -26,6 +15,12 @@ export default function Characters() {
 		allOccupations: string[];
 		firstEpisode: string;
 		voicedBy: string;
+		url: string;
+	}
+	interface Relative {
+		name: string;
+		relationship: string;
+		wikiUrl: string;
 		url: string;
 	}
 
