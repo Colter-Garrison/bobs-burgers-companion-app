@@ -54,23 +54,38 @@ export default function PestControl() {
 	}
 
 	return (
-		<ScrollView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-			<YStack gap='$2' alignItems='center'>
+		<ScrollView backgroundColor='#BDFB73'>
+			<YStack padding='$2' gap='$2'>
 				{trucks.length > 0 ? (
 					trucks.map((truck) => (
-						<SizableText key={truck.id} size='$5'>
+						<XStack
+							key={truck.id}
+							gap='$2'
+							backgroundColor={'#F8DF24'}
+							borderWidth={4}
+							borderColor={'#E8242F'}
+							borderRadius={8}
+							padding='$2'
+							alignItems='center'
+						>
 							{truck.image ? (
 								<Image
 									source={{ uri: truck.image }}
-									style={{
-										width: 100,
-										height: 100,
-									}}
+									width={100}
+									height={100}
+									objectFit='contain'
 								/>
 							) : null}
-							Name: {truck.name}, Season: {truck.season}, Episode:{' '}
-							{truck.episode}
-						</SizableText>
+							<YStack maxWidth='70%'>
+								<SizableText color='#E8242F'>Name: {truck.name}</SizableText>
+								<SizableText color='#E8242F'>
+									Season: {truck.season}
+								</SizableText>
+								<SizableText color='#E8242F'>
+									Episode: {truck.episode}
+								</SizableText>
+							</YStack>
+						</XStack>
 					))
 				) : (
 					<YStack flex={1} justifyContent='center' alignItems='center'>

@@ -54,14 +54,25 @@ export default function Burgers() {
 	}
 
 	return (
-		<ScrollView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-			<YStack gap='$2' alignItems='center'>
+		<ScrollView backgroundColor='#BDFB73'>
+			<YStack padding='$2' gap='$2'>
 				{burgers.length > 0 ? (
 					burgers.map((burger) => (
-						<SizableText key={burger.id} size='$5'>
-							Name: {burger.name}, Price: {burger.price}, Season:{' '}
-							{burger.season}, Episode: {burger.episode}.
-						</SizableText>
+						<YStack
+							key={burger.id}
+							backgroundColor={'#F8DF24'}
+							borderWidth={4}
+							borderColor={'#E8242F'}
+							borderRadius={8}
+							padding='$2'
+						>
+							<SizableText color='#E8242F'>Name: {burger.name}</SizableText>
+							<SizableText color='#E8242F'>Price: {burger.price}</SizableText>
+							<SizableText color='#E8242F'>Season: {burger.season}</SizableText>
+							<SizableText color='#E8242F'>
+								Episode: {burger.episode}
+							</SizableText>
+						</YStack>
 					))
 				) : (
 					<YStack flex={1} justifyContent='center' alignItems='center'>
