@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
 import { getEpisodes } from '../hooks/fetchEpisodes';
+import { Linking, Pressable } from 'react-native';
 
 export default function Episodes() {
 	interface Episode {
@@ -18,6 +19,9 @@ export default function Episodes() {
 
 	const [episodes, setEpisodes] = useState<Episode[]>([]);
 	const [loading, setLoading] = useState(true);
+	const handlePress = (episode: Episode) => {
+		Linking.openURL(episode.wikiUrl);
+	};
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -61,31 +65,32 @@ export default function Episodes() {
 			<YStack padding='$2' gap='$2'>
 				{episodes.length > 0 ? (
 					episodes.map((episode) => (
-						<YStack
-							key={episode.id}
-							backgroundColor={'#F8DF24'}
-							borderWidth={4}
-							borderColor={'#E8242F'}
-							borderRadius={8}
-							padding='$2'
-						>
-							<SizableText color='#E8242F'>Name: {episode.name}</SizableText>
-							<SizableText color='#E8242F'>
-								Description: {episode.description}
-							</SizableText>
-							<SizableText color='#E8242F'>
-								Air Date: {episode.airDate}
-							</SizableText>
-							<SizableText color='#E8242F'>
-								Season: {episode.season}
-							</SizableText>
-							<SizableText color='#E8242F'>
-								Episode: {episode.episode}
-							</SizableText>
-							<SizableText color='#E8242F'>
-								Total Viewers: {episode.totalViewers}
-							</SizableText>
-						</YStack>
+						<Pressable key={episode.id} onPress={() => handlePress(episode)}>
+							<YStack
+								backgroundColor={'#F8DF24'}
+								borderWidth={4}
+								borderColor={'#E8242F'}
+								borderRadius={8}
+								padding='$2'
+							>
+								<SizableText color='#E8242F'>Name: {episode.name}</SizableText>
+								<SizableText color='#E8242F'>
+									Description: {episode.description}
+								</SizableText>
+								<SizableText color='#E8242F'>
+									Air Date: {episode.airDate}
+								</SizableText>
+								<SizableText color='#E8242F'>
+									Season: {episode.season}
+								</SizableText>
+								<SizableText color='#E8242F'>
+									Episode: {episode.episode}
+								</SizableText>
+								<SizableText color='#E8242F'>
+									Total Viewers: {episode.totalViewers}
+								</SizableText>
+							</YStack>
+						</Pressable>
 					))
 				) : (
 					<YStack flex={1} justifyContent='center' alignItems='center'>

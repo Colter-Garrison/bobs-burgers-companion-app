@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { H1, Image, ScrollView, SizableText, XStack, YStack } from 'tamagui';
+import { Image } from 'react-native';
+import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
 import { getEndCreditsSequences } from '../hooks/fetchEndCreditsSequences';
 
 export default function EndCredits() {
@@ -69,10 +70,10 @@ export default function EndCredits() {
 						>
 							{credits.image ? (
 								<Image
-									source={{ uri: credits.image }}
+									source={{ width: 100, height: 100, uri: credits.image }}
 									width={100}
 									height={100}
-									objectFit='contain'
+									resizeMode='contain'
 								/>
 							) : null}
 							<YStack maxWidth='70%'>
