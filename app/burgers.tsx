@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
+import { H1, ScrollView, SizableText, Spinner, XStack, YStack } from 'tamagui';
 import { getBurgersOfTheDay } from '../hooks/fetchBurgersOfTheDay';
 
 export default function Burgers() {
@@ -47,7 +47,8 @@ export default function Burgers() {
 					padding='$2'
 					alignItems='center'
 				>
-					<H1 color='#E8242F'>Loading...</H1>
+					<H1 color='#E8242F'>Loading </H1>
+					<Spinner size='large' color='#E8242F' />
 				</XStack>
 			</YStack>
 		);

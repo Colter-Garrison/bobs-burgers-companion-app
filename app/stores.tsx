@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Image } from 'tamagui';
-import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
+import { Image } from 'react-native';
+import { H1, ScrollView, SizableText, Spinner, XStack, YStack } from 'tamagui';
 import { getStoresNextDoor } from '../hooks/fetchStoresNextDoor';
 
 export default function Stores() {
@@ -48,7 +48,8 @@ export default function Stores() {
 					padding='$2'
 					alignItems='center'
 				>
-					<H1 color='#E8242F'>Loading...</H1>
+					<H1 color='#E8242F'>Loading </H1>
+					<Spinner size='large' color='#E8242F' />
 				</XStack>
 			</YStack>
 		);
