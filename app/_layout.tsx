@@ -1,8 +1,11 @@
 import { useEffect } from 'react';
+import { useColorScheme } from 'react-native';
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
 import tamaguiConfig from '@/tamagui.config';
-import { TamaguiProvider } from 'tamagui';
+import { TamaguiProvider, Theme } from 'tamagui';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Drawer from 'expo-router/drawer';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -14,6 +17,8 @@ export default function RootLayout() {
 		Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
 		InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
 	});
+
+	const colorScheme = useColorScheme();
 
 	useEffect(() => {
 		if (fontLoaded) {
@@ -27,21 +32,46 @@ export default function RootLayout() {
 
 	return (
 		<TamaguiProvider config={tamaguiConfig}>
-			<Stack>
-				<Stack.Screen name='index' options={{ title: 'Home' }} />
-				<Stack.Screen
-					name='burgers'
-					options={{ title: 'Burgers of the Day' }}
-				/>
-				<Stack.Screen name='characters' options={{ title: 'Characters' }} />
-				<Stack.Screen name='endCredits' options={{ title: 'End Credits' }} />
-				<Stack.Screen name='episodes' options={{ title: 'Episodes' }} />
-				<Stack.Screen
-					name='pestControl'
-					options={{ title: 'Pest Control Trucks' }}
-				/>
-				<Stack.Screen name='stores' options={{ title: 'Stores Next Door' }} />
-			</Stack>
+			<Theme name={colorScheme === 'dark' ? 'dark' : 'light'}>
+				<GestureHandlerRootView style={{ flex: 1 }}>
+					<Drawer>
+						<Drawer.Screen
+							name='index'
+							options={{ drawerLabel: 'Home', title: 'Home' }}
+						/>
+						<Drawer.Screen
+							name='burgers'
+							options={{
+								drawerLabel: 'Burgers of the Day',
+								title: 'Burgers of the Day',
+							}}
+						/>
+						<Drawer.Screen
+							name='characters'
+							options={{ drawerLabel: 'Characters', title: 'Characters' }}
+						/>
+						<Drawer.Screen
+							name='endCredits'
+							options={{ drawerLabel: 'End Credits', title: 'End Credits' }}
+						/>
+						<Drawer.Screen
+							name='episodes'
+							options={{ drawerLabel: 'Episodes', title: 'Episodes' }}
+						/>
+						<Drawer.Screen
+							name='pestControl'
+							options={{
+								drawerLabel: 'Pest Control Trucks',
+								title: 'Pest Control Trucks',
+							}}
+						/>
+						<Drawer.Screen
+							name='stores'
+							options={{ drawerLabel: 'Stores', title: 'Stores' }}
+						/>
+					</Drawer>
+				</GestureHandlerRootView>
+			</Theme>
 		</TamaguiProvider>
 	);
 }

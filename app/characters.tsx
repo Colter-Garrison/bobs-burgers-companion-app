@@ -97,7 +97,7 @@ export default function Characters() {
 											resizeMode='contain'
 										/>
 									) : null}
-									<YStack maxWidth='70%'>
+									<YStack $gtMd={{ maxWidth: '90%' }} maxWidth='70%'>
 										<SizableText color='#E8242F'>
 											Name: {character.name}
 										</SizableText>
