@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Image } from 'react-native';
-import { H1, ScrollView, SizableText, Spinner, XStack, YStack } from 'tamagui';
+import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
 import { getEndCreditsSequences } from '../hooks/fetchEndCreditsSequences';
 
 export default function EndCredits() {
@@ -15,6 +15,7 @@ export default function EndCredits() {
 
 	const [endCredits, setEndCredits] = useState<EndCredit[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [dots, setDots] = useState(1);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -29,6 +30,14 @@ export default function EndCredits() {
 		};
 
 		fetchData();
+	}, []);
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setDots((prevDots) => (prevDots % 3) + 1);
+		}, 300);
+
+		return () => clearInterval(interval);
 	}, []);
 
 	if (loading) {
@@ -47,8 +56,7 @@ export default function EndCredits() {
 					padding='$2'
 					alignItems='center'
 				>
-					<H1 color='#E8242F'>Loading </H1>
-					<Spinner size='large' color='#E8242F' />
+					<H1 color='#E8242F'>Loading{'.'.repeat(dots)}</H1>
 				</XStack>
 			</YStack>
 		);

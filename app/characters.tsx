@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Image, Linking, Pressable } from 'react-native';
-import { H1, ScrollView, SizableText, Spinner, XStack, YStack } from 'tamagui';
+import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
 import { getCharacters } from '../hooks/fetchCharacters';
 
 export default function Characters() {
@@ -30,6 +30,7 @@ export default function Characters() {
 	const handlePress = (character: Character) => {
 		Linking.openURL(character.wikiUrl);
 	};
+	const [dots, setDots] = useState(1);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -44,6 +45,14 @@ export default function Characters() {
 		};
 
 		fetchData();
+	}, []);
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setDots((prevDots) => (prevDots % 3) + 1);
+		}, 300);
+
+		return () => clearInterval(interval);
 	}, []);
 
 	if (loading) {
@@ -62,8 +71,7 @@ export default function Characters() {
 					padding='$2'
 					alignItems='center'
 				>
-					<H1 color='#E8242F'>Loading </H1>
-					<Spinner size='large' color='#E8242F' />
+					<H1 color='#E8242F'>Loading{'.'.repeat(dots)}</H1>
 				</XStack>
 			</YStack>
 		);
