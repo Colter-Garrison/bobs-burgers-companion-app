@@ -34,10 +34,32 @@ export default function RootLayout() {
 		<TamaguiProvider config={tamaguiConfig}>
 			<Theme name={colorScheme === 'dark' ? 'dark' : 'light'}>
 				<GestureHandlerRootView style={{ flex: 1 }}>
-					<Drawer>
+					<Drawer
+						screenOptions={{
+							headerStyle: {
+								backgroundColor: '#5D74A6',
+							},
+							headerTitleStyle: {
+								fontFamily: 'chewy',
+							},
+							headerTintColor: '#E4E4E5',
+							drawerStyle: {
+								backgroundColor: '#5D74A6',
+							},
+							drawerActiveTintColor: '#E8242F',
+							drawerActiveBackgroundColor: '#F8DF24',
+							drawerInactiveTintColor: '#E4E4E5',
+							drawerLabelStyle: {
+								fontFamily: 'chewy',
+							},
+						}}
+					>
 						<Drawer.Screen
 							name='index'
-							options={{ drawerLabel: 'Home', title: 'Home' }}
+							options={{
+								drawerLabel: 'Home',
+								title: "Bob's Burgers Companion",
+							}}
 						/>
 						<Drawer.Screen
 							name='burgers'
