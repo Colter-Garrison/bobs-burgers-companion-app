@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Image } from 'react-native';
+import { ActivityIndicator, Image } from 'react-native';
 import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
 import { getPestControlTrucks } from '../hooks/fetchPestControlTrucks';
 
@@ -48,7 +48,8 @@ export default function PestControl() {
 					padding='$2'
 					alignItems='center'
 				>
-					<H1 color='#E8242F'>Loading...</H1>
+					<H1 color='#E8242F'>Loading </H1>
+					<ActivityIndicator size='large' color='#E8242F' />
 				</XStack>
 			</YStack>
 		);

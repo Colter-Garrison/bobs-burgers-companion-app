@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ActivityIndicator } from 'react-native';
 import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
 import { getBurgersOfTheDay } from '../hooks/fetchBurgersOfTheDay';
 
@@ -47,7 +48,8 @@ export default function Burgers() {
 					padding='$2'
 					alignItems='center'
 				>
-					<H1 color='#E8242F'>Loading...</H1>
+					<H1 color='#E8242F'>Loading </H1>
+					<ActivityIndicator size='large' color='#E8242F' />
 				</XStack>
 			</YStack>
 		);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { ActivityIndicator, Linking, Pressable } from 'react-native';
 import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
 import { getEpisodes } from '../hooks/fetchEpisodes';
-import { Linking, Pressable } from 'react-native';
 
 export default function Episodes() {
 	interface Episode {
@@ -54,7 +54,8 @@ export default function Episodes() {
 					padding='$2'
 					alignItems='center'
 				>
-					<H1 color='#E8242F'>Loading...</H1>
+					<H1 color='#E8242F'>Loading </H1>
+					<ActivityIndicator size='large' color='#E8242F' />
 				</XStack>
 			</YStack>
 		);

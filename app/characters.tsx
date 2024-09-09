@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Image, Linking, Pressable } from 'react-native';
+import { ActivityIndicator, Image, Linking, Pressable } from 'react-native';
 import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
 import { getCharacters } from '../hooks/fetchCharacters';
 
@@ -62,7 +62,8 @@ export default function Characters() {
 					padding='$2'
 					alignItems='center'
 				>
-					<H1 color='#E8242F'>Loading...</H1>
+					<H1 color='#E8242F'>Loading </H1>
+					<ActivityIndicator size='large' color='#E8242F' />
 				</XStack>
 			</YStack>
 		);
