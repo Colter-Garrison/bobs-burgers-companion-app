@@ -4,8 +4,6 @@ import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
 import tamaguiConfig from '@/tamagui.config';
 import { TamaguiProvider, Theme } from 'tamagui';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Drawer from 'expo-router/drawer';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -33,66 +31,36 @@ export default function RootLayout() {
 	return (
 		<TamaguiProvider config={tamaguiConfig}>
 			<Theme name={colorScheme === 'dark' ? 'dark' : 'light'}>
-				<GestureHandlerRootView style={{ flex: 1 }}>
-					<Drawer
-						screenOptions={{
-							headerStyle: {
-								backgroundColor: '#5D74A6',
-							},
-							headerTitleStyle: {
-								fontFamily: 'chewy',
-							},
-							headerTintColor: '#E4E4E5',
-							drawerStyle: {
-								backgroundColor: '#5D74A6',
-							},
-							drawerActiveTintColor: '#E8242F',
-							drawerActiveBackgroundColor: '#F8DF24',
-							drawerInactiveTintColor: '#E4E4E5',
-							drawerLabelStyle: {
-								fontFamily: 'chewy',
-							},
-						}}
-					>
-						<Drawer.Screen
-							name='index'
-							options={{
-								drawerLabel: 'Home',
-								title: "Bob's Burgers Companion",
-							}}
-						/>
-						<Drawer.Screen
-							name='burgers'
-							options={{
-								drawerLabel: 'Burgers of the Day',
-								title: 'Burgers of the Day',
-							}}
-						/>
-						<Drawer.Screen
-							name='characters'
-							options={{ drawerLabel: 'Characters', title: 'Characters' }}
-						/>
-						<Drawer.Screen
-							name='endCredits'
-							options={{ drawerLabel: 'End Credits', title: 'End Credits' }}
-						/>
-						<Drawer.Screen
-							name='episodes'
-							options={{ drawerLabel: 'Episodes', title: 'Episodes' }}
-						/>
-						<Drawer.Screen
-							name='pestControl'
-							options={{
-								drawerLabel: 'Pest Control Trucks',
-								title: 'Pest Control Trucks',
-							}}
-						/>
-						<Drawer.Screen
-							name='stores'
-							options={{ drawerLabel: 'Stores', title: 'Stores' }}
-						/>
-					</Drawer>
-				</GestureHandlerRootView>
+				<Stack
+					screenOptions={{
+						headerStyle: {
+							backgroundColor: '#5D74A6',
+						},
+						headerTitleStyle: {
+							fontFamily: 'chewy',
+							fontSize: 24,
+						},
+						headerBackTitleStyle: {
+							fontFamily: 'chewy',
+							fontSize: 18,
+						},
+						headerTintColor: '#E4E4E5',
+					}}
+				>
+					<Stack.Screen name='index' options={{ title: 'Home' }} />
+					<Stack.Screen
+						name='burgers'
+						options={{ title: 'Burgers of the Day' }}
+					/>
+					<Stack.Screen name='characters' options={{ title: 'Characters' }} />
+					<Stack.Screen name='endCredits' options={{ title: 'End Credits' }} />
+					<Stack.Screen name='episodes' options={{ title: 'Episodes' }} />
+					<Stack.Screen
+						name='pestControl'
+						options={{ title: 'Pest Control Trucks' }}
+					/>
+					<Stack.Screen name='stores' options={{ title: 'Stores Next Door' }} />
+				</Stack>
 			</Theme>
 		</TamaguiProvider>
 	);

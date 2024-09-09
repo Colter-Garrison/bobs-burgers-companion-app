@@ -35,7 +35,7 @@ export default function Burgers() {
 	useEffect(() => {
 		const interval = setInterval(() => {
 			setDots((prevDots) => (prevDots % 3) + 1);
-		}, 300);
+		}, 500);
 
 		return () => clearInterval(interval);
 	}, []);
