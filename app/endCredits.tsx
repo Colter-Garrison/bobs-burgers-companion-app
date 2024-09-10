@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Image } from 'react-native';
 import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
 import { getEndCreditsSequences } from '../hooks/fetchEndCreditsSequences';
@@ -17,20 +17,20 @@ export default function EndCredits() {
 	const [loading, setLoading] = useState(true);
 	const [dots, setDots] = useState(1);
 
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const creditData = await getEndCreditsSequences();
-				setEndCredits(creditData);
-			} catch (error) {
-				console.error('Error fetching end credits data:', error);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchData();
+	const fetchData = useCallback(async () => {
+		try {
+			const creditData = await getEndCreditsSequences();
+			setEndCredits(creditData);
+		} catch (error) {
+			console.error('Error fetching end credits data:', error);
+		} finally {
+			setLoading(false);
+		}
 	}, []);
+
+	useEffect(() => {
+		fetchData();
+	}, [fetchData]);
 
 	useEffect(() => {
 		const interval = setInterval(() => {
