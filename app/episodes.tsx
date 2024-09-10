@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Linking, Pressable } from 'react-native';
 import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
 import { getEpisodes } from '../hooks/fetchEpisodes';
@@ -24,20 +24,20 @@ export default function Episodes() {
 	};
 	const [dots, setDots] = useState(1);
 
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const episodeData = await getEpisodes();
-				setEpisodes(episodeData);
-			} catch (error) {
-				console.error('Error fetching episode data:', error);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchData();
+	const fetchData = useCallback(async () => {
+		try {
+			const episodeData = await getEpisodes();
+			setEpisodes(episodeData);
+		} catch (error) {
+			console.error('Error fetching episode data:', error);
+		} finally {
+			setLoading(false);
+		}
 	}, []);
+
+	useEffect(() => {
+		fetchData();
+	}, [fetchData]);
 
 	useEffect(() => {
 		const interval = setInterval(() => {

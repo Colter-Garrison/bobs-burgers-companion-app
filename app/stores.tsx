@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Image } from 'react-native';
 import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
 import { getStoresNextDoor } from '../hooks/fetchStoresNextDoor';
@@ -18,20 +18,20 @@ export default function Stores() {
 	const [loading, setLoading] = useState(true);
 	const [dots, setDots] = useState(1);
 
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const storeData = await getStoresNextDoor();
-				setStores(storeData);
-			} catch (error) {
-				console.error('Error fetching store data:', error);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchData();
+	const fetchData = useCallback(async () => {
+		try {
+			const storeData = await getStoresNextDoor();
+			setStores(storeData);
+		} catch (error) {
+			console.error('Error fetching store data:', error);
+		} finally {
+			setLoading(false);
+		}
 	}, []);
+
+	useEffect(() => {
+		fetchData();
+	}, [fetchData]);
 
 	useEffect(() => {
 		const interval = setInterval(() => {

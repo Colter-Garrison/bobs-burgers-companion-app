@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
 import { getBurgersOfTheDay } from '../hooks/fetchBurgersOfTheDay';
 
@@ -17,20 +17,20 @@ export default function Burgers() {
 	const [loading, setLoading] = useState(true);
 	const [dots, setDots] = useState(1);
 
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const burgerData = await getBurgersOfTheDay();
-				setBurgers(burgerData);
-			} catch (error) {
-				console.error('Error fetching burger of the day data:', error);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchData();
+	const fetchData = useCallback(async () => {
+		try {
+			const burgerData = await getBurgersOfTheDay();
+			setBurgers(burgerData);
+		} catch (error) {
+			console.error('Error fetching burger of the day data:', error);
+		} finally {
+			setLoading(false);
+		}
 	}, []);
+
+	useEffect(() => {
+		fetchData();
+	}, [fetchData]);
 
 	useEffect(() => {
 		const interval = setInterval(() => {

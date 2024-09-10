@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Image, Linking, Pressable } from 'react-native';
 import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
 import { getCharacters } from '../hooks/fetchCharacters';
@@ -32,20 +32,20 @@ export default function Characters() {
 	};
 	const [dots, setDots] = useState(1);
 
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const characterData = await getCharacters();
-				setCharacters(characterData);
-			} catch (error) {
-				console.error('Error fetching character data:', error);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchData();
+	const fetchData = useCallback(async () => {
+		try {
+			const characterData = await getCharacters();
+			setCharacters(characterData);
+		} catch (error) {
+			console.error('Error fetching character data:', error);
+		} finally {
+			setLoading(false);
+		}
 	}, []);
+
+	useEffect(() => {
+		fetchData();
+	}, [fetchData]);
 
 	useEffect(() => {
 		const interval = setInterval(() => {
