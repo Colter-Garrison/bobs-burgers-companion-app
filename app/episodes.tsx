@@ -31,7 +31,9 @@ export default function Episodes() {
 		} catch (error) {
 			console.error('Error fetching episode data:', error);
 		} finally {
-			setLoading(false);
+			setTimeout(() => {
+				setLoading(false);
+			}, 3000);
 		}
 	}, []);
 
