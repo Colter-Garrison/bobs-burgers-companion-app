@@ -24,7 +24,9 @@ export default function Burgers() {
 		} catch (error) {
 			console.error('Error fetching burger of the day data:', error);
 		} finally {
-			setLoading(false);
+			setTimeout(() => {
+				setLoading(false);
+			}, 3000);
 		}
 	}, []);
 

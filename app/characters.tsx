@@ -39,7 +39,9 @@ export default function Characters() {
 		} catch (error) {
 			console.error('Error fetching character data:', error);
 		} finally {
-			setLoading(false);
+			setTimeout(() => {
+				setLoading(false);
+			}, 3000);
 		}
 	}, []);
 
