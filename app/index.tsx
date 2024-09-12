@@ -1,7 +1,6 @@
 import React from 'react';
 import { useRouter } from 'expo-router';
-import { Button, Input, Text, View, XStack } from 'tamagui';
-import { Ionicons } from '@expo/vector-icons';
+import { Button, Text, View } from 'tamagui';
 
 export default function Index() {
 	const router = useRouter();
@@ -116,27 +115,6 @@ export default function Index() {
 					Stores Next Door
 				</Text>
 			</Button>
-			<XStack
-				alignItems='center'
-				paddingHorizontal={10}
-				backgroundColor={'#F8DF24'}
-				borderWidth={4}
-				borderColor={'#E8242F'}
-				borderRadius={8}
-			>
-				<Ionicons name='search' size={20} color='#E8242F' />
-				<Input
-					fontSize={20}
-					placeholder='Search'
-					placeholderTextColor='#E8242F'
-					color='#E8242F'
-					backgroundColor='#F8DF24'
-					borderColor='#F8DF24'
-					borderWidth={0}
-					paddingLeft={10}
-					flex={1}
-				/>
-			</XStack>
 		</View>
 	);
 }

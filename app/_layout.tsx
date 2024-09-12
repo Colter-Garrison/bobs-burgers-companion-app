@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
 import tamaguiConfig from '@/tamagui.config';
@@ -15,8 +14,6 @@ export default function RootLayout() {
 		Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
 		InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
 	});
-
-	const colorScheme = useColorScheme();
 
 	useEffect(() => {
 		if (fontLoaded) {
