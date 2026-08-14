@@ -13,7 +13,11 @@ Netlify. Cross-platform target: iOS, Android, and web.
 - Styling: Tamagui (currently) → migrating to NativeWind (Tailwind for RN)
 - Backend (planned): Node/Express + PostgreSQL, for user profiles and favorites
 - Package manager: npm
-- Linting/formatting: ESLint + Prettier (run before considering any change done)
+- Linting/formatting: ESLint (`eslint-config-expo`, legacy `.eslintrc.js` —
+  this project is on Expo SDK 51, which predates `eslint-config-expo`'s flat
+  config support) + Prettier, bridged via `eslint-plugin-prettier` so
+  formatting issues surface as lint errors. Run `npm run lint` before
+  considering any change done; `npx eslint . --fix` applies safe fixes.
 
 ## Conventions
 
@@ -26,7 +30,10 @@ Netlify. Cross-platform target: iOS, Android, and web.
 
 ## Current priorities (in order)
 
-1. Add a search feature for characters/episodes/burgers of the day/pest control trucks
+1. Add a live-filtering search feature on the Home screen (see Screen
+   designs → Home screen below) covering these categories: "Burgers of the
+   Day", "Characters", "End Credits", "Episodes", "Pest Control Trucks",
+   and "Stores Next Door"
 2. Migrate styling from Tamagui to NativeWind
 3. Add backend (Node/Express + PostgreSQL) for user profiles + favorites
    - Auth: start with hand-rolled email/password + JWT (using a vetted hashing
@@ -35,7 +42,10 @@ Netlify. Cross-platform target: iOS, Android, and web.
      and are understood. (Note: Lucia is deprecated as of March 2025 — don't use
      it. Auth.js is maintenance-only. Better Auth is the current recommended
      option for new projects, but isn't a v1 priority.)
-   - Endpoints needed: create profile; add/remove favorite "burger of the day"; add/remove favorite character; add/remove favorite "end credits" art; add/remove favorite episode; add/remove favorite "pest control truck sighting"; add/remove favorite "store next door"; fetch a user's favorites
+   - Endpoints needed: create profile; delete profile; add/remove favorite "burger of the day";
+     add/remove favorite character; add/remove favorite "end credits" art;
+     add/remove favorite episode; add/remove favorite "pest control truck
+     sighting"; add/remove favorite "store next door"; fetch a user's favorites
 4. Add testing (Jest + React Native Testing Library for units/components,
    Playwright for the web build)
 5. Add GitHub Actions CI workflow that runs tests on push
@@ -44,6 +54,25 @@ Netlify. Cross-platform target: iOS, Android, and web.
 8. Loading/error states done properly (skeleton loaders, retry logic)
 9. Offline support / cached data
 10. "Random burger of the day" generator (AI-assisted feature)
+
+## Screen designs
+
+### Home screen
+
+- Search bar front and center (primary focus of the screen), live-filtering:
+  a list directly on the Home screen filters in place as the user types,
+  narrowing with each additional letter — not a static bar that navigates
+  to a separate results screen. Covers all six categories: "Burgers of the
+  Day", "Characters", "End Credits", "Episodes", "Pest Control Trucks", and
+  "Stores Next Door".
+- Hamburger menu (nav drawer) containing:
+  - Login / Signup — build as a UI placeholder now (nav item + a stub
+    screen), wire up to real auth once the backend/auth priority (#3
+    above) is done.
+  - Links to all six category screens: "Burgers of the Day", "Characters",
+    "End Credits", "Episodes", "Pest Control Trucks", "Stores Next Door"
+- This replaces the current Home screen layout — ask before removing any
+  existing functionality that isn't accounted for above.
 
 ## Working style
 
