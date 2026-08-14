@@ -1,15 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { Image, Linking, Pressable } from 'react-native';
 import {
-	Button,
-	Input,
+	Image,
+	Linking,
+	Pressable,
 	ScrollView,
-	SizableText,
 	Text,
-	XStack,
-	YStack,
-} from 'tamagui';
+	TextInput,
+	View,
+} from 'react-native';
 import { SearchItem, useSearchableItems } from '../hooks/useSearchableItems';
 
 export default function Index() {
@@ -32,36 +31,23 @@ export default function Index() {
 	const isSearching = query.trim().length > 0;
 
 	return (
-		<ScrollView flex={1} backgroundColor={'#BDFB73'}>
-			<YStack gap={10} padding={10}>
-				<Input
+		<ScrollView className='flex-1 bg-bbGreen'>
+			<View className='flex-col gap-[10px] p-[10px]'>
+				<TextInput
 					placeholder='Search burgers, characters, episodes...'
 					placeholderTextColor='#E8242F'
 					value={query}
 					onChangeText={setQuery}
-					backgroundColor={'#F8DF24'}
-					borderWidth={4}
-					borderColor={'#E8242F'}
-					borderRadius={8}
-					color={'#E8242F'}
-					fontSize={18}
+					className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
 				/>
 
 				{isSearching &&
 					(loading ? (
-						<SizableText color='#E8242F'>Loading...</SizableText>
+						<Text className='font-chewy text-bbRed'>Loading...</Text>
 					) : filteredItems.length > 0 ? (
 						filteredItems.map((item) => (
 							<Pressable key={item.id} onPress={() => handleResultPress(item)}>
-								<XStack
-									gap={10}
-									backgroundColor={'#F8DF24'}
-									borderWidth={4}
-									borderColor={'#E8242F'}
-									borderRadius={8}
-									padding={10}
-									alignItems='center'
-								>
+								<View className='flex-row items-center gap-[10px] rounded-lg border-4 border-bbRed bg-bbYellow p-[10px]'>
 									{item.image ? (
 										<Image
 											source={{ width: 60, height: 60, uri: item.image }}
@@ -70,130 +56,88 @@ export default function Index() {
 											resizeMode='contain'
 										/>
 									) : null}
-									<YStack flex={1}>
-										<SizableText color='#E8242F' fontSize={12}>
+									<View className='flex-1 flex-col'>
+										<Text className='font-chewy text-[12px] text-bbRed'>
 											{item.category}
-										</SizableText>
-										<SizableText color='#E8242F' fontSize={16}>
+										</Text>
+										<Text className='font-chewy text-[16px] text-bbRed'>
 											{item.label}
-										</SizableText>
-									</YStack>
-								</XStack>
+										</Text>
+									</View>
+								</View>
 							</Pressable>
 						))
 					) : (
-						<SizableText color='#E8242F'>No results found.</SizableText>
+						<Text className='font-chewy text-bbRed'>No results found.</Text>
 					))}
 
-				<Button
-					backgroundColor={'#F8DF24'}
-					borderWidth={4}
-					borderColor={'#E8242F'}
-					borderRadius={8}
+				<Pressable
+					className='items-center justify-center rounded-lg border-4 border-bbRed bg-bbYellow p-2'
 					onPress={() => router.push('/burgers')}
 				>
 					<Text
-						style={{
-							fontSize: 20,
-							color: '#E8242F',
-							textShadowColor: 'black',
-							textShadowRadius: 1,
-						}}
+						className='font-chewy text-[20px] text-bbRed'
+						style={{ textShadowColor: 'black', textShadowRadius: 1 }}
 					>
 						Burgers of the Day
 					</Text>
-				</Button>
-				<Button
-					backgroundColor={'#F8DF24'}
-					borderWidth={4}
-					borderColor={'#E8242F'}
-					borderRadius={8}
+				</Pressable>
+				<Pressable
+					className='items-center justify-center rounded-lg border-4 border-bbRed bg-bbYellow p-2'
 					onPress={() => router.push('/characters')}
 				>
 					<Text
-						style={{
-							fontSize: 20,
-							color: '#E8242F',
-							textShadowColor: 'black',
-							textShadowRadius: 1,
-						}}
+						className='font-chewy text-[20px] text-bbRed'
+						style={{ textShadowColor: 'black', textShadowRadius: 1 }}
 					>
 						Characters
 					</Text>
-				</Button>
-				<Button
-					backgroundColor={'#F8DF24'}
-					borderWidth={4}
-					borderColor={'#E8242F'}
-					borderRadius={8}
+				</Pressable>
+				<Pressable
+					className='items-center justify-center rounded-lg border-4 border-bbRed bg-bbYellow p-2'
 					onPress={() => router.push('/endCredits')}
 				>
 					<Text
-						style={{
-							fontSize: 20,
-							color: '#E8242F',
-							textShadowColor: 'black',
-							textShadowRadius: 1,
-						}}
+						className='font-chewy text-[20px] text-bbRed'
+						style={{ textShadowColor: 'black', textShadowRadius: 1 }}
 					>
 						End Credits
 					</Text>
-				</Button>
-				<Button
-					backgroundColor={'#F8DF24'}
-					borderWidth={4}
-					borderColor={'#E8242F'}
-					borderRadius={8}
+				</Pressable>
+				<Pressable
+					className='items-center justify-center rounded-lg border-4 border-bbRed bg-bbYellow p-2'
 					onPress={() => router.push('/episodes')}
 				>
 					<Text
-						style={{
-							fontSize: 20,
-							color: '#E8242F',
-							textShadowColor: 'black',
-							textShadowRadius: 1,
-						}}
+						className='font-chewy text-[20px] text-bbRed'
+						style={{ textShadowColor: 'black', textShadowRadius: 1 }}
 					>
 						Episodes
 					</Text>
-				</Button>
-				<Button
-					backgroundColor={'#F8DF24'}
-					borderWidth={4}
-					borderColor={'#E8242F'}
-					borderRadius={8}
+				</Pressable>
+				<Pressable
+					className='items-center justify-center rounded-lg border-4 border-bbRed bg-bbYellow p-2'
 					onPress={() => router.push('/pestControl')}
 				>
 					<Text
-						style={{
-							fontSize: 20,
-							color: '#E8242F',
-							textShadowColor: 'black',
-							textShadowRadius: 1,
-						}}
+						className='font-chewy text-[20px] text-bbRed'
+						style={{ textShadowColor: 'black', textShadowRadius: 1 }}
 					>
 						Pest Control Trucks
 					</Text>
-				</Button>
-				<Button
-					backgroundColor={'#F8DF24'}
-					borderWidth={4}
-					borderColor={'#E8242F'}
-					borderRadius={8}
+				</Pressable>
+				<Pressable
+					className='items-center justify-center rounded-lg border-4 border-bbRed bg-bbYellow p-2'
 					onPress={() => router.push('/stores')}
 				>
 					<Text
-						style={{
-							fontSize: 20,
-							color: '#E8242F',
-							textShadowColor: 'black',
-							textShadowRadius: 1,
-						}}
+						className='font-chewy text-[20px] text-bbRed'
+						style={{ textShadowColor: 'black', textShadowRadius: 1 }}
 					>
 						Stores Next Door
 					</Text>
-				</Button>
-			</YStack>
+				</Pressable>
+			</View>
 		</ScrollView>
 	);
 }

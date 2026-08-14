@@ -2,7 +2,7 @@
 
 ## Overview
 
-A React Native app built with Expo, styled with Tamagui (migrating to NativeWind),
+A React Native app built with Expo, styled with NativeWind (Tailwind for RN),
 using the Bob's Burgers API (https://www.bobsburgersapi.com/). Deployed to web via
 Netlify. Cross-platform target: iOS, Android, and web.
 
@@ -10,7 +10,7 @@ Netlify. Cross-platform target: iOS, Android, and web.
 
 - React Native + Expo
 - TypeScript
-- Styling: Tamagui (currently) → migrating to NativeWind (Tailwind for RN)
+- Styling: NativeWind (Tailwind for RN)
 - Backend (planned): Node/Express + PostgreSQL, for user profiles and favorites
 - Package manager: npm
 - Linting/formatting: ESLint (`eslint-config-expo`, legacy `.eslintrc.js` —
@@ -30,12 +30,7 @@ Netlify. Cross-platform target: iOS, Android, and web.
 
 ## Current priorities (in order)
 
-1. Add a live-filtering search feature on the Home screen (see Screen
-   designs → Home screen below) covering these categories: "Burgers of the
-   Day", "Characters", "End Credits", "Episodes", "Pest Control Trucks",
-   and "Stores Next Door"
-2. Migrate styling from Tamagui to NativeWind
-3. Add backend (Node/Express + PostgreSQL) for user profiles + favorites
+1. Add backend (Node/Express + PostgreSQL) for user profiles + favorites
    - Auth: start with hand-rolled email/password + JWT (using a vetted hashing
      library like bcrypt — never roll your own crypto). This is for learning
      purposes; migrate to a library like Better Auth later once the basics work
@@ -46,14 +41,14 @@ Netlify. Cross-platform target: iOS, Android, and web.
      add/remove favorite character; add/remove favorite "end credits" art;
      add/remove favorite episode; add/remove favorite "pest control truck
      sighting"; add/remove favorite "store next door"; fetch a user's favorites
-4. Add testing (Jest + React Native Testing Library for units/components,
+2. Add testing (Jest + React Native Testing Library for units/components,
    Playwright for the web build)
-5. Add GitHub Actions CI workflow that runs tests on push
-6. Favorites sync across devices (exercises the auth/backend end-to-end)
-7. Visual/style redesign once on NativeWind
-8. Loading/error states done properly (skeleton loaders, retry logic)
-9. Offline support / cached data
-10. "Random burger of the day" generator (AI-assisted feature)
+3. Add GitHub Actions CI workflow that runs tests on push
+4. Favorites sync across devices (exercises the auth/backend end-to-end)
+5. Visual/style redesign now that we're on NativeWind
+6. Loading/error states done properly (skeleton loaders, retry logic)
+7. Offline support / cached data
+8. "Random burger of the day" generator (AI-assisted feature)
 
 ## Screen designs
 
@@ -92,5 +87,3 @@ Netlify. Cross-platform target: iOS, Android, and web.
 
 - Don't add new dependencies without flagging it and explaining why.
 - Don't rewrite unrelated files while working on a feature.
-- Don't remove existing Tamagui usage until the NativeWind migration is
-  explicitly underway (avoid a half-migrated inconsistent state).

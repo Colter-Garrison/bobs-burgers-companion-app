@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Image } from 'react-native';
-import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
+import { Image, ScrollView, Text, View } from 'react-native';
 import { getPestControlTrucks } from '../hooks/fetchPestControlTrucks';
 
 export default function PestControl() {
@@ -45,40 +44,24 @@ export default function PestControl() {
 
 	if (loading) {
 		return (
-			<YStack
-				flex={1}
-				justifyContent='center'
-				alignItems='center'
-				backgroundColor='#BDFB73'
-			>
-				<XStack
-					backgroundColor={'#F8DF24'}
-					borderWidth={4}
-					borderColor={'#E8242F'}
-					borderRadius={8}
-					padding='$2'
-					alignItems='center'
-				>
-					<H1 color='#E8242F'>Loading{'.'.repeat(dots)}</H1>
-				</XStack>
-			</YStack>
+			<View className='flex-1 flex-col items-center justify-center bg-bbGreen'>
+				<View className='flex-row items-center rounded-lg border-4 border-bbRed bg-bbYellow p-2'>
+					<Text className='font-chewy text-[44px] text-bbRed'>
+						Loading{'.'.repeat(dots)}
+					</Text>
+				</View>
+			</View>
 		);
 	}
 
 	return (
-		<ScrollView backgroundColor='#BDFB73'>
-			<YStack padding='$2' gap='$2'>
+		<ScrollView className='bg-bbGreen'>
+			<View className='flex-col gap-2 p-2'>
 				{trucks.length > 0 ? (
 					trucks.map((truck) => (
-						<XStack
+						<View
 							key={truck.id}
-							gap='$2'
-							backgroundColor={'#F8DF24'}
-							borderWidth={4}
-							borderColor={'#E8242F'}
-							borderRadius={8}
-							padding='$2'
-							alignItems='center'
+							className='flex-row items-center gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'
 						>
 							{truck.image ? (
 								<Image
@@ -88,23 +71,27 @@ export default function PestControl() {
 									resizeMode='contain'
 								/>
 							) : null}
-							<YStack maxWidth='70%'>
-								<SizableText color='#E8242F'>Name: {truck.name}</SizableText>
-								<SizableText color='#E8242F'>
+							<View className='max-w-[70%] flex-col'>
+								<Text className='font-chewy text-base text-bbRed'>
+									Name: {truck.name}
+								</Text>
+								<Text className='font-chewy text-base text-bbRed'>
 									Season: {truck.season}
-								</SizableText>
-								<SizableText color='#E8242F'>
+								</Text>
+								<Text className='font-chewy text-base text-bbRed'>
 									Episode: {truck.episode}
-								</SizableText>
-							</YStack>
-						</XStack>
+								</Text>
+							</View>
+						</View>
 					))
 				) : (
-					<YStack flex={1} justifyContent='center' alignItems='center'>
-						<H1>Pest Control Truck UH OH...</H1>
-					</YStack>
+					<View className='flex-1 flex-col items-center justify-center'>
+						<Text className='font-chewy text-[44px]'>
+							Pest Control Truck UH OH...
+						</Text>
+					</View>
 				)}
-			</YStack>
+			</View>
 		</ScrollView>
 	);
 }
