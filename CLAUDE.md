@@ -11,7 +11,11 @@ Netlify. Cross-platform target: iOS, Android, and web.
 - React Native + Expo
 - TypeScript
 - Styling: NativeWind (Tailwind for RN)
-- Backend (planned): Node/Express + PostgreSQL, for user profiles and favorites
+- Backend: Node/Express + PostgreSQL (`server/`), a standalone project
+  (its own package.json, not wired into the Expo app yet). Drizzle ORM,
+  hand-rolled email/password + JWT auth (bcrypt). See `server/` for the
+  route list; run `npm run dev` inside `server/` and
+  `server/scripts/smoke-test.sh` to verify it end-to-end.
 - Package manager: npm
 - Linting/formatting: ESLint (`eslint-config-expo`, legacy `.eslintrc.js` —
   this project is on Expo SDK 51, which predates `eslint-config-expo`'s flat
@@ -30,25 +34,21 @@ Netlify. Cross-platform target: iOS, Android, and web.
 
 ## Current priorities (in order)
 
-1. Add backend (Node/Express + PostgreSQL) for user profiles + favorites
-   - Auth: start with hand-rolled email/password + JWT (using a vetted hashing
-     library like bcrypt — never roll your own crypto). This is for learning
-     purposes; migrate to a library like Better Auth later once the basics work
-     and are understood. (Note: Lucia is deprecated as of March 2025 — don't use
-     it. Auth.js is maintenance-only. Better Auth is the current recommended
-     option for new projects, but isn't a v1 priority.)
-   - Endpoints needed: create profile; delete profile; add/remove favorite "burger of the day";
-     add/remove favorite character; add/remove favorite "end credits" art;
-     add/remove favorite episode; add/remove favorite "pest control truck
-     sighting"; add/remove favorite "store next door"; fetch a user's favorites
-2. Add testing (Jest + React Native Testing Library for units/components,
+1. Add testing (Jest + React Native Testing Library for units/components,
    Playwright for the web build)
-3. Add GitHub Actions CI workflow that runs tests on push
-4. Favorites sync across devices (exercises the auth/backend end-to-end)
-5. Visual/style redesign now that we're on NativeWind
-6. Loading/error states done properly (skeleton loaders, retry logic)
-7. Offline support / cached data
-8. "Random burger of the day" generator (AI-assisted feature)
+2. Add GitHub Actions CI workflow that runs tests on push
+3. Favorites sync across devices (exercises the auth/backend end-to-end —
+   this is where the Expo app actually gets wired up to the `server/`
+   backend: login/signup screens, token storage, calling the favorites
+   endpoints)
+4. Visual/style redesign now that we're on NativeWind
+5. Loading/error states done properly (skeleton loaders, retry logic)
+6. Offline support / cached data
+7. "Random burger of the day" generator (AI-assisted feature)
+8. Migrate authentication from hand-rolled email/password + JWT to Better
+   Auth, once the above priorities are done. (Note: Lucia is deprecated as
+   of March 2025 — don't use it. Auth.js is maintenance-only. Better Auth
+   is the current recommended option for new projects.)
 
 ## Screen designs
 
@@ -62,8 +62,8 @@ Netlify. Cross-platform target: iOS, Android, and web.
   "Stores Next Door".
 - Hamburger menu (nav drawer) containing:
   - Login / Signup — build as a UI placeholder now (nav item + a stub
-    screen), wire up to real auth once the backend/auth priority (#3
-    above) is done.
+    screen); the `server/` backend now exists, so wire this up to it as
+    part of priority #3 (favorites sync) above.
   - Links to all six category screens: "Burgers of the Day", "Characters",
     "End Credits", "Episodes", "Pest Control Trucks", "Stores Next Door"
 - This replaces the current Home screen layout — ask before removing any
