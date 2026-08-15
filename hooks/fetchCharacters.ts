@@ -7,5 +7,6 @@ export const getCharacters = async () => {
 		return data;
 	} catch (error) {
 		console.error('Error fetching characters:', error);
+		return [];
 	}
 };

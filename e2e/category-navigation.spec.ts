@@ -1,0 +1,36 @@
+import { test, expect } from '@playwright/test';
+
+test('nav button navigates to the category screen and back', async ({
+	page,
+}) => {
+	await page.goto('/');
+
+	await page.getByText('Burgers of the Day', { exact: true }).click();
+	await expect(page).toHaveURL(/\/burgers/);
+
+	// The 3-second artificial loading delay is real here — no fake timers
+	// in a real browser — so wait for the real UI to settle rather than
+	// asserting immediately.
+	await expect(page.getByText(/Name:/).first()).toBeVisible({
+		timeout: 10_000,
+	});
+
+	await page.goBack();
+	await expect(page).toHaveURL('/');
+	await expect(
+		page.getByPlaceholder('Search burgers, characters, episodes...'),
+	).toBeVisible();
+});
+
+test('a direct link to a category screen works (not just in-app navigation)', async ({
+	page,
+}) => {
+	// Only a real server can prove Expo Router's static export actually
+	// handles a deep link — this is exactly the kind of thing RNTL's
+	// simulated renderer can't verify at all.
+	await page.goto('/characters');
+
+	await expect(page.getByText(/Name:/).first()).toBeVisible({
+		timeout: 10_000,
+	});
+});

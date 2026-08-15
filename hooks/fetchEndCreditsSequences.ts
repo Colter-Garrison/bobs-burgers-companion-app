@@ -7,5 +7,6 @@ export const getEndCreditsSequences = async () => {
 		return data;
 	} catch (error) {
 		console.error('Error fetching end credits sequences:', error);
+		return [];
 	}
 };

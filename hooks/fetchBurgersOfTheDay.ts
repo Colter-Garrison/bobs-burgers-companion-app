@@ -7,5 +7,6 @@ export const getBurgersOfTheDay = async () => {
 		return data;
 	} catch (error) {
 		console.error('Error fetching burgers of the day:', error);
+		return [];
 	}
 };

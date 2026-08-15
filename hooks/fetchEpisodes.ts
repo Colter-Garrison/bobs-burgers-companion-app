@@ -7,5 +7,6 @@ export const getEpisodes = async () => {
 		return data;
 	} catch (error) {
 		console.error('Error fetching episodes:', error);
+		return [];
 	}
 };

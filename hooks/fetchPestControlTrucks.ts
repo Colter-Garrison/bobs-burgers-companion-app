@@ -7,5 +7,6 @@ export const getPestControlTrucks = async () => {
 		return data;
 	} catch (error) {
 		console.error('Error fetching pest control trucks:', error);
+		return [];
 	}
 };

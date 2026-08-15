@@ -7,5 +7,6 @@ export const getStoresNextDoor = async () => {
 		return data;
 	} catch (error) {
 		console.error('Error fetching stores next door:', error);
+		return [];
 	}
 };
