@@ -2,6 +2,9 @@
   "name": "bobs-burgers-companion-app",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "engines": {
+    "node": ">=20.17.0"
+  },
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -11,7 +14,8 @@
     "test:ci": "jest --ci",
     "build:web": "expo export",
     "test:e2e": "playwright test",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.3",

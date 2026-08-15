@@ -1,0 +1,84 @@
+name: CI
+
+# Runs on every push to main/dev, and on every pull request (regardless
+# of target branch) — a PR is how you'd normally get changes into main,
+# so checking it before merge is the whole point of having CI. Pushing
+# straight to a scratch/feature branch won't trigger this, only main,
+# dev, and PRs — that keeps CI from running on every single commit of
+# work-in-progress on a branch nobody's proposed merging yet.
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      # `npm ci` (not `npm install`) — installs exactly what's in
+      # package-lock.json, fails instead of silently updating it if the
+      # lockfile and package.json disagree. That's what you want in CI:
+      # a reproducible install, not a live dependency resolution.
+      - run: npm ci
+
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run test:ci
+
+      # Playwright's browser binaries aren't part of npm's dependency
+      # tree — they're downloaded separately. A fresh CI machine has
+      # none installed, so this step is required every run (no OS-level
+      # browser to fall back on, unlike your own machine).
+      - run: npx playwright install --with-deps chromium
+
+      # test:e2e runs `expo export` + serves it + drives real Chromium
+      # against it (see playwright.config.ts's webServer block) — GitHub
+      # Actions sets CI=true automatically, which is what makes
+      # playwright.config.ts's retries/forbidOnly logic switch on.
+      - run: npm run test:e2e
+
+      # If the E2E run fails, the HTML report (screenshots, traces) is
+      # the main way to figure out why on a machine you can't log into —
+      # upload it so it's downloadable from the failed run's summary
+      # page instead of being lost the moment the runner shuts down.
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - run: npm ci
+
+      - run: npm run typecheck
+
+      # server/.env is gitignored (it holds a real DB password) and
+      # doesn't exist on the runner, so the same two values have to come
+      # from GitHub's own encrypted secrets store instead. These tests
+      # hit the real dev Neon database, same as running them locally.
+      - run: npm test
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}

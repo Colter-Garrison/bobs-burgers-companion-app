@@ -34,16 +34,15 @@ Netlify. Cross-platform target: iOS, Android, and web.
 
 ## Current priorities (in order)
 
-1. Add GitHub Actions CI workflow that runs tests on push
-2. Favorites sync across devices (exercises the auth/backend end-to-end —
+1. Favorites sync across devices (exercises the auth/backend end-to-end —
    this is where the Expo app actually gets wired up to the `server/`
    backend: login/signup screens, token storage, calling the favorites
    endpoints)
-3. Visual/style redesign now that we're on NativeWind
-4. Loading/error states done properly (skeleton loaders, retry logic)
-5. Offline support / cached data
-6. "Random burger of the day" generator (AI-assisted feature)
-7. Migrate authentication from hand-rolled email/password + JWT to Better
+2. Visual/style redesign now that we're on NativeWind
+3. Loading/error states done properly (skeleton loaders, retry logic)
+4. Offline support / cached data
+5. "Random burger of the day" generator (AI-assisted feature)
+6. Migrate authentication from hand-rolled email/password + JWT to Better
    Auth, once the above priorities are done. (Note: Lucia is deprecated as
    of March 2025 — don't use it. Auth.js is maintenance-only. Better Auth
    is the current recommended option for new projects.)
@@ -61,7 +60,7 @@ Netlify. Cross-platform target: iOS, Android, and web.
 - Hamburger menu (nav drawer) containing:
   - Login / Signup — build as a UI placeholder now (nav item + a stub
     screen); the `server/` backend now exists, so wire this up to it as
-    part of priority #2 (favorites sync) above.
+    part of priority #1 (favorites sync) above.
   - Links to all six category screens: "Burgers of the Day", "Characters",
     "End Credits", "Episodes", "Pest Control Trucks", "Stores Next Door"
 - This replaces the current Home screen layout — ask before removing any
@@ -90,6 +89,12 @@ Netlify. Cross-platform target: iOS, Android, and web.
   `server/test/`. `server/scripts/smoke-test.sh` remains as a manual
   full-lifecycle sanity check against a running dev server.
 - New features should come with tests; don't skip this.
+- CI: GitHub Actions (`.github/workflows/ci.yml`) runs all three suites
+  (frontend typecheck/lint/Jest/Playwright, backend typecheck/Vitest) on
+  every push to `main`/`dev` and on every pull request. The backend job
+  needs `DATABASE_URL` and `JWT_SECRET` set as GitHub repo secrets (same
+  values as `server/.env`) — without them, the backend job fails at the
+  `npm test` step.
 
 ## Do not
 
