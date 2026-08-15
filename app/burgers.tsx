@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
+import { ScrollView, Text, View } from 'react-native';
 import { getBurgersOfTheDay } from '../hooks/fetchBurgersOfTheDay';
 
 export default function Burgers() {
@@ -44,53 +44,47 @@ export default function Burgers() {
 
 	if (loading) {
 		return (
-			<YStack
-				flex={1}
-				justifyContent='center'
-				alignItems='center'
-				backgroundColor='#BDFB73'
-			>
-				<XStack
-					backgroundColor={'#F8DF24'}
-					borderWidth={4}
-					borderColor={'#E8242F'}
-					borderRadius={8}
-					padding='$2'
-					alignItems='center'
-				>
-					<H1 color='#E8242F'>Loading{'.'.repeat(dots)}</H1>
-				</XStack>
-			</YStack>
+			<View className='flex-1 flex-col items-center justify-center bg-bbGreen'>
+				<View className='flex-row items-center rounded-lg border-4 border-bbRed bg-bbYellow p-2'>
+					<Text className='font-chewy text-[44px] text-bbRed'>
+						Loading{'.'.repeat(dots)}
+					</Text>
+				</View>
+			</View>
 		);
 	}
 
 	return (
-		<ScrollView backgroundColor='#BDFB73'>
-			<YStack padding='$2' gap='$2'>
+		<ScrollView className='bg-bbGreen'>
+			<View className='flex-col gap-2 p-2'>
 				{burgers.length > 0 ? (
 					burgers.map((burger) => (
-						<YStack
+						<View
 							key={burger.id}
-							backgroundColor={'#F8DF24'}
-							borderWidth={4}
-							borderColor={'#E8242F'}
-							borderRadius={8}
-							padding='$2'
+							className='flex-col rounded-lg border-4 border-bbRed bg-bbYellow p-2'
 						>
-							<SizableText color='#E8242F'>Name: {burger.name}</SizableText>
-							<SizableText color='#E8242F'>Price: {burger.price}</SizableText>
-							<SizableText color='#E8242F'>Season: {burger.season}</SizableText>
-							<SizableText color='#E8242F'>
+							<Text className='font-chewy text-base text-bbRed'>
+								Name: {burger.name}
+							</Text>
+							<Text className='font-chewy text-base text-bbRed'>
+								Price: {burger.price}
+							</Text>
+							<Text className='font-chewy text-base text-bbRed'>
+								Season: {burger.season}
+							</Text>
+							<Text className='font-chewy text-base text-bbRed'>
 								Episode: {burger.episode}
-							</SizableText>
-						</YStack>
+							</Text>
+						</View>
 					))
 				) : (
-					<YStack flex={1} justifyContent='center' alignItems='center'>
-						<H1>Burger of the Day UH OH...</H1>
-					</YStack>
+					<View className='flex-1 flex-col items-center justify-center'>
+						<Text className='font-chewy text-[44px]'>
+							Burger of the Day UH OH...
+						</Text>
+					</View>
 				)}
-			</YStack>
+			</View>
 		</ScrollView>
 	);
 }

@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Image, Linking, Pressable } from 'react-native';
-import { H1, ScrollView, SizableText, XStack, YStack } from 'tamagui';
+import {
+	Image,
+	Linking,
+	Pressable,
+	ScrollView,
+	Text,
+	View,
+} from 'react-native';
 import { getCharacters } from '../hooks/fetchCharacters';
 
 export default function Characters() {
@@ -59,29 +65,19 @@ export default function Characters() {
 
 	if (loading) {
 		return (
-			<YStack
-				flex={1}
-				justifyContent='center'
-				alignItems='center'
-				backgroundColor='#BDFB73'
-			>
-				<XStack
-					backgroundColor={'#F8DF24'}
-					borderWidth={4}
-					borderColor={'#E8242F'}
-					borderRadius={8}
-					padding='$2'
-					alignItems='center'
-				>
-					<H1 color='#E8242F'>Loading{'.'.repeat(dots)}</H1>
-				</XStack>
-			</YStack>
+			<View className='flex-1 flex-col items-center justify-center bg-bbGreen'>
+				<View className='flex-row items-center rounded-lg border-4 border-bbRed bg-bbYellow p-2'>
+					<Text className='font-chewy text-[44px] text-bbRed'>
+						Loading{'.'.repeat(dots)}
+					</Text>
+				</View>
+			</View>
 		);
 	}
 
 	return (
-		<ScrollView backgroundColor='#BDFB73'>
-			<YStack padding='$2' gap='$2'>
+		<ScrollView className='bg-bbGreen'>
+			<View className='flex-col gap-2 p-2'>
 				{characters.length > 0 ? (
 					characters.map((character) => {
 						return (
@@ -89,16 +85,7 @@ export default function Characters() {
 								key={character.id}
 								onPress={() => handlePress(character)}
 							>
-								<XStack
-									key={character.id}
-									gap='$2'
-									backgroundColor={'#F8DF24'}
-									borderWidth={4}
-									borderColor={'#E8242F'}
-									borderRadius={8}
-									padding='$2'
-									alignItems='center'
-								>
+								<View className='flex-row items-center gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'>
 									{character.image ? (
 										<Image
 											source={{ width: 100, height: 100, uri: character.image }}
@@ -107,60 +94,60 @@ export default function Characters() {
 											resizeMode='contain'
 										/>
 									) : null}
-									<YStack $gtMd={{ maxWidth: '90%' }} maxWidth='70%'>
-										<SizableText color='#E8242F'>
+									<View className='max-w-[70%] flex-col md:max-w-[90%]'>
+										<Text className='font-chewy text-base text-bbRed'>
 											Name: {character.name}
-										</SizableText>
-										<SizableText>
+										</Text>
+										<Text>
 											{character.relatives.length > 0 ? (
-												<SizableText color='#E8242F'>
+												<Text className='font-chewy text-base text-bbRed'>
 													Relatives:{' '}
 													{character.relatives
 														.map((relative) => relative.name)
 														.join(', ')}
-												</SizableText>
+												</Text>
 											) : (
-												<SizableText color='#E8242F'>
+												<Text className='font-chewy text-base text-bbRed'>
 													Relatives: None
-												</SizableText>
+												</Text>
 											)}
-										</SizableText>
-										<SizableText>
+										</Text>
+										<Text>
 											{character.occupation ? (
-												<SizableText color='#E8242F'>
+												<Text className='font-chewy text-base text-bbRed'>
 													Occupation: {character.occupation}
-												</SizableText>
+												</Text>
 											) : (
-												<SizableText color='#E8242F'>
+												<Text className='font-chewy text-base text-bbRed'>
 													Occupation: None
-												</SizableText>
+												</Text>
 											)}
-										</SizableText>
-										<SizableText color='#E8242F'>
+										</Text>
+										<Text className='font-chewy text-base text-bbRed'>
 											First Episode: {character.firstEpisode}
-										</SizableText>
-										<SizableText>
+										</Text>
+										<Text>
 											{character.voicedBy ? (
-												<SizableText color='#E8242F'>
+												<Text className='font-chewy text-base text-bbRed'>
 													Voiced By: {character.voicedBy}
-												</SizableText>
+												</Text>
 											) : (
-												<SizableText color='#E8242F'>
+												<Text className='font-chewy text-base text-bbRed'>
 													Voiced By: Unknown
-												</SizableText>
+												</Text>
 											)}
-										</SizableText>
-									</YStack>
-								</XStack>
+										</Text>
+									</View>
+								</View>
 							</Pressable>
 						);
 					})
 				) : (
-					<YStack flex={1} justifyContent='center' alignItems='center'>
-						<H1>Character UH OH...</H1>
-					</YStack>
+					<View className='flex-1 flex-col items-center justify-center'>
+						<Text className='font-chewy text-[44px]'>Character UH OH...</Text>
+					</View>
 				)}
-			</YStack>
+			</View>
 		</ScrollView>
 	);
 }
