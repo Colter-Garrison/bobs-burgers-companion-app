@@ -1,15 +1,8 @@
-import React, {
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
-	Image,
+	FlatList,
 	Linking,
 	Pressable,
-	ScrollView,
 	Text,
 	TextInput,
 	View,
@@ -17,22 +10,29 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { SearchItem, useSearchableItems } from '../hooks/useSearchableItems';
 import { useFavorites } from '../hooks/useFavorites';
-import { FavoriteButton } from '../components/FavoriteButton';
+import { PAGE_SIZE, usePagination } from '../hooks/usePagination';
+import { SearchResultCard } from '../components/SearchResultCard';
+import {
+	CategoryFilterPills,
+	CategoryFilter,
+} from '../components/CategoryFilterPills';
 import { CategorySkeleton } from '../components/CategorySkeleton';
 
 export default function Index() {
-	const { items, loading, error, retry } = useSearchableItems();
+	const { items, error, retry } = useSearchableItems();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const [query, setQuery] = useState('');
+	const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('All');
 
 	// Same reasoning as login.tsx/signup.tsx: Home is a Drawer.Screen that
-	// stays mounted when you navigate away, so a typed-in query would
-	// otherwise still be sitting here — filtered results and all — the
-	// next time you land back on Home.
+	// stays mounted when you navigate away, so a typed-in query (and a
+	// chosen filter pill) would otherwise still be sitting here — filtered
+	// results and all — the next time you land back on Home.
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
 				setQuery('');
+				setCategoryFilter('All');
 			};
 		}, []),
 	);
@@ -40,8 +40,14 @@ export default function Index() {
 	const filteredItems = useMemo(() => {
 		const trimmed = query.trim().toLowerCase();
 		if (!trimmed) return [];
-		return items.filter((item) => item.label.toLowerCase().includes(trimmed));
-	}, [items, query]);
+		return items
+			.filter((item) => item.label.toLowerCase().includes(trimmed))
+			.filter(
+				(item) => categoryFilter === 'All' || item.category === categoryFilter,
+			);
+	}, [items, query, categoryFilter]);
+
+	const { visibleItems, loadMore } = usePagination(filteredItems);
 
 	const handleResultPress = (item: SearchItem) => {
 		if (item.linkUrl) {
@@ -58,92 +64,116 @@ export default function Index() {
 	// anything to show for. Re-fetching on the first keystroke of each
 	// search gives the skeleton real work to reflect instead, without
 	// faking a delay that isn't there.
-	const hasRefetchedForThisSearchRef = useRef(false);
-	useEffect(() => {
-		if (isSearching && !hasRefetchedForThisSearchRef.current) {
-			hasRefetchedForThisSearchRef.current = true;
-			retry();
-		} else if (!isSearching) {
-			hasRefetchedForThisSearchRef.current = false;
+	//
+	// This has to happen inside the change handler itself, synchronously
+	// alongside setQuery — not in a useEffect watching isSearching, which
+	// only runs after the render commits and only calls setLoading(true)
+	// once the (async) retry() gets around to it. That round trip was the
+	// visible lag: the skeleton wouldn't appear until a second render,
+	// one or two frames after the keystroke that should have shown it.
+	const [searchLoading, setSearchLoading] = useState(false);
+	// isNewSearchRef gates re-fetching to once per search (not once per
+	// keystroke). searchRequestIdRef additionally guards against a rarer
+	// case: clearing and starting a new search fast enough that the
+	// previous search's fetch is still in flight — without this, that
+	// stale fetch resolving could clear searchLoading out from under the
+	// new search before its own (newer) fetch has actually finished.
+	const isNewSearchRef = useRef(true);
+	const searchRequestIdRef = useRef(0);
+	const handleQueryChange = (text: string) => {
+		setQuery(text);
+		const willBeSearching = text.trim().length > 0;
+
+		if (!willBeSearching) {
+			isNewSearchRef.current = true;
+			searchRequestIdRef.current += 1;
+			setSearchLoading(false);
+			return;
 		}
-	}, [isSearching, retry]);
+
+		if (isNewSearchRef.current) {
+			isNewSearchRef.current = false;
+			setSearchLoading(true);
+			const requestId = ++searchRequestIdRef.current;
+			retry().finally(() => {
+				if (searchRequestIdRef.current === requestId) {
+					setSearchLoading(false);
+				}
+			});
+		}
+	};
+
+	// Defined once, up front, and handed to FlatList as `renderItem` —
+	// rather than an inline arrow function rebuilt (and re-rendering
+	// every card) on every keystroke.
+	const renderItem = useCallback(
+		({ item }: { item: SearchItem }) => (
+			<SearchResultCard
+				item={item}
+				favorited={isFavorited(item.favoriteCategory, item.itemId)}
+				onToggleFavorite={() =>
+					isFavorited(item.favoriteCategory, item.itemId)
+						? removeFavorite(item.favoriteCategory, item.itemId)
+						: addFavorite(item.favoriteCategory, item.itemId)
+				}
+				onPress={() => handleResultPress(item)}
+			/>
+		),
+		[isFavorited, addFavorite, removeFavorite],
+	);
 
 	return (
-		<ScrollView className='flex-1 bg-bbGreen'>
-			<View className='flex-col gap-[10px] p-[10px]'>
-				<TextInput
-					placeholder='Search burgers, characters, episodes...'
-					placeholderTextColor='#E8242F'
-					value={query}
-					onChangeText={setQuery}
-					className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
-				/>
-
-				{isSearching &&
-					(loading ? (
+		<FlatList
+			testID='search-results-list'
+			className='flex-1 bg-bbGreen'
+			contentContainerClassName='flex-col gap-[10px] p-[10px]'
+			data={isSearching && !searchLoading ? visibleItems : []}
+			renderItem={renderItem}
+			keyExtractor={(item) => item.id}
+			onEndReached={isSearching && !searchLoading ? loadMore : undefined}
+			onEndReachedThreshold={0.5}
+			// usePagination already caps `data` to one page at a time, so
+			// there's no need for FlatList's own default windowing
+			// (initialNumToRender=10) to further sub-render within that —
+			// the whole current page should mount together.
+			initialNumToRender={PAGE_SIZE}
+			ListHeaderComponent={
+				<View className='gap-[10px]'>
+					<TextInput
+						placeholder='Search burgers, characters, episodes...'
+						placeholderTextColor='#E8242F'
+						value={query}
+						onChangeText={handleQueryChange}
+						className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
+					/>
+					{isSearching ? (
+						<CategoryFilterPills
+							selected={categoryFilter}
+							onSelect={setCategoryFilter}
+						/>
+					) : null}
+					{isSearching && searchLoading ? (
 						<CategorySkeleton count={3} fullScreen={false} />
-					) : (
-						<>
-							{error ? (
-								// Some categories failed to load, but the ones that
-								// succeeded are still shown below — this banner
-								// doesn't replace the results the way a category
-								// screen's full ErrorState does.
-								<View className='flex-row items-center justify-between gap-[10px] rounded-lg border-4 border-bbRed bg-bbYellow p-[10px]'>
-									<Text className='flex-1 font-chewy text-bbRed'>{error}</Text>
-									<Pressable onPress={retry} accessibilityRole='button'>
-										<Text className='font-chewy text-bbRed underline'>
-											Retry
-										</Text>
-									</Pressable>
-								</View>
-							) : null}
-							{filteredItems.length > 0 ? (
-								filteredItems.map((item) => (
-									<View
-										key={item.id}
-										className='flex-row items-center justify-between gap-[10px] rounded-lg border-4 border-bbRed bg-bbYellow p-[10px]'
-									>
-										<Pressable
-											className='flex-1 flex-row items-center gap-[10px]'
-											onPress={() => handleResultPress(item)}
-										>
-											{item.image ? (
-												<Image
-													source={{ width: 60, height: 60, uri: item.image }}
-													width={60}
-													height={60}
-													resizeMode='contain'
-												/>
-											) : null}
-											<View className='flex-1 flex-col'>
-												<Text className='font-chewy text-[12px] text-bbRed'>
-													{item.category}
-												</Text>
-												<Text className='font-chewy text-[16px] text-bbRed'>
-													{item.label}
-												</Text>
-											</View>
-										</Pressable>
-										<FavoriteButton
-											favorited={isFavorited(
-												item.favoriteCategory,
-												item.itemId,
-											)}
-											onToggle={() =>
-												isFavorited(item.favoriteCategory, item.itemId)
-													? removeFavorite(item.favoriteCategory, item.itemId)
-													: addFavorite(item.favoriteCategory, item.itemId)
-											}
-										/>
-									</View>
-								))
-							) : (
-								<Text className='font-chewy text-bbRed'>No results found.</Text>
-							)}
-						</>
-					))}
-			</View>
-		</ScrollView>
+					) : null}
+					{isSearching && !searchLoading && error ? (
+						// Some categories failed to load, but the ones that
+						// succeeded are still shown below — this banner
+						// doesn't replace the results the way a category
+						// screen's full ErrorState does.
+						<View className='flex-row items-center justify-between gap-[10px] rounded-lg border-4 border-bbRed bg-bbYellow p-[10px]'>
+							<Text className='flex-1 font-chewy text-bbRed'>{error}</Text>
+							<Pressable onPress={retry} accessibilityRole='button'>
+								<Text className='font-chewy text-bbRed underline'>Retry</Text>
+							</Pressable>
+						</View>
+					) : null}
+				</View>
+			}
+			ListEmptyComponent={
+				isSearching && !searchLoading ? (
+					<Text className='font-chewy text-bbRed'>No results found.</Text>
+				) : null
+			}
+		/>
 	);
 }

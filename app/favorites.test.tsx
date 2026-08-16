@@ -1,5 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
+import { FlatList } from 'react-native';
 import Favorites from './favorites';
 import { useSearchableItems } from '../hooks/useSearchableItems';
 import { useFavorites } from '../hooks/useFavorites';
@@ -10,6 +11,18 @@ jest.mock('../hooks/useFavorites');
 jest.mock('../hooks/useAuth');
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
+}));
+
+// useFocusEffect is normally driven by real navigation focus events,
+// which don't exist in a bare RNTL render. Calling the callback directly
+// at render time captures its returned cleanup function so a test can
+// invoke it to simulate a blur (navigating away), without needing a real
+// navigation container.
+let focusEffectCleanup: (() => void) | undefined;
+jest.mock('@react-navigation/native', () => ({
+	useFocusEffect: (callback: () => void | (() => void)) => {
+		focusEffectCleanup = callback() ?? undefined;
+	},
 }));
 
 const items = [
@@ -107,5 +120,75 @@ describe('Favorites screen', () => {
 		fireEvent.press(screen.getByLabelText('Remove from favorites'));
 
 		expect(mockRemoveFavorite).toHaveBeenCalledWith('burger', 1);
+	});
+
+	it('filters the favorited items by category when a pill is selected', () => {
+		(useFavorites as jest.Mock).mockReturnValue({
+			isFavorited: () => true,
+			removeFavorite: mockRemoveFavorite,
+			loading: false,
+		});
+		render(<Favorites />);
+
+		expect(screen.getByText('Favorited Burger')).toBeVisible();
+		expect(screen.getByText('Unfavorited Character')).toBeVisible();
+
+		fireEvent.press(screen.getByLabelText('Filter by Characters'));
+
+		expect(screen.queryByText('Favorited Burger')).toBeNull();
+		expect(screen.getByText('Unfavorited Character')).toBeVisible();
+	});
+
+	it('resets the category filter when the screen loses focus', () => {
+		(useFavorites as jest.Mock).mockReturnValue({
+			isFavorited: () => true,
+			removeFavorite: mockRemoveFavorite,
+			loading: false,
+		});
+		render(<Favorites />);
+
+		fireEvent.press(screen.getByLabelText('Filter by Characters'));
+		expect(screen.queryByText('Favorited Burger')).toBeNull();
+
+		act(() => {
+			focusEffectCleanup?.();
+		});
+
+		expect(screen.getByText('Favorited Burger')).toBeVisible();
+	});
+
+	it('shows only the first page of favorites, revealing more as the list is scrolled', () => {
+		const manyFavorites = Array.from({ length: 25 }, (_, i) => ({
+			id: `character-${i}`,
+			category: 'Characters',
+			label: `Favorite Number ${i}`,
+			itemId: i,
+			favoriteCategory: 'character',
+		}));
+		(useSearchableItems as jest.Mock).mockReturnValue({
+			items: manyFavorites,
+			loading: false,
+		});
+		(useFavorites as jest.Mock).mockReturnValue({
+			isFavorited: () => true,
+			removeFavorite: mockRemoveFavorite,
+			loading: false,
+		});
+		render(<Favorites />);
+
+		expect(screen.getByText('Favorite Number 0')).toBeVisible();
+		expect(screen.getByText('Favorite Number 19')).toBeVisible();
+		expect(screen.queryByText('Favorite Number 20')).toBeNull();
+		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(20);
+
+		// See app/index.test.tsx's equivalent test for why this asserts
+		// on `data` growing rather than on newly revealed text actually
+		// rendering — that part is FlatList's own virtualization, not
+		// this app's logic, and RNTL can't simulate a real scroll.
+		act(() => {
+			screen.UNSAFE_getByType(FlatList).props.onEndReached();
+		});
+
+		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(25);
 	});
 });

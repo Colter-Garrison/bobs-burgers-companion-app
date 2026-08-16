@@ -31,6 +31,14 @@ jest.mock('../hooks/useSearchableItems', () => ({
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
+// Favorites now also calls useFocusEffect (to reset its category filter
+// on blur) — this file doesn't exercise that behavior itself, so a
+// no-op stand-in is enough to avoid needing a real NavigationContainer.
+jest.mock('@react-navigation/native', () => ({
+	useFocusEffect: (callback: () => void | (() => void)) => {
+		callback();
+	},
+}));
 
 describe('guarded screens sharing one AuthProvider', () => {
 	const mockPush = jest.fn();
