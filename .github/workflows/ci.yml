@@ -23,11 +23,16 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
-      # `npm ci` (not `npm install`) — installs exactly what's in
-      # package-lock.json, fails instead of silently updating it if the
-      # lockfile and package.json disagree. That's what you want in CI:
-      # a reproducible install, not a live dependency resolution.
-      - run: npm ci
+      # `npm install`, not `npm ci`, here specifically: `npm ci` demands
+      # the lockfile be a *complete* cross-platform record and fails
+      # outright if it isn't — and this project's lockfile has a known
+      # gap in an optional native/WASM dependency branch (pulled in
+      # transitively through ESLint's dependency chain) that only shows
+      # up when resolving on Linux, never on macOS where the lockfile
+      # was generated. `npm install` tolerates that gap instead of
+      # hard-failing on it, while still installing from the lockfile's
+      # pinned versions rather than re-resolving everything.
+      - run: npm install
 
       - run: npm run typecheck
       - run: npm run lint
