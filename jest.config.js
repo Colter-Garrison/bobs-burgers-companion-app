@@ -23,4 +23,13 @@ module.exports = {
 		'<rootDir>/e2e/',
 		'<rootDir>/server/',
 	],
+
+	// Several screen tests (app/burgers.test.tsx and its five siblings)
+	// use fake timers to fast-forward the screens' hard-coded 3s loading
+	// delay via advanceTimersByTime — logically instant, but each still
+	// fires a real setTimeout plus six 500ms setInterval "..." ticks
+	// through act(), and on a slow/contended CI runner that bookkeeping
+	// has been seen to exceed the 5000ms default. 10s gives real headroom
+	// without hiding an actual hang (which would still exceed this too).
+	testTimeout: 10000,
 };
