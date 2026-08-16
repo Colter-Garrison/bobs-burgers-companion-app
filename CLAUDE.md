@@ -65,6 +65,7 @@ Netlify. Cross-platform target: iOS, Android, and web.
    possible. Think about things like a user using a screen reader, or a user who navigates
    the app with features other than touch, or a user who's colorblind.
 10. Update what happens when a user clicks a card in the Search bar results. It should take them to a screen with an ai synopsis on that episode/character/store next door/pest control truck or anything else the user clicks. From there the card should have a clickable link to the bobs-burgers-fandom-page. Ideally each synopsis page will have an image associated with the thing clicked on on the left, with the synopsis of the thing clicked on to the right of it. It should have the same red border, yellow background, and red font that everything else does with the green on the back of the screen.
+11. Add filtering pills/filtering option on the Favorites screen so a user can filter their favorites between the six categories in the hamburger menu.
 
 ## Screen designs
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouter } from 'expo-router';
 import { Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuth } from '../hooks/useAuth';
 
 interface FavoriteButtonProps {
@@ -22,10 +22,14 @@ export function FavoriteButton({ favorited, onToggle }: FavoriteButtonProps) {
 				favorited ? 'Remove from favorites' : 'Add to favorites'
 			}
 		>
-			<Ionicons
-				name={favorited ? 'star' : 'star-outline'}
+			{/* MaterialCommunityIcons' "hamburger" has no outline variant
+			the way Ionicons' star/star-outline pair does, so favorited vs
+			not is shown via opacity on the same glyph instead. */}
+			<MaterialCommunityIcons
+				name='hamburger'
 				size={24}
 				color='#E8242F'
+				style={{ opacity: favorited ? 1 : 0.5 }}
 			/>
 		</Pressable>
 	);
