@@ -1,35 +1,22 @@
 import { getCharacters } from './fetchCharacters';
+import { fetchBobsBurgersApi } from '../lib/bobsBurgersApi';
+
+jest.mock('../lib/bobsBurgersApi');
 
 describe('getCharacters', () => {
-	beforeEach(() => {
-		global.fetch = jest.fn();
-	});
-
 	afterEach(() => {
-		jest.restoreAllMocks();
+		jest.clearAllMocks();
 	});
 
-	it('calls the correct URL (including the sort query params) and returns the parsed characters', async () => {
+	it('requests the correct path (including the sort query params) and returns the result', async () => {
 		const mockCharacters = [{ id: 1, name: 'Bob Belcher' }];
-		(global.fetch as jest.Mock).mockResolvedValueOnce({
-			json: async () => mockCharacters,
-		});
+		(fetchBobsBurgersApi as jest.Mock).mockResolvedValueOnce(mockCharacters);
 
 		const result = await getCharacters();
 
-		expect(global.fetch).toHaveBeenCalledWith(
-			'https://bobsburgers-api.herokuapp.com/characters?sortBy=name&OrderBy=asc',
+		expect(fetchBobsBurgersApi).toHaveBeenCalledWith(
+			'/characters?sortBy=name&OrderBy=asc',
 		);
 		expect(result).toEqual(mockCharacters);
-	});
-
-	it('returns an empty array when the fetch fails', async () => {
-		(global.fetch as jest.Mock).mockRejectedValueOnce(
-			new Error('network down'),
-		);
-
-		const result = await getCharacters();
-
-		expect(result).toEqual([]);
 	});
 });

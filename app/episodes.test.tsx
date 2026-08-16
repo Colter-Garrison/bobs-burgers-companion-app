@@ -26,10 +26,9 @@ const mockEpisode = {
 	wikiUrl: 'https://wiki/human-flesh',
 };
 
-async function flushAndAdvance() {
+async function flush() {
 	await act(async () => {
 		await Promise.resolve();
-		jest.advanceTimersByTime(3000);
 	});
 }
 
@@ -38,7 +37,6 @@ describe('Episodes screen', () => {
 	const mockRemoveFavorite = jest.fn();
 
 	beforeEach(() => {
-		jest.useFakeTimers();
 		(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => false,
 			addFavorite: mockAddFavorite,
@@ -49,18 +47,17 @@ describe('Episodes screen', () => {
 	});
 
 	afterEach(() => {
-		jest.useRealTimers();
 		jest.restoreAllMocks();
 		jest.clearAllMocks();
 	});
 
-	it('shows the loading state, then the episode list', async () => {
+	it('shows a skeleton while loading, then the episode list', async () => {
 		(getEpisodes as jest.Mock).mockResolvedValue([mockEpisode]);
 		render(<Episodes />);
 
-		expect(screen.getByText(/Loading/)).toBeVisible();
+		expect(screen.getByTestId('category-skeleton')).toBeVisible();
 
-		await flushAndAdvance();
+		await flush();
 
 		expect(screen.getByText('Name: Human Flesh')).toBeVisible();
 		expect(
@@ -75,7 +72,7 @@ describe('Episodes screen', () => {
 	it('shows the "UH OH" empty state when there is no data', async () => {
 		(getEpisodes as jest.Mock).mockResolvedValue([]);
 		render(<Episodes />);
-		await flushAndAdvance();
+		await flush();
 		expect(screen.getByText('Episode UH OH...')).toBeVisible();
 	});
 
@@ -85,7 +82,7 @@ describe('Episodes screen', () => {
 			.mockResolvedValue(true as never);
 		(getEpisodes as jest.Mock).mockResolvedValue([mockEpisode]);
 		render(<Episodes />);
-		await flushAndAdvance();
+		await flush();
 
 		fireEvent.press(screen.getByText('Name: Human Flesh'));
 
@@ -98,11 +95,30 @@ describe('Episodes screen', () => {
 			.mockResolvedValue(true as never);
 		(getEpisodes as jest.Mock).mockResolvedValue([mockEpisode]);
 		render(<Episodes />);
-		await flushAndAdvance();
+		await flush();
 
 		fireEvent.press(screen.getByLabelText('Add to favorites'));
 
 		expect(mockAddFavorite).toHaveBeenCalledWith('episode', 1);
 		expect(openURLSpy).not.toHaveBeenCalled();
+	});
+
+	it('shows an error state with a working retry when the fetch fails', async () => {
+		(getEpisodes as jest.Mock)
+			.mockRejectedValueOnce(new Error('network down'))
+			.mockResolvedValueOnce([mockEpisode]);
+
+		render(<Episodes />);
+		await flush();
+
+		expect(screen.getByText('network down')).toBeVisible();
+
+		await act(async () => {
+			fireEvent.press(screen.getByRole('button', { name: 'Retry' }));
+			await Promise.resolve();
+		});
+
+		expect(getEpisodes).toHaveBeenCalledTimes(2);
+		expect(screen.getByText('Name: Human Flesh')).toBeVisible();
 	});
 });

@@ -49,8 +49,11 @@ Netlify. Cross-platform target: iOS, Android, and web.
    of the entire hamburger menu to match the rest of the app.~~ DONE (Home, the six categories,
    and Favorites now share the same bbYellow/bbRed boxed look; Hello/Log In/Sign Up/Log Out stay
    plain text; Log Out is pinned to the very bottom of the drawer)
-4. Loading/error states done properly (skeleton loaders, retry logic) and git rid of the hard
-   coded 3 second loader. Make the app as quick and performant as possible.
+4. ~~Loading/error states done properly (skeleton loaders, retry logic) and git rid of the hard
+   coded 3 second loader. Make the app as quick and performant as possible.~~ DONE (shared
+   useCategoryData hook + CategorySkeleton/ErrorState components across all 6 category screens
+   and Home; fetch hooks now throw with a 10s timeout instead of silently swallowing errors;
+   Home's search uses Promise.allSettled so one category failing doesn't blank out the rest)
 5. Offline support / cached data
 6. "Random burger of the day" generator (AI-assisted feature)
 7. Add "dark mode/light mode" option

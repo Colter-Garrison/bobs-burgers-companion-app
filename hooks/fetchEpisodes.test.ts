@@ -1,37 +1,22 @@
 import { getEpisodes } from './fetchEpisodes';
+import { fetchBobsBurgersApi } from '../lib/bobsBurgersApi';
+
+jest.mock('../lib/bobsBurgersApi');
 
 describe('getEpisodes', () => {
-	beforeEach(() => {
-		global.fetch = jest.fn();
-	});
-
 	afterEach(() => {
-		jest.restoreAllMocks();
+		jest.clearAllMocks();
 	});
 
-	it('calls the correct URL and returns the parsed episodes', async () => {
+	it('requests the correct path and returns the result', async () => {
 		const mockEpisodes = [
 			{ id: 1, name: 'Human Flesh', wikiUrl: 'https://wiki' },
 		];
-		(global.fetch as jest.Mock).mockResolvedValueOnce({
-			json: async () => mockEpisodes,
-		});
+		(fetchBobsBurgersApi as jest.Mock).mockResolvedValueOnce(mockEpisodes);
 
 		const result = await getEpisodes();
 
-		expect(global.fetch).toHaveBeenCalledWith(
-			'https://bobsburgers-api.herokuapp.com/episodes/',
-		);
+		expect(fetchBobsBurgersApi).toHaveBeenCalledWith('/episodes/');
 		expect(result).toEqual(mockEpisodes);
-	});
-
-	it('returns an empty array when the fetch fails', async () => {
-		(global.fetch as jest.Mock).mockRejectedValueOnce(
-			new Error('network down'),
-		);
-
-		const result = await getEpisodes();
-
-		expect(result).toEqual([]);
 	});
 });

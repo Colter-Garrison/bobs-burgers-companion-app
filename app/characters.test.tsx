@@ -28,10 +28,9 @@ const baseCharacter = {
 	url: '',
 };
 
-async function flushAndAdvance() {
+async function flush() {
 	await act(async () => {
 		await Promise.resolve();
-		jest.advanceTimersByTime(3000);
 	});
 }
 
@@ -40,7 +39,6 @@ describe('Characters screen', () => {
 	const mockRemoveFavorite = jest.fn();
 
 	beforeEach(() => {
-		jest.useFakeTimers();
 		(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => false,
 			addFavorite: mockAddFavorite,
@@ -51,22 +49,30 @@ describe('Characters screen', () => {
 	});
 
 	afterEach(() => {
-		jest.useRealTimers();
 		jest.restoreAllMocks();
 		jest.clearAllMocks();
+	});
+
+	it('shows a skeleton while loading', async () => {
+		(getCharacters as jest.Mock).mockResolvedValue([]);
+		render(<Characters />);
+
+		expect(screen.getByTestId('category-skeleton')).toBeVisible();
+
+		await flush();
 	});
 
 	it('shows the "UH OH" empty state when there is no data', async () => {
 		(getCharacters as jest.Mock).mockResolvedValue([]);
 		render(<Characters />);
-		await flushAndAdvance();
+		await flush();
 		expect(screen.getByText('Character UH OH...')).toBeVisible();
 	});
 
 	it('shows "None"/"Unknown" fallback text when relatives/occupation/voicedBy are empty', async () => {
 		(getCharacters as jest.Mock).mockResolvedValue([baseCharacter]);
 		render(<Characters />);
-		await flushAndAdvance();
+		await flush();
 
 		expect(screen.getByText('Name: Bob Belcher')).toBeVisible();
 		expect(screen.getByText('Relatives: None')).toBeVisible();
@@ -87,7 +93,7 @@ describe('Characters screen', () => {
 			},
 		]);
 		render(<Characters />);
-		await flushAndAdvance();
+		await flush();
 
 		expect(screen.getByText('Relatives: Linda Belcher')).toBeVisible();
 		expect(screen.getByText('Occupation: Restaurateur')).toBeVisible();
@@ -100,7 +106,7 @@ describe('Characters screen', () => {
 			.mockResolvedValue(true as never);
 		(getCharacters as jest.Mock).mockResolvedValue([baseCharacter]);
 		render(<Characters />);
-		await flushAndAdvance();
+		await flush();
 
 		fireEvent.press(screen.getByText('Name: Bob Belcher'));
 
@@ -113,11 +119,30 @@ describe('Characters screen', () => {
 			.mockResolvedValue(true as never);
 		(getCharacters as jest.Mock).mockResolvedValue([baseCharacter]);
 		render(<Characters />);
-		await flushAndAdvance();
+		await flush();
 
 		fireEvent.press(screen.getByLabelText('Add to favorites'));
 
 		expect(mockAddFavorite).toHaveBeenCalledWith('character', 1);
 		expect(openURLSpy).not.toHaveBeenCalled();
+	});
+
+	it('shows an error state with a working retry when the fetch fails', async () => {
+		(getCharacters as jest.Mock)
+			.mockRejectedValueOnce(new Error('network down'))
+			.mockResolvedValueOnce([baseCharacter]);
+
+		render(<Characters />);
+		await flush();
+
+		expect(screen.getByText('network down')).toBeVisible();
+
+		await act(async () => {
+			fireEvent.press(screen.getByRole('button', { name: 'Retry' }));
+			await Promise.resolve();
+		});
+
+		expect(getCharacters).toHaveBeenCalledTimes(2);
+		expect(screen.getByText('Name: Bob Belcher')).toBeVisible();
 	});
 });

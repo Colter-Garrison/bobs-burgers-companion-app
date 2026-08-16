@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import {
 	Image,
 	Linking,
@@ -7,75 +7,31 @@ import {
 	Text,
 	View,
 } from 'react-native';
-import { getCharacters } from '../hooks/fetchCharacters';
+import { Character, getCharacters } from '../hooks/fetchCharacters';
+import { useCategoryData } from '../hooks/useCategoryData';
 import { useFavorites } from '../hooks/useFavorites';
 import { FavoriteButton } from '../components/FavoriteButton';
+import { CategorySkeleton } from '../components/CategorySkeleton';
+import { ErrorState } from '../components/ErrorState';
 
 export default function Characters() {
-	interface Character {
-		id: number;
-		name: string;
-		relatives: Relative[];
-		wikiUrl: string;
-		image: string;
-		gender: string;
-		hair: string;
-		occupation: string;
-		allOccupations: string[];
-		firstEpisode: string;
-		voicedBy: string;
-		url: string;
-	}
-	interface Relative {
-		name: string;
-		relationship: string;
-		wikiUrl: string;
-		url: string;
-	}
-
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
-	const [characters, setCharacters] = useState<Character[]>([]);
-	const [loading, setLoading] = useState(true);
+	const {
+		data: characters,
+		loading,
+		error,
+		retry,
+	} = useCategoryData<Character>(getCharacters);
 	const handlePress = (character: Character) => {
 		Linking.openURL(character.wikiUrl);
 	};
-	const [dots, setDots] = useState(1);
-
-	const fetchData = useCallback(async () => {
-		try {
-			const characterData = await getCharacters();
-			setCharacters(characterData);
-		} catch (error) {
-			console.error('Error fetching character data:', error);
-		} finally {
-			setTimeout(() => {
-				setLoading(false);
-			}, 3000);
-		}
-	}, []);
-
-	useEffect(() => {
-		fetchData();
-	}, [fetchData]);
-
-	useEffect(() => {
-		const interval = setInterval(() => {
-			setDots((prevDots) => (prevDots % 3) + 1);
-		}, 500);
-
-		return () => clearInterval(interval);
-	}, []);
 
 	if (loading) {
-		return (
-			<View className='flex-1 flex-col items-center justify-center bg-bbGreen'>
-				<View className='flex-row items-center rounded-lg border-4 border-bbRed bg-bbYellow p-2'>
-					<Text className='font-chewy text-[44px] text-bbRed'>
-						Loading{'.'.repeat(dots)}
-					</Text>
-				</View>
-			</View>
-		);
+		return <CategorySkeleton />;
+	}
+
+	if (error) {
+		return <ErrorState message={error} onRetry={retry} />;
 	}
 
 	return (

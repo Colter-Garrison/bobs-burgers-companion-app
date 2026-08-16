@@ -90,7 +90,7 @@ describe('Favorites screen', () => {
 		expect(screen.getByText('No favorites yet.')).toBeVisible();
 	});
 
-	it('shows a loading state while items or favorites are still loading', () => {
+	it('shows a skeleton while items or favorites are still loading', () => {
 		(useSearchableItems as jest.Mock).mockReturnValue({
 			items: [],
 			loading: true,
@@ -98,7 +98,7 @@ describe('Favorites screen', () => {
 
 		render(<Favorites />);
 
-		expect(screen.getByText('Loading...')).toBeVisible();
+		expect(screen.getByTestId('category-skeleton')).toBeVisible();
 	});
 
 	it('tapping the star on a favorited row calls removeFavorite with its category and id', () => {

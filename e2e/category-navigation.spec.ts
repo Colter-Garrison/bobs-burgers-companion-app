@@ -11,9 +11,9 @@ test('drawer link navigates to the category screen and back', async ({
 	await page.getByText('Burgers of the Day', { exact: true }).click();
 	await expect(page).toHaveURL(/\/burgers/);
 
-	// The 3-second artificial loading delay is real here — no fake timers
-	// in a real browser — so wait for the real UI to settle rather than
-	// asserting immediately.
+	// A real network round-trip to the third-party Bob's Burgers API is
+	// real here — wait for the real UI to settle rather than asserting
+	// immediately.
 	await expect(page.getByText(/Name:/).first()).toBeVisible({
 		timeout: 10_000,
 	});

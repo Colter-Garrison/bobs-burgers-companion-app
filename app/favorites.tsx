@@ -12,6 +12,7 @@ import { SearchItem, useSearchableItems } from '../hooks/useSearchableItems';
 import { useFavorites } from '../hooks/useFavorites';
 import { useAuth } from '../hooks/useAuth';
 import { FavoriteButton } from '../components/FavoriteButton';
+import { CategorySkeleton } from '../components/CategorySkeleton';
 
 export default function Favorites() {
 	const router = useRouter();
@@ -52,12 +53,14 @@ export default function Favorites() {
 	);
 	const loading = itemsLoading || favoritesLoading;
 
+	if (loading) {
+		return <CategorySkeleton />;
+	}
+
 	return (
 		<ScrollView className='flex-1 bg-bbGreen'>
 			<View className='flex-col gap-[10px] p-[10px]'>
-				{loading ? (
-					<Text className='font-chewy text-bbRed'>Loading...</Text>
-				) : favoritedItems.length > 0 ? (
+				{favoritedItems.length > 0 ? (
 					favoritedItems.map((item) => (
 						<View
 							key={item.id}

@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react-native';
+import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useSearchableItems } from './useSearchableItems';
 import { getBurgersOfTheDay } from './fetchBurgersOfTheDay';
 import { getCharacters } from './fetchCharacters';
@@ -78,16 +78,41 @@ describe('useSearchableItems', () => {
 		);
 	});
 
-	it('leaves items empty and does not crash when one source rejects', async () => {
+	it("keeps the other five sources' results and surfaces an error when one source rejects", async () => {
 		(getCharacters as jest.Mock).mockRejectedValue(new Error('boom'));
 
 		const { result } = renderHook(() => useSearchableItems());
 		await waitFor(() => expect(result.current.loading).toBe(false));
 
-		// Promise.all rejects as a whole the moment any one of its
-		// promises rejects — the hook's catch block fires and `items`
-		// stays at its initial `[]`, even though 5 of the 6 sources
-		// would have succeeded individually.
-		expect(result.current.items).toEqual([]);
+		// Promise.allSettled doesn't let one rejected source discard the
+		// others — burgers and end credits (both mocked to succeed above)
+		// still show up, even though characters failed.
+		expect(result.current.items).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ id: 'burger-1' }),
+				expect.objectContaining({ id: 'endCredits-3' }),
+			]),
+		);
+		expect(
+			result.current.items.some((item) => item.id.startsWith('character-')),
+		).toBe(false);
+		expect(result.current.error).toBe('Some results may be missing.');
+	});
+
+	it('retry re-runs every source and can clear a prior error', async () => {
+		(getCharacters as jest.Mock).mockRejectedValueOnce(new Error('boom'));
+
+		const { result } = renderHook(() => useSearchableItems());
+		await waitFor(() => expect(result.current.loading).toBe(false));
+		expect(result.current.error).toBe('Some results may be missing.');
+
+		await act(async () => {
+			await result.current.retry();
+		});
+
+		expect(result.current.error).toBeNull();
+		expect(result.current.items).toEqual(
+			expect.arrayContaining([expect.objectContaining({ id: 'character-2' })]),
+		);
 	});
 });

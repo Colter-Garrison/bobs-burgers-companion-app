@@ -1,66 +1,30 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import { Linking, Pressable, ScrollView, Text, View } from 'react-native';
-import { getEpisodes } from '../hooks/fetchEpisodes';
+import { Episode, getEpisodes } from '../hooks/fetchEpisodes';
+import { useCategoryData } from '../hooks/useCategoryData';
 import { useFavorites } from '../hooks/useFavorites';
 import { FavoriteButton } from '../components/FavoriteButton';
+import { CategorySkeleton } from '../components/CategorySkeleton';
+import { ErrorState } from '../components/ErrorState';
 
 export default function Episodes() {
-	interface Episode {
-		id: number;
-		name: string;
-		description: string;
-		productionCode: string;
-		airDate: string;
-		season: number;
-		episode: number;
-		totalViewers: string;
-		url: string;
-		wikiUrl: string;
-	}
-
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
-	const [episodes, setEpisodes] = useState<Episode[]>([]);
-	const [loading, setLoading] = useState(true);
+	const {
+		data: episodes,
+		loading,
+		error,
+		retry,
+	} = useCategoryData<Episode>(getEpisodes);
 	const handlePress = (episode: Episode) => {
 		Linking.openURL(episode.wikiUrl);
 	};
-	const [dots, setDots] = useState(1);
-
-	const fetchData = useCallback(async () => {
-		try {
-			const episodeData = await getEpisodes();
-			setEpisodes(episodeData);
-		} catch (error) {
-			console.error('Error fetching episode data:', error);
-		} finally {
-			setTimeout(() => {
-				setLoading(false);
-			}, 3000);
-		}
-	}, []);
-
-	useEffect(() => {
-		fetchData();
-	}, [fetchData]);
-
-	useEffect(() => {
-		const interval = setInterval(() => {
-			setDots((prevDots) => (prevDots % 3) + 1);
-		}, 500);
-
-		return () => clearInterval(interval);
-	}, []);
 
 	if (loading) {
-		return (
-			<View className='flex-1 flex-col items-center justify-center bg-bbGreen'>
-				<View className='flex-row items-center rounded-lg border-4 border-bbRed bg-bbYellow p-2'>
-					<Text className='font-chewy text-[44px] text-bbRed'>
-						Loading{'.'.repeat(dots)}
-					</Text>
-				</View>
-			</View>
-		);
+		return <CategorySkeleton />;
+	}
+
+	if (error) {
+		return <ErrorState message={error} onRetry={retry} />;
 	}
 
 	return (

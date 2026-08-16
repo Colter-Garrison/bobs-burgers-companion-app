@@ -1,35 +1,20 @@
 import { getStoresNextDoor } from './fetchStoresNextDoor';
+import { fetchBobsBurgersApi } from '../lib/bobsBurgersApi';
+
+jest.mock('../lib/bobsBurgersApi');
 
 describe('getStoresNextDoor', () => {
-	beforeEach(() => {
-		global.fetch = jest.fn();
-	});
-
 	afterEach(() => {
-		jest.restoreAllMocks();
+		jest.clearAllMocks();
 	});
 
-	it('calls the correct URL and returns the parsed stores', async () => {
+	it('requests the correct path and returns the result', async () => {
 		const mockStores = [{ id: 1, name: 'Test Store', image: 'https://img' }];
-		(global.fetch as jest.Mock).mockResolvedValueOnce({
-			json: async () => mockStores,
-		});
+		(fetchBobsBurgersApi as jest.Mock).mockResolvedValueOnce(mockStores);
 
 		const result = await getStoresNextDoor();
 
-		expect(global.fetch).toHaveBeenCalledWith(
-			'https://bobsburgers-api.herokuapp.com/storeNextDoor/',
-		);
+		expect(fetchBobsBurgersApi).toHaveBeenCalledWith('/storeNextDoor/');
 		expect(result).toEqual(mockStores);
-	});
-
-	it('returns an empty array when the fetch fails', async () => {
-		(global.fetch as jest.Mock).mockRejectedValueOnce(
-			new Error('network down'),
-		);
-
-		const result = await getStoresNextDoor();
-
-		expect(result).toEqual([]);
 	});
 });

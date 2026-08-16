@@ -1,12 +1,14 @@
-export const getPestControlTrucks = async () => {
-	try {
-		const response = await fetch(
-			'https://bobsburgers-api.herokuapp.com/pestControlTruck/',
-		);
-		const data = await response.json();
-		return data;
-	} catch (error) {
-		console.error('Error fetching pest control trucks:', error);
-		return [];
-	}
-};
+import { fetchBobsBurgersApi } from '../lib/bobsBurgersApi';
+
+export interface Truck {
+	id: number;
+	name: string;
+	image: string;
+	season: number;
+	episode: number;
+	episodeUrl: string;
+	url: string;
+}
+
+export const getPestControlTrucks = () =>
+	fetchBobsBurgersApi<Truck[]>('/pestControlTruck/');

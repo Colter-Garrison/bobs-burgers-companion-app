@@ -1,12 +1,16 @@
-export const getEpisodes = async () => {
-	try {
-		const response = await fetch(
-			'https://bobsburgers-api.herokuapp.com/episodes/',
-		);
-		const data = await response.json();
-		return data;
-	} catch (error) {
-		console.error('Error fetching episodes:', error);
-		return [];
-	}
-};
+import { fetchBobsBurgersApi } from '../lib/bobsBurgersApi';
+
+export interface Episode {
+	id: number;
+	name: string;
+	description: string;
+	productionCode: string;
+	airDate: string;
+	season: number;
+	episode: number;
+	totalViewers: string;
+	url: string;
+	wikiUrl: string;
+}
+
+export const getEpisodes = () => fetchBobsBurgersApi<Episode[]>('/episodes/');

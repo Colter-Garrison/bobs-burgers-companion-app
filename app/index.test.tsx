@@ -27,10 +27,13 @@ jest.mock('@react-navigation/native', () => ({
 describe('Home / search screen', () => {
 	const mockAddFavorite = jest.fn();
 	const mockRemoveFavorite = jest.fn();
+	const mockRetry = jest.fn();
 
 	beforeEach(() => {
 		(useSearchableItems as jest.Mock).mockReturnValue({
 			loading: false,
+			error: null,
+			retry: mockRetry,
 			items: [
 				{
 					id: 'burger-1',
@@ -100,6 +103,72 @@ describe('Home / search screen', () => {
 		fireEvent.press(screen.getByLabelText('Add to favorites'));
 
 		expect(mockAddFavorite).toHaveBeenCalledWith('character', 2);
+	});
+
+	it('shows a skeleton while loading and only once the user is actively searching', () => {
+		(useSearchableItems as jest.Mock).mockReturnValue({
+			loading: true,
+			error: null,
+			retry: mockRetry,
+			items: [],
+		});
+		render(<Index />);
+
+		expect(screen.queryByTestId('category-skeleton')).toBeNull();
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search burgers, characters, episodes...'),
+			'bob',
+		);
+
+		expect(screen.getByTestId('category-skeleton')).toBeVisible();
+	});
+
+	it('re-fetches once when a search starts, not on every keystroke, and re-arms after clearing', () => {
+		render(<Index />);
+		const input = screen.getByPlaceholderText(
+			'Search burgers, characters, episodes...',
+		);
+
+		fireEvent.changeText(input, 'b');
+		expect(mockRetry).toHaveBeenCalledTimes(1);
+
+		fireEvent.changeText(input, 'bo');
+		fireEvent.changeText(input, 'bob');
+		expect(mockRetry).toHaveBeenCalledTimes(1);
+
+		fireEvent.changeText(input, '');
+		fireEvent.changeText(input, 'l');
+		expect(mockRetry).toHaveBeenCalledTimes(2);
+	});
+
+	it('shows an error banner with a working retry while still showing the results that did load', () => {
+		(useSearchableItems as jest.Mock).mockReturnValue({
+			loading: false,
+			error: 'Some results may be missing.',
+			retry: mockRetry,
+			items: [
+				{
+					id: 'burger-1',
+					category: 'Burgers of the Day',
+					label: 'Test Burger',
+					itemId: 1,
+					favoriteCategory: 'burger',
+				},
+			],
+		});
+		render(<Index />);
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search burgers, characters, episodes...'),
+			'burger',
+		);
+
+		expect(screen.getByText('Some results may be missing.')).toBeVisible();
+		expect(screen.getByText('Test Burger')).toBeVisible();
+
+		fireEvent.press(screen.getByText('Retry'));
+		expect(mockRetry).toHaveBeenCalled();
 	});
 
 	it('clears the search query when the screen loses focus', () => {

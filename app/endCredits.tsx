@@ -1,59 +1,30 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
-import { getEndCreditsSequences } from '../hooks/fetchEndCreditsSequences';
+import {
+	EndCredit,
+	getEndCreditsSequences,
+} from '../hooks/fetchEndCreditsSequences';
+import { useCategoryData } from '../hooks/useCategoryData';
 import { useFavorites } from '../hooks/useFavorites';
 import { FavoriteButton } from '../components/FavoriteButton';
+import { CategorySkeleton } from '../components/CategorySkeleton';
+import { ErrorState } from '../components/ErrorState';
 
 export default function EndCredits() {
-	interface EndCredit {
-		id: number;
-		image: string;
-		season: number;
-		episode: number;
-		episodeUrl: string;
-		url: string;
-	}
-
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
-	const [endCredits, setEndCredits] = useState<EndCredit[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [dots, setDots] = useState(1);
-
-	const fetchData = useCallback(async () => {
-		try {
-			const creditData = await getEndCreditsSequences();
-			setEndCredits(creditData);
-		} catch (error) {
-			console.error('Error fetching end credits data:', error);
-		} finally {
-			setTimeout(() => {
-				setLoading(false);
-			}, 3000);
-		}
-	}, []);
-
-	useEffect(() => {
-		fetchData();
-	}, [fetchData]);
-
-	useEffect(() => {
-		const interval = setInterval(() => {
-			setDots((prevDots) => (prevDots % 3) + 1);
-		}, 500);
-
-		return () => clearInterval(interval);
-	}, []);
+	const {
+		data: endCredits,
+		loading,
+		error,
+		retry,
+	} = useCategoryData<EndCredit>(getEndCreditsSequences);
 
 	if (loading) {
-		return (
-			<View className='flex-1 flex-col items-center justify-center bg-bbGreen'>
-				<View className='flex-row items-center rounded-lg border-4 border-bbRed bg-bbYellow p-2'>
-					<Text className='font-chewy text-[44px] text-bbRed'>
-						Loading{'.'.repeat(dots)}
-					</Text>
-				</View>
-			</View>
-		);
+		return <CategorySkeleton />;
+	}
+
+	if (error) {
+		return <ErrorState message={error} onRetry={retry} />;
 	}
 
 	return (
