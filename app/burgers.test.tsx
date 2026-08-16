@@ -1,10 +1,21 @@
-import { act, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 import Burgers from './burgers';
 import { getBurgersOfTheDay } from '../hooks/fetchBurgersOfTheDay';
+import { useFavorites } from '../hooks/useFavorites';
+import { useAuth } from '../hooks/useAuth';
 
 jest.mock('../hooks/fetchBurgersOfTheDay');
+jest.mock('../hooks/useFavorites');
+jest.mock('../hooks/useAuth');
+jest.mock('expo-router', () => ({
+	useRouter: jest.fn(),
+}));
 
 describe('Burgers screen', () => {
+	const mockAddFavorite = jest.fn();
+	const mockRemoveFavorite = jest.fn();
+
 	beforeEach(() => {
 		// The screen's `finally` block does
 		// setTimeout(() => setLoading(false), 3000) — under real timers a
@@ -12,11 +23,19 @@ describe('Burgers screen', () => {
 		// fire. Fake timers swap in a clock we control: nothing runs
 		// until we explicitly move it forward.
 		jest.useFakeTimers();
+		(useFavorites as jest.Mock).mockReturnValue({
+			isFavorited: () => false,
+			addFavorite: mockAddFavorite,
+			removeFavorite: mockRemoveFavorite,
+		});
+		(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' });
+		(useRouter as jest.Mock).mockReturnValue({ push: jest.fn() });
 	});
 
 	afterEach(() => {
 		jest.useRealTimers();
 		jest.restoreAllMocks();
+		jest.clearAllMocks();
 	});
 
 	it('shows the loading state immediately, then the list after 3s', async () => {
@@ -65,5 +84,21 @@ describe('Burgers screen', () => {
 		});
 
 		expect(screen.getByText('Burger of the Day UH OH...')).toBeVisible();
+	});
+
+	it('tapping the favorite star calls addFavorite with the burger category and id', async () => {
+		(getBurgersOfTheDay as jest.Mock).mockResolvedValue([
+			{ id: 1, name: 'Test Burger', price: '$6.75', season: 1, episode: 1 },
+		]);
+
+		render(<Burgers />);
+		await act(async () => {
+			await Promise.resolve();
+			jest.advanceTimersByTime(3000);
+		});
+
+		fireEvent.press(screen.getByLabelText('Add to favorites'));
+
+		expect(mockAddFavorite).toHaveBeenCalledWith('burger', 1);
 	});
 });

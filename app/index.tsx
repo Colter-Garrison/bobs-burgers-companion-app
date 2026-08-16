@@ -9,9 +9,12 @@ import {
 	View,
 } from 'react-native';
 import { SearchItem, useSearchableItems } from '../hooks/useSearchableItems';
+import { useFavorites } from '../hooks/useFavorites';
+import { FavoriteButton } from '../components/FavoriteButton';
 
 export default function Index() {
 	const { items, loading } = useSearchableItems();
+	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const [query, setQuery] = useState('');
 
 	const filteredItems = useMemo(() => {
@@ -44,8 +47,14 @@ export default function Index() {
 						<Text className='font-chewy text-bbRed'>Loading...</Text>
 					) : filteredItems.length > 0 ? (
 						filteredItems.map((item) => (
-							<Pressable key={item.id} onPress={() => handleResultPress(item)}>
-								<View className='flex-row items-center gap-[10px] rounded-lg border-4 border-bbRed bg-bbYellow p-[10px]'>
+							<View
+								key={item.id}
+								className='flex-row items-center justify-between gap-[10px] rounded-lg border-4 border-bbRed bg-bbYellow p-[10px]'
+							>
+								<Pressable
+									className='flex-1 flex-row items-center gap-[10px]'
+									onPress={() => handleResultPress(item)}
+								>
 									{item.image ? (
 										<Image
 											source={{ width: 60, height: 60, uri: item.image }}
@@ -62,8 +71,16 @@ export default function Index() {
 											{item.label}
 										</Text>
 									</View>
-								</View>
-							</Pressable>
+								</Pressable>
+								<FavoriteButton
+									favorited={isFavorited(item.favoriteCategory, item.itemId)}
+									onToggle={() =>
+										isFavorited(item.favoriteCategory, item.itemId)
+											? removeFavorite(item.favoriteCategory, item.itemId)
+											: addFavorite(item.favoriteCategory, item.itemId)
+									}
+								/>
+							</View>
 						))
 					) : (
 						<Text className='font-chewy text-bbRed'>No results found.</Text>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
 import { getEndCreditsSequences } from '../hooks/fetchEndCreditsSequences';
+import { useFavorites } from '../hooks/useFavorites';
+import { FavoriteButton } from '../components/FavoriteButton';
 
 export default function EndCredits() {
 	interface EndCredit {
@@ -12,6 +14,7 @@ export default function EndCredits() {
 		url: string;
 	}
 
+	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const [endCredits, setEndCredits] = useState<EndCredit[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [dots, setDots] = useState(1);
@@ -60,24 +63,34 @@ export default function EndCredits() {
 					endCredits.map((credits) => (
 						<View
 							key={credits.id}
-							className='flex-row items-center gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'
+							className='flex-row items-center justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'
 						>
-							{credits.image ? (
-								<Image
-									source={{ width: 100, height: 100, uri: credits.image }}
-									width={100}
-									height={100}
-									resizeMode='contain'
-								/>
-							) : null}
-							<View className='max-w-[70%] flex-col'>
-								<Text className='font-chewy text-base text-bbRed'>
-									Season: {credits.season}
-								</Text>
-								<Text className='font-chewy text-base text-bbRed'>
-									Episode: {credits.episode}
-								</Text>
+							<View className='flex-1 flex-row items-center gap-2'>
+								{credits.image ? (
+									<Image
+										source={{ width: 100, height: 100, uri: credits.image }}
+										width={100}
+										height={100}
+										resizeMode='contain'
+									/>
+								) : null}
+								<View className='max-w-[70%] flex-col'>
+									<Text className='font-chewy text-base text-bbRed'>
+										Season: {credits.season}
+									</Text>
+									<Text className='font-chewy text-base text-bbRed'>
+										Episode: {credits.episode}
+									</Text>
+								</View>
 							</View>
+							<FavoriteButton
+								favorited={isFavorited('end_credit', credits.id)}
+								onToggle={() =>
+									isFavorited('end_credit', credits.id)
+										? removeFavorite('end_credit', credits.id)
+										: addFavorite('end_credit', credits.id)
+								}
+							/>
 						</View>
 					))
 				) : (

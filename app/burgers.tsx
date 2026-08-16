@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { getBurgersOfTheDay } from '../hooks/fetchBurgersOfTheDay';
+import { useFavorites } from '../hooks/useFavorites';
+import { FavoriteButton } from '../components/FavoriteButton';
 
 export default function Burgers() {
+	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	interface Burger {
 		id: number;
 		name: string;
@@ -61,20 +64,30 @@ export default function Burgers() {
 					burgers.map((burger) => (
 						<View
 							key={burger.id}
-							className='flex-col rounded-lg border-4 border-bbRed bg-bbYellow p-2'
+							className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'
 						>
-							<Text className='font-chewy text-base text-bbRed'>
-								Name: {burger.name}
-							</Text>
-							<Text className='font-chewy text-base text-bbRed'>
-								Price: {burger.price}
-							</Text>
-							<Text className='font-chewy text-base text-bbRed'>
-								Season: {burger.season}
-							</Text>
-							<Text className='font-chewy text-base text-bbRed'>
-								Episode: {burger.episode}
-							</Text>
+							<View className='flex-1 flex-col'>
+								<Text className='font-chewy text-base text-bbRed'>
+									Name: {burger.name}
+								</Text>
+								<Text className='font-chewy text-base text-bbRed'>
+									Price: {burger.price}
+								</Text>
+								<Text className='font-chewy text-base text-bbRed'>
+									Season: {burger.season}
+								</Text>
+								<Text className='font-chewy text-base text-bbRed'>
+									Episode: {burger.episode}
+								</Text>
+							</View>
+							<FavoriteButton
+								favorited={isFavorited('burger', burger.id)}
+								onToggle={() =>
+									isFavorited('burger', burger.id)
+										? removeFavorite('burger', burger.id)
+										: addFavorite('burger', burger.id)
+								}
+							/>
 						</View>
 					))
 				) : (

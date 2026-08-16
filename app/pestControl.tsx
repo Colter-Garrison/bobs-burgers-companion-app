@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
 import { getPestControlTrucks } from '../hooks/fetchPestControlTrucks';
+import { useFavorites } from '../hooks/useFavorites';
+import { FavoriteButton } from '../components/FavoriteButton';
 
 export default function PestControl() {
 	interface Truck {
@@ -13,6 +15,7 @@ export default function PestControl() {
 		url: string;
 	}
 
+	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const [trucks, setTrucks] = useState<Truck[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [dots, setDots] = useState(1);
@@ -61,27 +64,37 @@ export default function PestControl() {
 					trucks.map((truck) => (
 						<View
 							key={truck.id}
-							className='flex-row items-center gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'
+							className='flex-row items-center justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'
 						>
-							{truck.image ? (
-								<Image
-									source={{ width: 100, height: 100, uri: truck.image }}
-									width={100}
-									height={100}
-									resizeMode='contain'
-								/>
-							) : null}
-							<View className='max-w-[70%] flex-col'>
-								<Text className='font-chewy text-base text-bbRed'>
-									Name: {truck.name}
-								</Text>
-								<Text className='font-chewy text-base text-bbRed'>
-									Season: {truck.season}
-								</Text>
-								<Text className='font-chewy text-base text-bbRed'>
-									Episode: {truck.episode}
-								</Text>
+							<View className='flex-1 flex-row items-center gap-2'>
+								{truck.image ? (
+									<Image
+										source={{ width: 100, height: 100, uri: truck.image }}
+										width={100}
+										height={100}
+										resizeMode='contain'
+									/>
+								) : null}
+								<View className='max-w-[70%] flex-col'>
+									<Text className='font-chewy text-base text-bbRed'>
+										Name: {truck.name}
+									</Text>
+									<Text className='font-chewy text-base text-bbRed'>
+										Season: {truck.season}
+									</Text>
+									<Text className='font-chewy text-base text-bbRed'>
+										Episode: {truck.episode}
+									</Text>
+								</View>
 							</View>
+							<FavoriteButton
+								favorited={isFavorited('pest_control_truck', truck.id)}
+								onToggle={() =>
+									isFavorited('pest_control_truck', truck.id)
+										? removeFavorite('pest_control_truck', truck.id)
+										: addFavorite('pest_control_truck', truck.id)
+								}
+							/>
 						</View>
 					))
 				) : (

@@ -16,7 +16,13 @@ export default function Signup() {
 		setSubmitting(true);
 		try {
 			await signup(email, password);
-			router.replace('/');
+			// router.replace('/') is a no-op here — /signup is a
+			// Drawer.Screen, and expo-router's replace() doesn't
+			// navigate away from a screen inside a drawer navigator in
+			// this version. push() does, and drawer screens are
+			// siblings with no back-stack anyway, so there's no
+			// leftover history entry to worry about.
+			router.push('/');
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Something went wrong');
 		} finally {

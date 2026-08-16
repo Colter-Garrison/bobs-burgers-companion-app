@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Linking, Pressable, ScrollView, Text, View } from 'react-native';
 import { getEpisodes } from '../hooks/fetchEpisodes';
+import { useFavorites } from '../hooks/useFavorites';
+import { FavoriteButton } from '../components/FavoriteButton';
 
 export default function Episodes() {
 	interface Episode {
@@ -16,6 +18,7 @@ export default function Episodes() {
 		wikiUrl: string;
 	}
 
+	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const [episodes, setEpisodes] = useState<Episode[]>([]);
 	const [loading, setLoading] = useState(true);
 	const handlePress = (episode: Episode) => {
@@ -65,8 +68,14 @@ export default function Episodes() {
 			<View className='flex-col gap-2 p-2'>
 				{episodes.length > 0 ? (
 					episodes.map((episode) => (
-						<Pressable key={episode.id} onPress={() => handlePress(episode)}>
-							<View className='flex-col rounded-lg border-4 border-bbRed bg-bbYellow p-2'>
+						<View
+							key={episode.id}
+							className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'
+						>
+							<Pressable
+								className='flex-1 flex-col'
+								onPress={() => handlePress(episode)}
+							>
 								<Text className='font-chewy text-base text-bbRed'>
 									Name: {episode.name}
 								</Text>
@@ -85,8 +94,16 @@ export default function Episodes() {
 								<Text className='font-chewy text-base text-bbRed'>
 									Total Viewers: {episode.totalViewers}
 								</Text>
-							</View>
-						</Pressable>
+							</Pressable>
+							<FavoriteButton
+								favorited={isFavorited('episode', episode.id)}
+								onToggle={() =>
+									isFavorited('episode', episode.id)
+										? removeFavorite('episode', episode.id)
+										: addFavorite('episode', episode.id)
+								}
+							/>
+						</View>
 					))
 				) : (
 					<View className='flex-1 flex-col items-center justify-center'>

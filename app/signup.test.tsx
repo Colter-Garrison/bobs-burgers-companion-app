@@ -10,14 +10,10 @@ jest.mock('../hooks/useAuth');
 
 describe('Signup screen', () => {
 	const mockPush = jest.fn();
-	const mockReplace = jest.fn();
 	const mockSignup = jest.fn();
 
 	beforeEach(() => {
-		(useRouter as jest.Mock).mockReturnValue({
-			push: mockPush,
-			replace: mockReplace,
-		});
+		(useRouter as jest.Mock).mockReturnValue({ push: mockPush });
 		(useAuth as jest.Mock).mockReturnValue({ signup: mockSignup });
 	});
 
@@ -45,7 +41,7 @@ describe('Signup screen', () => {
 			'new@bobsburgers.com',
 			'correcthorse',
 		);
-		expect(mockReplace).toHaveBeenCalledWith('/');
+		expect(mockPush).toHaveBeenCalledWith('/');
 	});
 
 	it('shows an error message and does not navigate on failure', async () => {
@@ -65,7 +61,7 @@ describe('Signup screen', () => {
 		});
 
 		expect(screen.getByText('Email already registered')).toBeVisible();
-		expect(mockReplace).not.toHaveBeenCalled();
+		expect(mockPush).not.toHaveBeenCalled();
 	});
 
 	it('navigates to Log In when the link is pressed', () => {

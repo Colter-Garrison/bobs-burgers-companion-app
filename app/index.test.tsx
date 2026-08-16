@@ -1,10 +1,21 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 import Index from './index';
 import { useSearchableItems } from '../hooks/useSearchableItems';
+import { useFavorites } from '../hooks/useFavorites';
+import { useAuth } from '../hooks/useAuth';
 
 jest.mock('../hooks/useSearchableItems');
+jest.mock('../hooks/useFavorites');
+jest.mock('../hooks/useAuth');
+jest.mock('expo-router', () => ({
+	useRouter: jest.fn(),
+}));
 
 describe('Home / search screen', () => {
+	const mockAddFavorite = jest.fn();
+	const mockRemoveFavorite = jest.fn();
+
 	beforeEach(() => {
 		(useSearchableItems as jest.Mock).mockReturnValue({
 			loading: false,
@@ -13,10 +24,25 @@ describe('Home / search screen', () => {
 					id: 'burger-1',
 					category: 'Burgers of the Day',
 					label: 'Test Burger',
+					itemId: 1,
+					favoriteCategory: 'burger',
 				},
-				{ id: 'character-2', category: 'Characters', label: 'Bob Belcher' },
+				{
+					id: 'character-2',
+					category: 'Characters',
+					label: 'Bob Belcher',
+					itemId: 2,
+					favoriteCategory: 'character',
+				},
 			],
 		});
+		(useFavorites as jest.Mock).mockReturnValue({
+			isFavorited: () => false,
+			addFavorite: mockAddFavorite,
+			removeFavorite: mockRemoveFavorite,
+		});
+		(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' });
+		(useRouter as jest.Mock).mockReturnValue({ push: jest.fn() });
 	});
 
 	afterEach(() => {
@@ -50,5 +76,17 @@ describe('Home / search screen', () => {
 		fireEvent.changeText(input, 'zzzznomatch');
 
 		expect(screen.getByText('No results found.')).toBeVisible();
+	});
+
+	it("tapping a result's favorite star calls addFavorite with that item's category and id", () => {
+		render(<Index />);
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search burgers, characters, episodes...'),
+			'bob',
+		);
+
+		fireEvent.press(screen.getByLabelText('Add to favorites'));
+
+		expect(mockAddFavorite).toHaveBeenCalledWith('character', 2);
 	});
 });

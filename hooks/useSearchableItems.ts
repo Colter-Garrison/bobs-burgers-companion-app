@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { FavoriteCategory } from '../lib/apiClient';
 import { getBurgersOfTheDay } from './fetchBurgersOfTheDay';
 import { getCharacters } from './fetchCharacters';
 import { getEndCreditsSequences } from './fetchEndCreditsSequences';
@@ -20,6 +21,11 @@ export interface SearchItem {
 	label: string;
 	image?: string;
 	linkUrl?: string;
+	// The item's raw numeric id from the external API and the backend's
+	// category enum value — distinct from `id`/`category` above, which
+	// are display/list-key concerns, not what favoriting needs.
+	itemId: number;
+	favoriteCategory: FavoriteCategory;
 }
 
 interface RawBurger {
@@ -89,6 +95,8 @@ export function useSearchableItems() {
 					category: 'Burgers of the Day' as const,
 					label: burger.name,
 					linkUrl: burger.episodeUrl,
+					itemId: burger.id,
+					favoriteCategory: 'burger' as const,
 				})),
 				...(characters ?? []).map((character) => ({
 					id: `character-${character.id}`,
@@ -96,6 +104,8 @@ export function useSearchableItems() {
 					label: character.name,
 					image: character.image,
 					linkUrl: character.wikiUrl,
+					itemId: character.id,
+					favoriteCategory: 'character' as const,
 				})),
 				...(endCredits ?? []).map((credit) => ({
 					id: `endCredits-${credit.id}`,
@@ -103,12 +113,16 @@ export function useSearchableItems() {
 					label: `Season ${credit.season}, Episode ${credit.episode}`,
 					image: credit.image,
 					linkUrl: credit.episodeUrl,
+					itemId: credit.id,
+					favoriteCategory: 'end_credit' as const,
 				})),
 				...(episodes ?? []).map((episode) => ({
 					id: `episode-${episode.id}`,
 					category: 'Episodes' as const,
 					label: episode.name,
 					linkUrl: episode.wikiUrl,
+					itemId: episode.id,
+					favoriteCategory: 'episode' as const,
 				})),
 				...(trucks ?? []).map((truck) => ({
 					id: `truck-${truck.id}`,
@@ -116,6 +130,8 @@ export function useSearchableItems() {
 					label: truck.name,
 					image: truck.image,
 					linkUrl: truck.episodeUrl,
+					itemId: truck.id,
+					favoriteCategory: 'pest_control_truck' as const,
 				})),
 				...(stores ?? []).map((store) => ({
 					id: `store-${store.id}`,
@@ -123,6 +139,8 @@ export function useSearchableItems() {
 					label: store.name,
 					image: store.image,
 					linkUrl: store.episodeUrl,
+					itemId: store.id,
+					favoriteCategory: 'store' as const,
 				})),
 			];
 

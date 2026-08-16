@@ -8,6 +8,8 @@ import {
 	View,
 } from 'react-native';
 import { getCharacters } from '../hooks/fetchCharacters';
+import { useFavorites } from '../hooks/useFavorites';
+import { FavoriteButton } from '../components/FavoriteButton';
 
 export default function Characters() {
 	interface Character {
@@ -31,6 +33,7 @@ export default function Characters() {
 		url: string;
 	}
 
+	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const [characters, setCharacters] = useState<Character[]>([]);
 	const [loading, setLoading] = useState(true);
 	const handlePress = (character: Character) => {
@@ -81,11 +84,14 @@ export default function Characters() {
 				{characters.length > 0 ? (
 					characters.map((character) => {
 						return (
-							<Pressable
+							<View
 								key={character.id}
-								onPress={() => handlePress(character)}
+								className='flex-row items-center justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'
 							>
-								<View className='flex-row items-center gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'>
+								<Pressable
+									className='flex-1 flex-row items-center gap-2'
+									onPress={() => handlePress(character)}
+								>
 									{character.image ? (
 										<Image
 											source={{ width: 100, height: 100, uri: character.image }}
@@ -138,8 +144,16 @@ export default function Characters() {
 											)}
 										</Text>
 									</View>
-								</View>
-							</Pressable>
+								</Pressable>
+								<FavoriteButton
+									favorited={isFavorited('character', character.id)}
+									onToggle={() =>
+										isFavorited('character', character.id)
+											? removeFavorite('character', character.id)
+											: addFavorite('character', character.id)
+									}
+								/>
+							</View>
 						);
 					})
 				) : (
