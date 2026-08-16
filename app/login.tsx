@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
 
@@ -10,6 +11,22 @@ export default function Login() {
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState<string | null>(null);
 	const [submitting, setSubmitting] = useState(false);
+
+	// A Drawer.Screen stays mounted when you navigate away from it (unlike
+	// Stack, which unmounts), so this state would otherwise sit here
+	// unchanged — still showing whatever was typed — the next time this
+	// screen comes back into view. Clearing on blur means it's always
+	// fresh, whether that's from switching screens mid-typing or from a
+	// later log out.
+	useFocusEffect(
+		useCallback(() => {
+			return () => {
+				setEmail('');
+				setPassword('');
+				setError(null);
+			};
+		}, []),
+	);
 
 	const handleSubmit = async () => {
 		setError(null);

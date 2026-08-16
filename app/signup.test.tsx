@@ -8,6 +8,18 @@ jest.mock('expo-router', () => ({
 }));
 jest.mock('../hooks/useAuth');
 
+// useFocusEffect is normally driven by real navigation focus events,
+// which don't exist in a bare RNTL render. Calling the callback directly
+// at render time captures its returned cleanup function so a test can
+// invoke it to simulate a blur (navigating away), without needing a real
+// navigation container.
+let focusEffectCleanup: (() => void) | undefined;
+jest.mock('@react-navigation/native', () => ({
+	useFocusEffect: (callback: () => void | (() => void)) => {
+		focusEffectCleanup = callback() ?? undefined;
+	},
+}));
+
 describe('Signup screen', () => {
 	const mockPush = jest.fn();
 	const mockSignup = jest.fn();
@@ -70,5 +82,27 @@ describe('Signup screen', () => {
 		fireEvent.press(screen.getByText('Already have an account? Log In'));
 
 		expect(mockPush).toHaveBeenCalledWith('/login');
+	});
+
+	it('clears the email/password fields when the screen loses focus', () => {
+		render(<Signup />);
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Email'),
+			'new@bobsburgers.com',
+		);
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Password (min. 8 characters)'),
+			'correcthorse',
+		);
+
+		act(() => {
+			focusEffectCleanup?.();
+		});
+
+		expect(screen.getByPlaceholderText('Email').props.value).toBe('');
+		expect(
+			screen.getByPlaceholderText('Password (min. 8 characters)').props.value,
+		).toBe('');
 	});
 });
