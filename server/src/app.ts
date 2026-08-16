@@ -1,14 +1,31 @@
 import express from 'express';
+import cors from 'cors';
 import authRoutes from './routes/auth.js';
 import profileRoutes from './routes/profile.js';
 import favoritesRoutes from './routes/favorites.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { env } from './env.js';
 
 // Building the app here, separate from index.ts's app.listen() call,
 // means tests can import `app` and exercise it directly over HTTP (via
 // Supertest) without binding a real port — no server process to start,
 // stop, or worry about colliding with another test run.
 const app = express();
+
+// The Expo app's web target runs in a real browser calling this API
+// from a different origin (its dev server, or eventually Netlify) — the
+// browser blocks that by default without these headers. Native
+// (iOS/Android) requests carry no Origin header at all, so this
+// allowlist never affects them.
+const defaultOrigins = [
+	'http://localhost:8081', // `expo start --web` dev server
+	'http://localhost:4173', // `serve dist` — Playwright's static-export preview
+];
+const allowedOrigins = env.CORS_ORIGINS
+	? env.CORS_ORIGINS.split(',').map((origin) => origin.trim())
+	: defaultOrigins;
+app.use(cors({ origin: allowedOrigins }));
+
 app.use(express.json());
 
 app.get('/health', (_req, res) => {

@@ -11,6 +11,11 @@ const envSchema = z.object({
 	DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
 	JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
 	PORT: z.coerce.number().default(3000),
+	// Comma-separated list of origins allowed to call this API from a
+	// browser. Optional (falls back to a hardcoded dev default in
+	// app.ts) so CI's backend job and local dev don't need a new secret
+	// just to run the test suite.
+	CORS_ORIGINS: z.string().optional(),
 });
 
 export const env = envSchema.parse(process.env);
