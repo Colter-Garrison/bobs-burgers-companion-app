@@ -16,7 +16,7 @@ test('favoriting/unfavoriting on one screen stays in sync with Favorites and oth
 	await page.goto('/signup');
 	await page.getByPlaceholder('Email').fill(email);
 	await page.getByPlaceholder('Password (min. 8 characters)').fill(password);
-	await page.getByRole('button', { name: 'Sign Up' }).click();
+	await page.getByRole('button', { name: 'Sign Up', exact: true }).click();
 	await expect(page).toHaveURL('/');
 
 	await page.goto('/characters');

@@ -9,18 +9,35 @@ jest.mock('../hooks/useAuth');
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
+// Needs a real <SafeAreaProvider> ancestor this bare render() never sets
+// up — not this component's logic to test, so just stub a zero inset.
+jest.mock('react-native-safe-area-context', () => ({
+	useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+}));
 // The real DrawerContentScrollView/DrawerItemList need a live navigation
 // state (drawer routes, descriptors) this test never constructs — they're
 // react-navigation's own machinery, not this component's logic. Stand
 // them in with plain View/Text so only DrawerContent's own auth-aware
-// section is under test here.
+// section is under test here. DrawerItem (used for the Favorites link) is
+// stubbed just enough to stay pressable/findable by label.
 jest.mock('@react-navigation/drawer', () => {
-	const { View, Text } = jest.requireActual('react-native');
+	const { Pressable, Text, View } = jest.requireActual('react-native');
 	return {
 		DrawerContentScrollView: ({ children }: { children: React.ReactNode }) => (
 			<View>{children}</View>
 		),
 		DrawerItemList: () => <Text>DrawerItemList</Text>,
+		DrawerItem: ({
+			label,
+			onPress,
+		}: {
+			label: string;
+			onPress: () => void;
+		}) => (
+			<Pressable onPress={onPress} accessibilityRole='button'>
+				<Text>{label}</Text>
+			</Pressable>
+		),
 	};
 });
 
@@ -41,7 +58,7 @@ describe('DrawerContent', () => {
 		jest.clearAllMocks();
 	});
 
-	it('shows Log In / Sign Up links when logged out', () => {
+	it('shows Log In / Sign Up links at the top when logged out', () => {
 		(useAuth as jest.Mock).mockReturnValue({
 			token: null,
 			email: null,
@@ -52,7 +69,9 @@ describe('DrawerContent', () => {
 
 		expect(screen.getByText('Log In')).toBeVisible();
 		expect(screen.getByText('Sign Up')).toBeVisible();
-		expect(screen.queryByText(/Logged in as/)).toBeNull();
+		expect(screen.queryByText(/^Hello:/)).toBeNull();
+		expect(screen.queryByText('Favorites')).toBeNull();
+		expect(screen.queryByText('Log Out')).toBeNull();
 
 		fireEvent.press(screen.getByText('Log In'));
 		expect(mockPush).toHaveBeenCalledWith('/login');
@@ -61,7 +80,7 @@ describe('DrawerContent', () => {
 		expect(mockPush).toHaveBeenCalledWith('/signup');
 	});
 
-	it('shows the logged-in email and a Log Out action when logged in', () => {
+	it('shows "Hello: email", Favorites, and Log Out when logged in', () => {
 		(useAuth as jest.Mock).mockReturnValue({
 			token: 'token-abc',
 			email: 'bob@bobsburgers.com',
@@ -70,18 +89,29 @@ describe('DrawerContent', () => {
 
 		render(<DrawerContent {...fakeDrawerProps} />);
 
-		expect(screen.getByText('Logged in as bob@bobsburgers.com')).toBeVisible();
 		expect(screen.queryByText('Log In')).toBeNull();
 		expect(screen.queryByText('Sign Up')).toBeNull();
+		expect(screen.queryByText('Account')).toBeNull();
 
-		fireEvent.press(screen.getByText('My Favorites'));
-		expect(mockPush).toHaveBeenCalledWith('/favorites');
-
-		fireEvent.press(screen.getByText('Account'));
+		fireEvent.press(screen.getByText('Hello: bob@bobsburgers.com'));
 		expect(mockPush).toHaveBeenCalledWith('/account');
 
-		fireEvent.press(screen.getByText('Log Out'));
+		fireEvent.press(screen.getByText('Favorites'));
+		expect(mockPush).toHaveBeenCalledWith('/favorites');
+	});
+
+	it('Log Out logs out and navigates home', async () => {
+		(useAuth as jest.Mock).mockReturnValue({
+			token: 'token-abc',
+			email: 'bob@bobsburgers.com',
+			logout: mockLogout,
+		});
+
+		render(<DrawerContent {...fakeDrawerProps} />);
+
+		await fireEvent.press(screen.getByText('Log Out'));
 		expect(mockLogout).toHaveBeenCalled();
+		expect(mockPush).toHaveBeenCalledWith('/');
 	});
 
 	it('always renders the category link list', () => {

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
 	Image,
 	Linking,
@@ -8,6 +8,7 @@ import {
 	TextInput,
 	View,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { SearchItem, useSearchableItems } from '../hooks/useSearchableItems';
 import { useFavorites } from '../hooks/useFavorites';
 import { FavoriteButton } from '../components/FavoriteButton';
@@ -16,6 +17,18 @@ export default function Index() {
 	const { items, loading } = useSearchableItems();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const [query, setQuery] = useState('');
+
+	// Same reasoning as login.tsx/signup.tsx: Home is a Drawer.Screen that
+	// stays mounted when you navigate away, so a typed-in query would
+	// otherwise still be sitting here — filtered results and all — the
+	// next time you land back on Home.
+	useFocusEffect(
+		useCallback(() => {
+			return () => {
+				setQuery('');
+			};
+		}, []),
+	);
 
 	const filteredItems = useMemo(() => {
 		const trimmed = query.trim().toLowerCase();

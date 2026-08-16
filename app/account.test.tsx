@@ -11,7 +11,6 @@ jest.mock('../hooks/useAuth');
 
 describe('Account screen', () => {
 	const mockPush = jest.fn();
-	const mockLogout = jest.fn();
 	const mockDeleteAccount = jest.fn();
 
 	beforeEach(() => {
@@ -20,7 +19,6 @@ describe('Account screen', () => {
 			token: 'token-abc',
 			email: 'bob@bobsburgers.com',
 			loading: false,
-			logout: mockLogout,
 			deleteAccount: mockDeleteAccount,
 		});
 	});
@@ -40,7 +38,6 @@ describe('Account screen', () => {
 			token: null,
 			email: null,
 			loading: false,
-			logout: mockLogout,
 			deleteAccount: mockDeleteAccount,
 		});
 
@@ -54,25 +51,12 @@ describe('Account screen', () => {
 			token: null,
 			email: null,
 			loading: true,
-			logout: mockLogout,
 			deleteAccount: mockDeleteAccount,
 		});
 
 		render(<Account />);
 
 		expect(mockPush).not.toHaveBeenCalled();
-	});
-
-	it('Log Out calls logout and navigates home', async () => {
-		mockLogout.mockResolvedValue(undefined);
-		render(<Account />);
-
-		await act(async () => {
-			fireEvent.press(screen.getByRole('button', { name: 'Log Out' }));
-		});
-
-		expect(mockLogout).toHaveBeenCalled();
-		expect(mockPush).toHaveBeenCalledWith('/');
 	});
 
 	describe('on native platforms', () => {

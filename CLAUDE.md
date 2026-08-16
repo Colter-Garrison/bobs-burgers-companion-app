@@ -39,21 +39,29 @@ Netlify. Cross-platform target: iOS, Android, and web.
 ## Current priorities (in order)
 
 1. ~~Fix the bugs associated with favoriting that're described under "Home screen"~~ DONE
-2. Update the hamburger menu to have log-in/sign-up at the top of the hamburger,
+2. ~~Update the hamburger menu to have log-in/sign-up at the top of the hamburger,
    that changes to "Hello: users email" once they're logged in, the account button
    is no longer there and instead you get to accounts by clicking the "Hello: users email",
    a new link to Favorites if a user is logged in that sits below the other six categories,
-   and a log-out button at the bottom of the hamburger menu.
-3. Visual/style redesign now that we're on NativeWind. Including updating the fonts and colors
-   of the entire hamburger menu to match the rest of the app.
+   and a log-out button at the bottom of the hamburger menu.~~ DONE (drawer colors from
+   priority #3 were folded into this too, at the user's request)
+3. ~~Visual/style redesign now that we're on NativeWind. Including updating the fonts and colors
+   of the entire hamburger menu to match the rest of the app.~~ DONE (Home, the six categories,
+   and Favorites now share the same bbYellow/bbRed boxed look; Hello/Log In/Sign Up/Log Out stay
+   plain text; Log Out is pinned to the very bottom of the drawer)
 4. Loading/error states done properly (skeleton loaders, retry logic) and git rid of the hard
    coded 3 second loader. Make the app as quick and performant as possible.
 5. Offline support / cached data
 6. "Random burger of the day" generator (AI-assisted feature)
-7. Migrate authentication from hand-rolled email/password + JWT to Better
+7. Add "dark mode/light mode" option
+8. Migrate authentication from hand-rolled email/password + JWT to Better
    Auth, once the above priorities are done. (Note: Lucia is deprecated as
    of March 2025 — don't use it. Auth.js is maintenance-only. Better Auth
    is the current recommended option for new projects.)
+9. Check the accessibility of the app, updating anything needed to make it as accessible as
+   possible. Think about things like a user using a screen reader, or a user who navigates
+   the app with features other than touch, or a user who's colorblind.
+10. Update what happens when a user clicks a card in the Search bar results. It should take them to a screen with an ai synopsis on that episode/character/store next door/pest control truck or anything else the user clicks. From there the card should have a clickable link to the bobs-burgers-fandom-page. Ideally each synopsis page will have an image associated with the thing clicked on on the left, with the synopsis of the thing clicked on to the right of it. It should have the same red border, yellow background, and red font that everything else does with the green on the back of the screen.
 
 ## Screen designs
 

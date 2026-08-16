@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 import Index from './index';
 import { useSearchableItems } from '../hooks/useSearchableItems';
@@ -10,6 +10,18 @@ jest.mock('../hooks/useFavorites');
 jest.mock('../hooks/useAuth');
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
+}));
+
+// useFocusEffect is normally driven by real navigation focus events,
+// which don't exist in a bare RNTL render. Calling the callback directly
+// at render time captures its returned cleanup function so a test can
+// invoke it to simulate a blur (navigating away), without needing a real
+// navigation container.
+let focusEffectCleanup: (() => void) | undefined;
+jest.mock('@react-navigation/native', () => ({
+	useFocusEffect: (callback: () => void | (() => void)) => {
+		focusEffectCleanup = callback() ?? undefined;
+	},
 }));
 
 describe('Home / search screen', () => {
@@ -88,5 +100,22 @@ describe('Home / search screen', () => {
 		fireEvent.press(screen.getByLabelText('Add to favorites'));
 
 		expect(mockAddFavorite).toHaveBeenCalledWith('character', 2);
+	});
+
+	it('clears the search query when the screen loses focus', () => {
+		render(<Index />);
+		const input = screen.getByPlaceholderText(
+			'Search burgers, characters, episodes...',
+		);
+
+		fireEvent.changeText(input, 'bob');
+		expect(screen.getByText('Bob Belcher')).toBeVisible();
+
+		act(() => {
+			focusEffectCleanup?.();
+		});
+
+		expect(input.props.value).toBe('');
+		expect(screen.queryByText('Bob Belcher')).toBeNull();
 	});
 });

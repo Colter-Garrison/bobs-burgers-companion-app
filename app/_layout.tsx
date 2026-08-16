@@ -50,6 +50,26 @@ export default function RootLayout() {
 									accessibilityLabel='Open navigation menu'
 								/>
 							),
+							drawerStyle: {
+								backgroundColor: '#BDFB73',
+							},
+							drawerActiveTintColor: '#E8242F',
+							drawerInactiveTintColor: '#E8242F',
+							drawerLabelStyle: {
+								fontFamily: 'Chewy',
+								fontSize: 16,
+							},
+							// The yellow-box-red-trim look used elsewhere in the app
+							// (e.g. the Delete Account button, the Home search bar).
+							// components/DrawerContent.tsx applies this same style to
+							// the Favorites link, which is rendered outside
+							// DrawerItemList and so doesn't pick this up automatically.
+							drawerItemStyle: {
+								borderWidth: 4,
+								borderColor: '#E8242F',
+								backgroundColor: '#F8DF24',
+								borderRadius: 8,
+							},
 						}}
 					>
 						<Drawer.Screen name='index' options={{ title: 'Home' }} />

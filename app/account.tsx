@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 
 export default function Account() {
 	const router = useRouter();
-	const { token, email, loading, logout, deleteAccount } = useAuth();
+	const { token, email, loading, deleteAccount } = useAuth();
 	const [error, setError] = useState<string | null>(null);
 	const [deleting, setDeleting] = useState(false);
 
@@ -17,9 +17,10 @@ export default function Account() {
 	// arrive here already logged out" — it does NOT re-fire every time
 	// `token` later changes. That matters because Drawer screens never
 	// unmount, so this component is still mounted (and still has this
-	// effect registered) after Log Out/Delete Account clear the token —
-	// if `token` were a dependency, this guard would fire a redirect to
-	// /login that races (and can override) those actions' own explicit
+	// effect registered) after Delete Account clears the token, or after
+	// Log Out is pressed in the drawer while this screen sits underneath
+	// it — if `token` were a dependency, this guard would fire a redirect
+	// to /login that races (and can override) those actions' own explicit
 	// navigation to /. A session expiring for some other reason (e.g. a
 	// 401 while mounted elsewhere) is already handled by
 	// useFavorites' own logout()+redirect, so this guard doesn't need to
@@ -34,11 +35,6 @@ export default function Account() {
 	if (!token) {
 		return null;
 	}
-
-	const handleLogout = async () => {
-		await logout();
-		router.push('/');
-	};
 
 	const performDelete = async () => {
 		setError(null);
@@ -79,14 +75,6 @@ export default function Account() {
 			<Text className='font-chewy text-bbRed'>{email}</Text>
 
 			{error ? <Text className='font-chewy text-bbRed'>{error}</Text> : null}
-
-			<Pressable
-				className='w-full items-center justify-center rounded-lg border-4 border-bbRed bg-bbYellow p-2'
-				onPress={handleLogout}
-				accessibilityRole='button'
-			>
-				<Text className='font-chewy text-[20px] text-bbRed'>Log Out</Text>
-			</Pressable>
 
 			<Pressable
 				className='w-full items-center justify-center rounded-lg border-4 border-bbRed bg-bbYellow p-2'
