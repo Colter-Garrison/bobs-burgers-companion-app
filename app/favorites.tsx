@@ -24,12 +24,18 @@ export default function Favorites() {
 	} = useFavorites();
 
 	// Reachable by direct URL, not just the drawer link (which already
-	// hides itself when logged out) — same guard as app/account.tsx.
+	// hides itself when logged out) — same guard as app/account.tsx,
+	// deliberately depending on `authLoading` alone rather than `token`
+	// (see the comment there for why: Drawer screens never unmount, so
+	// this guard must only check "did we arrive here already logged
+	// out," not react to every later token change, or it can race
+	// Account's own post-logout navigation to /).
 	useEffect(() => {
 		if (!authLoading && !token) {
 			router.push('/login');
 		}
-	}, [authLoading, token, router]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [authLoading]);
 
 	if (!token) {
 		return null;
