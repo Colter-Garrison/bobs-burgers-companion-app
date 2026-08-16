@@ -74,6 +74,9 @@ describe('DrawerContent', () => {
 		expect(screen.queryByText('Log In')).toBeNull();
 		expect(screen.queryByText('Sign Up')).toBeNull();
 
+		fireEvent.press(screen.getByText('My Favorites'));
+		expect(mockPush).toHaveBeenCalledWith('/favorites');
+
 		fireEvent.press(screen.getByText('Account'));
 		expect(mockPush).toHaveBeenCalledWith('/account');
 

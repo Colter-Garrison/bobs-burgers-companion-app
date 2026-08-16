@@ -84,6 +84,13 @@ export default function RootLayout() {
 							drawerItemStyle: { display: 'none' },
 						}}
 					/>
+					<Drawer.Screen
+						name='favorites'
+						options={{
+							title: 'My Favorites',
+							drawerItemStyle: { display: 'none' },
+						}}
+					/>
 				</Drawer>
 			</GestureHandlerRootView>
 		</AuthProvider>
