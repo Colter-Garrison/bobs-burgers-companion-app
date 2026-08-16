@@ -31,18 +31,26 @@ Netlify. Cross-platform target: iOS, Android, and web.
   and explain why if you do.
 - Prefer functional components and hooks; no class components.
 - Keep components small and focused; extract shared logic into `hooks/`.
+- After completing a task in "Current priorities (in order)" cross off the task
+  we completed instead of deleting it and renumbering the tasks.
+- You can spin up Playwright, the front-end and back-end server, or anything else
+  you need to self-verify but make sure to stop the process when you're done.
 
 ## Current priorities (in order)
 
-1. Favorites sync across devices (exercises the auth/backend end-to-end —
-   this is where the Expo app actually gets wired up to the `server/`
-   backend: login/signup screens, token storage, calling the favorites
-   endpoints)
-2. Visual/style redesign now that we're on NativeWind
-3. Loading/error states done properly (skeleton loaders, retry logic)
-4. Offline support / cached data
-5. "Random burger of the day" generator (AI-assisted feature)
-6. Migrate authentication from hand-rolled email/password + JWT to Better
+1. ~~Fix the bugs associated with favoriting that're described under "Home screen"~~ DONE
+2. Update the hamburger menu to have log-in/sign-up at the top of the hamburger,
+   that changes to "Hello: users email" once they're logged in, the account button
+   is no longer there and instead you get to accounts by clicking the "Hello: users email",
+   a new link to Favorites if a user is logged in that sits below the other six categories,
+   and a log-out button at the bottom of the hamburger menu.
+3. Visual/style redesign now that we're on NativeWind. Including updating the fonts and colors
+   of the entire hamburger menu to match the rest of the app.
+4. Loading/error states done properly (skeleton loaders, retry logic) and git rid of the hard
+   coded 3 second loader. Make the app as quick and performant as possible.
+5. Offline support / cached data
+6. "Random burger of the day" generator (AI-assisted feature)
+7. Migrate authentication from hand-rolled email/password + JWT to Better
    Auth, once the above priorities are done. (Note: Lucia is deprecated as
    of March 2025 — don't use it. Auth.js is maintenance-only. Better Auth
    is the current recommended option for new projects.)
@@ -58,11 +66,28 @@ Netlify. Cross-platform target: iOS, Android, and web.
   Day", "Characters", "End Credits", "Episodes", "Pest Control Trucks", and
   "Stores Next Door".
 - Hamburger menu (nav drawer) containing:
-  - Login / Signup — build as a UI placeholder now (nav item + a stub
-    screen); the `server/` backend now exists, so wire this up to it as
-    part of priority #1 (favorites sync) above.
+  - Login / Signup — build in the same way as most conventional apps, having
+    login/signup at the top of the hamburger menu. Once the user is logged in
+    it should show "Hello: users email" instead of login/signup. The log-in and
+    sign-up fields should clear if a user navigates away from those screens or
+    if they log in. Currently when you log in then log out the users email and
+    password are still saved in the field. This should be styled with the same
+    font and color scheme as the rest of the app with bbRed, bbYellow, and bbGreen.
+  - Instead of a seperate Account button change it so the "Hello: users email" is
+    clickable and navigates to the users profile page where they can delete their
+    account.
   - Links to all six category screens: "Burgers of the Day", "Characters",
     "End Credits", "Episodes", "Pest Control Trucks", "Stores Next Door"
+  - When a user is logged in a new link shuold appear at the bottom called
+    "Favorites" where they can see any thing they've favorited. There's currently
+    a bug associated with this feature where after you favorite something, then
+    navigate to Favorites, then un-favorite the thing, it dissapears from
+    Favorites (good, this is what we want), but the star is still selected when
+    you see it in the other menues (bad, this is a bug). Also, when you try to
+    re-favorite an item after you've unfavorited it it does not populate in Favorites
+    again (bad, this is a bug).
+  - When a user is logged in there should be a Log Out button at the very bottom
+    of the drawer for them to log out with.
 - This replaces the current Home screen layout — ask before removing any
   existing functionality that isn't accounted for above.
 

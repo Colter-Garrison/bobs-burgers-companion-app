@@ -1,6 +1,6 @@
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
-import { useFavorites } from './useFavorites';
+import { FavoritesProvider, useFavorites } from './useFavorites';
 import { useAuth } from './useAuth';
 import {
 	ApiError,
@@ -52,7 +52,9 @@ describe('useFavorites', () => {
 	it('stays empty and never calls the API when logged out', async () => {
 		(useAuth as jest.Mock).mockReturnValue({ token: null, logout: mockLogout });
 
-		const { result } = renderHook(() => useFavorites());
+		const { result } = renderHook(() => useFavorites(), {
+			wrapper: FavoritesProvider,
+		});
 
 		await waitFor(() => expect(result.current.loading).toBe(false));
 		expect(result.current.favorites).toEqual([]);
@@ -60,7 +62,9 @@ describe('useFavorites', () => {
 	});
 
 	it('fetches favorites when a token is present', async () => {
-		const { result } = renderHook(() => useFavorites());
+		const { result } = renderHook(() => useFavorites(), {
+			wrapper: FavoritesProvider,
+		});
 
 		expect(result.current.loading).toBe(true);
 		await waitFor(() => expect(result.current.loading).toBe(false));
@@ -78,7 +82,9 @@ describe('useFavorites', () => {
 			itemId: 7,
 			createdAt: '2024-01-02T00:00:00.000Z',
 		});
-		const { result } = renderHook(() => useFavorites());
+		const { result } = renderHook(() => useFavorites(), {
+			wrapper: FavoritesProvider,
+		});
 		await waitFor(() => expect(result.current.loading).toBe(false));
 
 		await act(async () => {
@@ -97,7 +103,9 @@ describe('useFavorites', () => {
 		(addFavoriteRequest as jest.Mock).mockRejectedValue(
 			new ApiError(500, 'Server error'),
 		);
-		const { result } = renderHook(() => useFavorites());
+		const { result } = renderHook(() => useFavorites(), {
+			wrapper: FavoritesProvider,
+		});
 		await waitFor(() => expect(result.current.loading).toBe(false));
 
 		await act(async () => {
@@ -111,7 +119,9 @@ describe('useFavorites', () => {
 		(addFavoriteRequest as jest.Mock).mockRejectedValue(
 			new ApiError(409, 'Already favorited'),
 		);
-		const { result } = renderHook(() => useFavorites());
+		const { result } = renderHook(() => useFavorites(), {
+			wrapper: FavoritesProvider,
+		});
 		await waitFor(() => expect(result.current.loading).toBe(false));
 
 		await act(async () => {
@@ -123,7 +133,9 @@ describe('useFavorites', () => {
 
 	it('removeFavorite optimistically removes, then stays removed once the request resolves', async () => {
 		(removeFavoriteRequest as jest.Mock).mockResolvedValue(undefined);
-		const { result } = renderHook(() => useFavorites());
+		const { result } = renderHook(() => useFavorites(), {
+			wrapper: FavoritesProvider,
+		});
 		await waitFor(() => expect(result.current.loading).toBe(false));
 		expect(result.current.isFavorited('burger', 42)).toBe(true);
 
@@ -143,7 +155,9 @@ describe('useFavorites', () => {
 		(removeFavoriteRequest as jest.Mock).mockRejectedValue(
 			new ApiError(500, 'Server error'),
 		);
-		const { result } = renderHook(() => useFavorites());
+		const { result } = renderHook(() => useFavorites(), {
+			wrapper: FavoritesProvider,
+		});
 		await waitFor(() => expect(result.current.loading).toBe(false));
 
 		await act(async () => {
@@ -157,7 +171,9 @@ describe('useFavorites', () => {
 		(removeFavoriteRequest as jest.Mock).mockRejectedValue(
 			new ApiError(404, 'Favorite not found'),
 		);
-		const { result } = renderHook(() => useFavorites());
+		const { result } = renderHook(() => useFavorites(), {
+			wrapper: FavoritesProvider,
+		});
 		await waitFor(() => expect(result.current.loading).toBe(false));
 
 		await act(async () => {
@@ -171,7 +187,9 @@ describe('useFavorites', () => {
 		(fetchFavorites as jest.Mock).mockRejectedValue(
 			new ApiError(401, 'Invalid or expired token'),
 		);
-		const { result } = renderHook(() => useFavorites());
+		const { result } = renderHook(() => useFavorites(), {
+			wrapper: FavoritesProvider,
+		});
 
 		await waitFor(() => expect(result.current.loading).toBe(false));
 

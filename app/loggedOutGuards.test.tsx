@@ -13,6 +13,7 @@ import { Platform } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 import { AuthProvider } from '../hooks/useAuth';
+import { FavoritesProvider } from '../hooks/useFavorites';
 import { tokenStorage } from '../lib/tokenStorage';
 import { deleteAccountRequest, fetchFavorites } from '../lib/apiClient';
 import Account from './account';
@@ -59,8 +60,10 @@ describe('guarded screens sharing one AuthProvider', () => {
 
 		render(
 			<AuthProvider>
-				<Favorites />
-				<Account />
+				<FavoritesProvider>
+					<Favorites />
+					<Account />
+				</FavoritesProvider>
 			</AuthProvider>,
 		);
 		// Let the session-restore effect (AuthProvider) and Favorites'
