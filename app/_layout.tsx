@@ -2,8 +2,12 @@ import '../global.css';
 
 import { useEffect } from 'react';
 import { useFonts } from 'expo-font';
-import { SplashScreen, Stack } from 'expo-router';
+import { SplashScreen } from 'expo-router';
+import { Drawer } from 'expo-router/drawer';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { DrawerToggleButton } from '@react-navigation/drawer';
 import { AuthProvider } from '../hooks/useAuth';
+import { DrawerContent } from '../components/DrawerContent';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -26,36 +30,55 @@ export default function RootLayout() {
 
 	return (
 		<AuthProvider>
-			<Stack
-				screenOptions={{
-					headerStyle: {
-						backgroundColor: '#5D74A6',
-					},
-					headerTitleStyle: {
-						fontFamily: 'Chewy',
-						fontSize: 24,
-					},
-					headerBackTitleStyle: {
-						fontFamily: 'Chewy',
-						fontSize: 18,
-					},
-					headerTintColor: '#E4E4E5',
-				}}
-			>
-				<Stack.Screen name='index' options={{ title: 'Home' }} />
-				<Stack.Screen
-					name='burgers'
-					options={{ title: 'Burgers of the Day' }}
-				/>
-				<Stack.Screen name='characters' options={{ title: 'Characters' }} />
-				<Stack.Screen name='endCredits' options={{ title: 'End Credits' }} />
-				<Stack.Screen name='episodes' options={{ title: 'Episodes' }} />
-				<Stack.Screen
-					name='pestControl'
-					options={{ title: 'Pest Control Trucks' }}
-				/>
-				<Stack.Screen name='stores' options={{ title: 'Stores Next Door' }} />
-			</Stack>
+			<GestureHandlerRootView style={{ flex: 1 }}>
+				<Drawer
+					drawerContent={(props) => <DrawerContent {...props} />}
+					screenOptions={{
+						headerStyle: {
+							backgroundColor: '#5D74A6',
+						},
+						headerTitleStyle: {
+							fontFamily: 'Chewy',
+							fontSize: 24,
+						},
+						headerTintColor: '#E4E4E5',
+						headerLeft: (props) => (
+							<DrawerToggleButton
+								{...props}
+								accessibilityLabel='Open navigation menu'
+							/>
+						),
+					}}
+				>
+					<Drawer.Screen name='index' options={{ title: 'Home' }} />
+					<Drawer.Screen
+						name='burgers'
+						options={{ title: 'Burgers of the Day' }}
+					/>
+					<Drawer.Screen name='characters' options={{ title: 'Characters' }} />
+					<Drawer.Screen name='endCredits' options={{ title: 'End Credits' }} />
+					<Drawer.Screen name='episodes' options={{ title: 'Episodes' }} />
+					<Drawer.Screen
+						name='pestControl'
+						options={{ title: 'Pest Control Trucks' }}
+					/>
+					<Drawer.Screen
+						name='stores'
+						options={{ title: 'Stores Next Door' }}
+					/>
+					<Drawer.Screen
+						name='login'
+						options={{ title: 'Log In', drawerItemStyle: { display: 'none' } }}
+					/>
+					<Drawer.Screen
+						name='signup'
+						options={{
+							title: 'Sign Up',
+							drawerItemStyle: { display: 'none' },
+						}}
+					/>
+				</Drawer>
+			</GestureHandlerRootView>
 		</AuthProvider>
 	);
 }

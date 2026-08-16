@@ -1,10 +1,13 @@
 import { test, expect } from '@playwright/test';
 
-test('nav button navigates to the category screen and back', async ({
+test('drawer link navigates to the category screen and back', async ({
 	page,
 }) => {
 	await page.goto('/');
 
+	// Category links live inside the hamburger drawer now (closed by
+	// default), not directly on the Home screen body.
+	await page.getByLabel('Open navigation menu').click();
 	await page.getByText('Burgers of the Day', { exact: true }).click();
 	await expect(page).toHaveURL(/\/burgers/);
 
