@@ -112,3 +112,7 @@ export function removeFavoriteRequest(
 		token,
 	});
 }
+
+export function deleteAccountRequest(token: string) {
+	return apiFetch<void>('/profile', { method: 'DELETE', token });
+}

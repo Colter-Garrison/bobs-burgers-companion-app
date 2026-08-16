@@ -5,7 +5,11 @@ import React, {
 	useEffect,
 	useState,
 } from 'react';
-import { loginUser, registerUser } from '../lib/apiClient';
+import {
+	deleteAccountRequest,
+	loginUser,
+	registerUser,
+} from '../lib/apiClient';
 import { tokenStorage } from '../lib/tokenStorage';
 
 interface AuthContextValue {
@@ -18,6 +22,7 @@ interface AuthContextValue {
 	login: (email: string, password: string) => Promise<void>;
 	signup: (email: string, password: string) => Promise<void>;
 	logout: () => Promise<void>;
+	deleteAccount: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -60,9 +65,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		setEmail(null);
 	}, []);
 
+	const deleteAccount = useCallback(async () => {
+		if (!token) return;
+		await deleteAccountRequest(token);
+		await logout();
+	}, [token, logout]);
+
 	return (
 		<AuthContext.Provider
-			value={{ token, email, loading, login, signup, logout }}
+			value={{ token, email, loading, login, signup, logout, deleteAccount }}
 		>
 			{children}
 		</AuthContext.Provider>

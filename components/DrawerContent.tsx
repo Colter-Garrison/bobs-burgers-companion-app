@@ -22,6 +22,9 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 						<Text className='font-chewy text-[#E4E4E5]'>
 							Logged in as {email}
 						</Text>
+						<Pressable onPress={() => router.push('/account')}>
+							<Text className='font-chewy text-[#E4E4E5]'>Account</Text>
+						</Pressable>
 						<Pressable onPress={logout}>
 							<Text className='font-chewy text-bbRed'>Log Out</Text>
 						</Pressable>
