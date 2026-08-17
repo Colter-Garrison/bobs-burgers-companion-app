@@ -6,9 +6,11 @@ test('drawer link navigates to the category screen and back', async ({
 	await page.goto('/');
 
 	// Category links live inside the hamburger drawer now (closed by
-	// default), not directly on the Home screen body.
+	// default), not directly on the Home screen body. Home's own
+	// always-visible filter pills share this same text, so the link role
+	// (vs. the pill's button role) is what disambiguates them.
 	await page.getByLabel('Open navigation menu').click();
-	await page.getByText('Burgers of the Day', { exact: true }).click();
+	await page.getByRole('link', { name: 'Burgers of the Day' }).click();
 	await expect(page).toHaveURL(/\/burgers/);
 
 	// A real network round-trip to the third-party Bob's Burgers API is

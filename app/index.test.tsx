@@ -210,9 +210,9 @@ describe('Home / search screen', () => {
 		expect(mockRetry).toHaveBeenCalled();
 	});
 
-	it('does not show filter pills until the user is searching', () => {
+	it('shows the Filter By pill even before the user has typed a search query', () => {
 		render(<Index />);
-		expect(screen.queryByTestId('category-filter-pills')).toBeNull();
+		expect(screen.getByLabelText('Show filter options')).toBeVisible();
 	});
 
 	it('filters results by category when a pill is selected', async () => {
@@ -227,10 +227,71 @@ describe('Home / search screen', () => {
 		expect(screen.getByText('Test Burger')).toBeVisible();
 		expect(screen.getByText('Bob Belcher')).toBeVisible();
 
+		fireEvent.press(screen.getByLabelText('Show filter options'));
 		fireEvent.press(screen.getByLabelText('Filter by Characters'));
 
 		expect(screen.queryByText('Test Burger')).toBeNull();
 		expect(screen.getByText('Bob Belcher')).toBeVisible();
+	});
+
+	it('filters results by gender/hair color, and sorts alphabetically, via the Filter By panel', async () => {
+		(useSearchableItems as jest.Mock).mockReturnValue({
+			loading: false,
+			error: null,
+			retry: mockRetry,
+			items: [
+				{
+					id: 'character-1',
+					category: 'Characters',
+					label: 'Bob Belcher',
+					itemId: 1,
+					favoriteCategory: 'character',
+					gender: 'Male',
+					hair: 'Brown',
+				},
+				{
+					id: 'character-2',
+					category: 'Characters',
+					label: 'Linda Belcher',
+					itemId: 2,
+					favoriteCategory: 'character',
+					gender: 'Female',
+					hair: 'Brown',
+				},
+			],
+		});
+		render(<Index />);
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search burgers, characters, episodes...'),
+			'belcher',
+		);
+		await flush();
+
+		expect(screen.getByText('Bob Belcher')).toBeVisible();
+		expect(screen.getByText('Linda Belcher')).toBeVisible();
+
+		fireEvent.press(screen.getByLabelText('Show filter options'));
+		fireEvent.press(screen.getByLabelText('Filter by gender: Male'));
+
+		expect(screen.getByText('Bob Belcher')).toBeVisible();
+		expect(screen.queryByText('Linda Belcher')).toBeNull();
+
+		// Clear the gender filter, then sort instead.
+		fireEvent.press(screen.getByLabelText('Filter by gender: Male'));
+		fireEvent.press(screen.getByLabelText('Tap to sort A to Z'));
+
+		const list = screen.UNSAFE_getByType(FlatList);
+		expect(
+			list.props.data.map((item: { label: string }) => item.label),
+		).toEqual(['Bob Belcher', 'Linda Belcher']);
+
+		fireEvent.press(screen.getByLabelText('Sorted A to Z. Tap to sort Z to A'));
+		expect(
+			screen
+				.UNSAFE_getByType(FlatList)
+				.props.data.map((item: { label: string }) => item.label),
+		).toEqual(['Linda Belcher', 'Bob Belcher']);
 	});
 
 	it('shows only the first page of results, revealing more as the list is scrolled', async () => {
@@ -293,5 +354,54 @@ describe('Home / search screen', () => {
 
 		expect(input.props.value).toBe('');
 		expect(screen.queryByText('Bob Belcher')).toBeNull();
+	});
+
+	it('clears active attribute filters when the screen loses focus', async () => {
+		(useSearchableItems as jest.Mock).mockReturnValue({
+			loading: false,
+			error: null,
+			retry: mockRetry,
+			items: [
+				{
+					id: 'character-1',
+					category: 'Characters',
+					label: 'Bob Belcher',
+					itemId: 1,
+					favoriteCategory: 'character',
+					gender: 'Male',
+				},
+				{
+					id: 'character-2',
+					category: 'Characters',
+					label: 'Linda Belcher',
+					itemId: 2,
+					favoriteCategory: 'character',
+					gender: 'Female',
+				},
+			],
+		});
+		render(<Index />);
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search burgers, characters, episodes...'),
+			'belcher',
+		);
+		await flush();
+		fireEvent.press(screen.getByLabelText('Show filter options'));
+		fireEvent.press(screen.getByLabelText('Filter by gender: Male'));
+		expect(screen.queryByText('Linda Belcher')).toBeNull();
+
+		act(() => {
+			focusEffectCleanup?.();
+		});
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search burgers, characters, episodes...'),
+			'belcher',
+		);
+		await flush();
+
+		expect(screen.getByText('Bob Belcher')).toBeVisible();
+		expect(screen.getByText('Linda Belcher')).toBeVisible();
 	});
 });

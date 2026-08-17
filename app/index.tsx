@@ -11,11 +11,10 @@ import { useFocusEffect } from '@react-navigation/native';
 import { SearchItem, useSearchableItems } from '../hooks/useSearchableItems';
 import { useFavorites } from '../hooks/useFavorites';
 import { PAGE_SIZE, usePagination } from '../hooks/usePagination';
+import { useAttributeFilters } from '../hooks/useAttributeFilters';
 import { SearchResultCard } from '../components/SearchResultCard';
-import {
-	CategoryFilterPills,
-	CategoryFilter,
-} from '../components/CategoryFilterPills';
+import { CategoryFilter } from '../components/CategoryFilterPills';
+import { FilterPanel } from '../components/FilterPanel';
 import { CategorySkeleton } from '../components/CategorySkeleton';
 
 export default function Index() {
@@ -23,6 +22,7 @@ export default function Index() {
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const [query, setQuery] = useState('');
 	const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('All');
+	const attributeFilters = useAttributeFilters();
 
 	// Same reasoning as login.tsx/signup.tsx: Home is a Drawer.Screen that
 	// stays mounted when you navigate away, so a typed-in query (and a
@@ -33,19 +33,37 @@ export default function Index() {
 			return () => {
 				setQuery('');
 				setCategoryFilter('All');
+				attributeFilters.reset();
 			};
+			// attributeFilters.reset is stable (useCallback with no deps in
+			// useAttributeFilters) — omitted here so this effect doesn't
+			// re-run (and re-register its cleanup) on every render.
+			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, []),
 	);
 
 	const filteredItems = useMemo(() => {
 		const trimmed = query.trim().toLowerCase();
 		if (!trimmed) return [];
-		return items
+		const matching = items
 			.filter((item) => item.label.toLowerCase().includes(trimmed))
 			.filter(
 				(item) => categoryFilter === 'All' || item.category === categoryFilter,
-			);
-	}, [items, query, categoryFilter]);
+			)
+			.filter(attributeFilters.matches);
+		return attributeFilters.sortItems(matching);
+		// attributeFilters itself is a fresh object every render — its
+		// `matches`/`sortItems` functions are what this actually reads,
+		// and those are independently memoized (stable unless the
+		// filters/sort they close over actually changed).
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [
+		items,
+		query,
+		categoryFilter,
+		attributeFilters.matches,
+		attributeFilters.sortItems,
+	]);
 
 	const { visibleItems, loadMore } = usePagination(filteredItems);
 
@@ -146,12 +164,17 @@ export default function Index() {
 						onChangeText={handleQueryChange}
 						className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
 					/>
-					{isSearching ? (
-						<CategoryFilterPills
-							selected={categoryFilter}
-							onSelect={setCategoryFilter}
-						/>
-					) : null}
+					<FilterPanel
+						categoryFilter={categoryFilter}
+						onSelectCategory={setCategoryFilter}
+						genders={attributeFilters.genders}
+						hairColors={attributeFilters.hairColors}
+						sortDirection={attributeFilters.sortDirection}
+						onToggleGender={attributeFilters.toggleGender}
+						onToggleHair={attributeFilters.toggleHair}
+						onToggleSort={attributeFilters.toggleSort}
+						activeCount={attributeFilters.activeCount}
+					/>
 					{isSearching && searchLoading ? (
 						<CategorySkeleton count={3} fullScreen={false} />
 					) : null}

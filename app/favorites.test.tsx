@@ -133,10 +133,102 @@ describe('Favorites screen', () => {
 		expect(screen.getByText('Favorited Burger')).toBeVisible();
 		expect(screen.getByText('Unfavorited Character')).toBeVisible();
 
+		fireEvent.press(screen.getByLabelText('Show filter options'));
 		fireEvent.press(screen.getByLabelText('Filter by Characters'));
 
 		expect(screen.queryByText('Favorited Burger')).toBeNull();
 		expect(screen.getByText('Unfavorited Character')).toBeVisible();
+	});
+
+	it('filters favorited items by gender/hair color, and sorts alphabetically', () => {
+		(useSearchableItems as jest.Mock).mockReturnValue({
+			items: [
+				{
+					id: 'character-1',
+					category: 'Characters',
+					label: 'Bob Belcher',
+					itemId: 1,
+					favoriteCategory: 'character',
+					gender: 'Male',
+					hair: 'Brown',
+				},
+				{
+					id: 'character-2',
+					category: 'Characters',
+					label: 'Linda Belcher',
+					itemId: 2,
+					favoriteCategory: 'character',
+					gender: 'Female',
+					hair: 'Brown',
+				},
+			],
+			loading: false,
+		});
+		(useFavorites as jest.Mock).mockReturnValue({
+			isFavorited: () => true,
+			removeFavorite: mockRemoveFavorite,
+			loading: false,
+		});
+		render(<Favorites />);
+
+		expect(screen.getByText('Bob Belcher')).toBeVisible();
+		expect(screen.getByText('Linda Belcher')).toBeVisible();
+
+		fireEvent.press(screen.getByLabelText('Show filter options'));
+		fireEvent.press(screen.getByLabelText('Filter by gender: Female'));
+
+		expect(screen.queryByText('Bob Belcher')).toBeNull();
+		expect(screen.getByText('Linda Belcher')).toBeVisible();
+
+		fireEvent.press(screen.getByLabelText('Filter by gender: Female'));
+		fireEvent.press(screen.getByLabelText('Tap to sort A to Z'));
+
+		expect(
+			screen
+				.UNSAFE_getByType(FlatList)
+				.props.data.map((item: { label: string }) => item.label),
+		).toEqual(['Bob Belcher', 'Linda Belcher']);
+	});
+
+	it('resets attribute filters when the screen loses focus', () => {
+		(useSearchableItems as jest.Mock).mockReturnValue({
+			items: [
+				{
+					id: 'character-1',
+					category: 'Characters',
+					label: 'Bob Belcher',
+					itemId: 1,
+					favoriteCategory: 'character',
+					gender: 'Male',
+				},
+				{
+					id: 'character-2',
+					category: 'Characters',
+					label: 'Linda Belcher',
+					itemId: 2,
+					favoriteCategory: 'character',
+					gender: 'Female',
+				},
+			],
+			loading: false,
+		});
+		(useFavorites as jest.Mock).mockReturnValue({
+			isFavorited: () => true,
+			removeFavorite: mockRemoveFavorite,
+			loading: false,
+		});
+		render(<Favorites />);
+
+		fireEvent.press(screen.getByLabelText('Show filter options'));
+		fireEvent.press(screen.getByLabelText('Filter by gender: Female'));
+		expect(screen.queryByText('Bob Belcher')).toBeNull();
+
+		act(() => {
+			focusEffectCleanup?.();
+		});
+
+		expect(screen.getByText('Bob Belcher')).toBeVisible();
+		expect(screen.getByText('Linda Belcher')).toBeVisible();
 	});
 
 	it('resets the category filter when the screen loses focus', () => {
@@ -147,6 +239,7 @@ describe('Favorites screen', () => {
 		});
 		render(<Favorites />);
 
+		fireEvent.press(screen.getByLabelText('Show filter options'));
 		fireEvent.press(screen.getByLabelText('Filter by Characters'));
 		expect(screen.queryByText('Favorited Burger')).toBeNull();
 

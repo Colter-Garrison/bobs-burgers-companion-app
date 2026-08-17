@@ -26,6 +26,10 @@ export interface SearchItem {
 	// are display/list-key concerns, not what favoriting needs.
 	itemId: number;
 	favoriteCategory: FavoriteCategory;
+	// Only ever populated for Characters — the only category the API
+	// (and the attribute filter panel) has these for.
+	gender?: string;
+	hair?: string;
 }
 
 export function useSearchableItems() {
@@ -88,6 +92,8 @@ export function useSearchableItems() {
 					linkUrl: character.wikiUrl,
 					itemId: character.id,
 					favoriteCategory: 'character' as const,
+					gender: character.gender,
+					hair: character.hair,
 				}),
 			),
 			...(endCredits.status === 'fulfilled' ? endCredits.value : []).map(

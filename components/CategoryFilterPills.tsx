@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { SearchCategory } from '../hooks/useSearchableItems';
 
 export type CategoryFilter = SearchCategory | 'All';
@@ -25,40 +25,43 @@ export function CategoryFilterPills({
 	onSelect,
 }: CategoryFilterPillsProps) {
 	return (
-		<ScrollView
-			horizontal
-			showsHorizontalScrollIndicator={false}
+		<View
+			className='gap-2 p-2'
+			// NativeWind doesn't generate a CSS rule for the flex-wrap
+			// utility class on web (it's present in the DOM's className
+			// attribute but computes to flex-wrap: nowrap) — flexWrap set
+			// inline is guaranteed to actually apply, unlike flexDirection/
+			// gap/padding above, which do render correctly via className.
+			style={{ flexDirection: 'row', flexWrap: 'wrap' }}
 			testID='category-filter-pills'
 		>
-			<View className='flex-row gap-2 p-2'>
-				{OPTIONS.map((option) => {
-					const isSelected = option === selected;
-					return (
-						<Pressable
-							key={option}
-							onPress={() => onSelect(option)}
-							accessibilityRole='button'
-							accessibilityLabel={`Filter by ${option}`}
-							accessibilityState={{ selected: isSelected }}
+			{OPTIONS.map((option) => {
+				const isSelected = option === selected;
+				return (
+					<Pressable
+						key={option}
+						onPress={() => onSelect(option)}
+						accessibilityRole='button'
+						accessibilityLabel={`Filter by ${option}`}
+						accessibilityState={{ selected: isSelected }}
+						className={
+							isSelected
+								? 'items-center justify-center rounded-full border-4 border-bbRed bg-bbRed px-4 py-2'
+								: 'items-center justify-center rounded-full border-4 border-bbRed bg-bbYellow px-4 py-2'
+						}
+					>
+						<Text
 							className={
 								isSelected
-									? 'items-center justify-center rounded-full border-4 border-bbRed bg-bbRed px-3 py-1'
-									: 'items-center justify-center rounded-full border-4 border-bbRed bg-bbYellow px-3 py-1'
+									? 'font-chewy text-[14px] text-bbYellow'
+									: 'font-chewy text-[14px] text-bbRed'
 							}
 						>
-							<Text
-								className={
-									isSelected
-										? 'font-chewy text-[14px] text-bbYellow'
-										: 'font-chewy text-[14px] text-bbRed'
-								}
-							>
-								{option}
-							</Text>
-						</Pressable>
-					);
-				})}
-			</View>
-		</ScrollView>
+							{option}
+						</Text>
+					</Pressable>
+				);
+			})}
+		</View>
 	);
 }

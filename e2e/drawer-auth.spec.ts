@@ -1,20 +1,21 @@
 import { test, expect } from '@playwright/test';
 
 // Regression/coverage for CLAUDE.md priority #2: the hamburger drawer's
-// auth section (Log In/Sign Up at the top, swapping to a clickable
-// "Hello: email" once logged in; Favorites and Log Out only shown when
-// logged in). components/DrawerContent.test.tsx covers this component in
-// isolation with a mocked router and a stubbed DrawerItemList — this spec
-// drives the real drawer, real routing, and a real backend instead.
+// auth section (only a Log In link at the top when logged out — Sign Up
+// isn't a separate drawer link, it's reached from the Log In screen's own
+// "Need an account? Sign Up" link — swapping to a clickable "Hello: email"
+// once logged in; Favorites and Log Out only shown when logged in).
+// components/DrawerContent.test.tsx covers this component in isolation
+// with a mocked router and a stubbed DrawerItemList — this spec drives
+// the real drawer, real routing, and a real backend instead.
 //
 // Drawer.Screens (and the drawer itself) never unmount, so the drawer's
-// own "Log In"/"Sign Up" links stay in the DOM even while visually closed
-// — the same accessible name as the login/signup screens' own submit
-// buttons. components/DrawerContent.tsx gives the drawer links a distinct
-// accessibilityLabel ("Log In (menu)"/"Sign Up (menu)") to keep them
-// unambiguous; that's why this spec targets those, not the plain names,
-// for the drawer's own links.
-test('drawer shows Log In/Sign Up when logged out, and Hello/Favorites/Log Out when logged in', async ({
+// own "Log In" link stays in the DOM even while visually closed — the
+// same accessible name as the login screen's own submit button.
+// components/DrawerContent.tsx gives the drawer link a distinct
+// accessibilityLabel ("Log In (menu)") to keep it unambiguous; that's why
+// this spec targets that, not the plain name, for the drawer's own link.
+test('drawer shows only Log In when logged out, and Hello/Favorites/Log Out when logged in', async ({
 	page,
 }) => {
 	const email = `e2e-drawer-auth-${Date.now()}@example.com`;
@@ -38,15 +39,14 @@ test('drawer shows Log In/Sign Up when logged out, and Hello/Favorites/Log Out w
 	await expect(
 		page.getByRole('button', { name: 'Log In (menu)' }),
 	).toBeVisible();
-	await expect(
-		page.getByRole('button', { name: 'Sign Up (menu)' }),
-	).toBeVisible();
 	await expect(page.getByRole('button', { name: /^Hello:/ })).not.toBeVisible();
 	await expect(
 		page.getByRole('button', { name: 'Favorites' }),
 	).not.toBeVisible();
 
-	await page.getByRole('button', { name: 'Sign Up (menu)' }).click();
+	await page.getByRole('button', { name: 'Log In (menu)' }).click();
+	await expect(page).toHaveURL(/\/login/);
+	await page.getByText('Need an account? Sign Up').click();
 	await expect(page).toHaveURL(/\/signup/);
 	await fillVisiblePlaceholder('Email', email);
 	await fillVisiblePlaceholder('Password (min. 8 characters)', password);
@@ -54,14 +54,11 @@ test('drawer shows Log In/Sign Up when logged out, and Hello/Favorites/Log Out w
 	await expect(page).toHaveURL('/');
 
 	// Now logged in: the top of the drawer should show "Hello: email"
-	// instead of Log In/Sign Up, and Favorites should appear below the
-	// six category links.
+	// instead of Log In, and Favorites should appear below the six
+	// category links.
 	await openDrawer();
 	await expect(
 		page.getByRole('button', { name: 'Log In (menu)' }),
-	).not.toBeVisible();
-	await expect(
-		page.getByRole('button', { name: 'Sign Up (menu)' }),
 	).not.toBeVisible();
 	await expect(
 		page.getByRole('button', { name: `Hello: ${email}` }),

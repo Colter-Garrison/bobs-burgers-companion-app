@@ -58,7 +58,7 @@ describe('DrawerContent', () => {
 		jest.clearAllMocks();
 	});
 
-	it('shows Log In / Sign Up links at the top when logged out', () => {
+	it('shows only a Log In link at the top when logged out', () => {
 		(useAuth as jest.Mock).mockReturnValue({
 			token: null,
 			email: null,
@@ -68,16 +68,13 @@ describe('DrawerContent', () => {
 		render(<DrawerContent {...fakeDrawerProps} />);
 
 		expect(screen.getByText('Log In')).toBeVisible();
-		expect(screen.getByText('Sign Up')).toBeVisible();
+		expect(screen.queryByText('Sign Up')).toBeNull();
 		expect(screen.queryByText(/^Hello:/)).toBeNull();
 		expect(screen.queryByText('Favorites')).toBeNull();
 		expect(screen.queryByText('Log Out')).toBeNull();
 
 		fireEvent.press(screen.getByText('Log In'));
 		expect(mockPush).toHaveBeenCalledWith('/login');
-
-		fireEvent.press(screen.getByText('Sign Up'));
-		expect(mockPush).toHaveBeenCalledWith('/signup');
 	});
 
 	it('shows "Hello: email", Favorites, and Log Out when logged in', () => {

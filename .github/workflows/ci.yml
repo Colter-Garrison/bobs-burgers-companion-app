@@ -38,6 +38,39 @@ jobs:
       - run: npm run lint
       - run: npm run test:ci
 
+      # e2e/drawer-auth.spec.ts and e2e/favorites-sync.spec.ts sign up
+      # and log in for real — favorites and auth are real API resources,
+      # not something the frontend can fake client-side (see their own
+      # file comments) — so server/ has to actually be running before
+      # test:e2e starts, the same as running it locally. playwright.
+      # config.ts's webServer block only starts the static frontend
+      # export on :4173; it doesn't know about the backend at all.
+      - run: npm ci
+        working-directory: server
+
+      - run: npm run build
+        working-directory: server
+
+      - name: Start backend
+        working-directory: server
+        run: npm start > backend.log 2>&1 &
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
+      - name: Wait for backend to be healthy
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3000/health > /dev/null; then
+              echo "Backend is up"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Backend never became healthy" >&2
+          cat server/backend.log >&2
+          exit 1
+
       # Playwright's browser binaries aren't part of npm's dependency
       # tree — they're downloaded separately. A fresh CI machine has
       # none installed, so this step is required every run (no OS-level
@@ -59,6 +92,13 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
+          retention-days: 7
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: backend-log
+          path: server/backend.log
           retention-days: 7
 
   backend:

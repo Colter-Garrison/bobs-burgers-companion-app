@@ -44,7 +44,7 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 			className='bg-bbGreen'
 			contentContainerStyle={{ flexGrow: 1 }}
 		>
-			<View className='gap-1 border-b-2 border-bbRed p-2'>
+			<View className='gap-1 p-2'>
 				{token ? (
 					<Pressable
 						onPress={() => router.push('/account')}
@@ -53,26 +53,19 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 						<Text className={navLinkClassName}>Hello: {email}</Text>
 					</Pressable>
 				) : (
-					<>
-						{/* Drawer.Screens (and this drawer itself) never unmount —
-						the login/signup screens' own submit buttons say the exact
-						same thing, so these need a distinct accessible name to
-						stay unambiguous to assistive tech (and to Playwright). */}
-						<Pressable
-							onPress={() => router.push('/login')}
-							accessibilityRole='button'
-							accessibilityLabel='Log In (menu)'
-						>
-							<Text className={navLinkClassName}>Log In</Text>
-						</Pressable>
-						<Pressable
-							onPress={() => router.push('/signup')}
-							accessibilityRole='button'
-							accessibilityLabel='Sign Up (menu)'
-						>
-							<Text className={navLinkClassName}>Sign Up</Text>
-						</Pressable>
-					</>
+					// Drawer.Screens (and this drawer itself) never unmount — the
+					// login screen's own submit button says the exact same
+					// thing, so this needs a distinct accessible name to stay
+					// unambiguous to assistive tech (and to Playwright). Sign Up
+					// isn't a separate drawer link — it's reached from the Log In
+					// screen's own "Need an account? Sign Up" link instead.
+					<Pressable
+						onPress={() => router.push('/login')}
+						accessibilityRole='button'
+						accessibilityLabel='Log In (menu)'
+					>
+						<Text className={navLinkClassName}>Log In</Text>
+					</Pressable>
 				)}
 			</View>
 
@@ -102,7 +95,7 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 					the left inset that lines it up with "Hello: email")
 					comes entirely from className, with nothing for a
 					className/style interop quirk to clobber. */}
-					<View className='gap-1 border-t-2 border-bbRed p-2'>
+					<View className='gap-1 p-2'>
 						<Pressable onPress={handleLogout} accessibilityRole='button'>
 							<Text className={navLinkClassName}>Log Out</Text>
 						</Pressable>
