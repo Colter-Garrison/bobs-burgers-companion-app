@@ -1,4 +1,3 @@
-import { Linking } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 import Characters from './characters';
@@ -21,6 +20,8 @@ const baseCharacter = {
 	image: '',
 	gender: 'Male',
 	hair: '',
+	age: null,
+	nicknames: [],
 	occupation: '',
 	allOccupations: [],
 	firstEpisode: 'Human Flesh',
@@ -37,6 +38,7 @@ async function flush() {
 describe('Characters screen', () => {
 	const mockAddFavorite = jest.fn();
 	const mockRemoveFavorite = jest.fn();
+	const mockPush = jest.fn();
 
 	beforeEach(() => {
 		(useFavorites as jest.Mock).mockReturnValue({
@@ -45,7 +47,7 @@ describe('Characters screen', () => {
 			removeFavorite: mockRemoveFavorite,
 		});
 		(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' });
-		(useRouter as jest.Mock).mockReturnValue({ push: jest.fn() });
+		(useRouter as jest.Mock).mockReturnValue({ push: mockPush });
 	});
 
 	afterEach(() => {
@@ -69,24 +71,25 @@ describe('Characters screen', () => {
 		expect(screen.getByText('Character UH OH...')).toBeVisible();
 	});
 
-	it('shows "None"/"Unknown" fallback text when relatives/occupation/voicedBy are empty', async () => {
+	it('shows the name and a bio blurb assembled from the sparse fields available', async () => {
 		(getCharacters as jest.Mock).mockResolvedValue([baseCharacter]);
 		render(<Characters />);
 		await flush();
 
-		expect(screen.getByText('Name: Bob Belcher')).toBeVisible();
-		expect(screen.getByText('Relatives: None')).toBeVisible();
-		expect(screen.getByText('Occupation: None')).toBeVisible();
-		expect(screen.getByText('Voiced By: Unknown')).toBeVisible();
-		expect(screen.getByText('First Episode: Human Flesh')).toBeVisible();
+		expect(screen.getByText('Bob Belcher')).toBeVisible();
+		expect(
+			screen.getByText(
+				"Bob Belcher is a regular in the Bob's Burgers world. First appeared in Human Flesh.",
+			),
+		).toBeVisible();
 	});
 
-	it('shows real values instead of fallbacks when relatives/occupation/voicedBy are present', async () => {
+	it('includes relatives, occupation, and voice actor in the blurb when present', async () => {
 		(getCharacters as jest.Mock).mockResolvedValue([
 			{
 				...baseCharacter,
 				relatives: [
-					{ name: 'Linda Belcher', relationship: 'Wife', wikiUrl: '', url: '' },
+					{ name: 'Linda Belcher', relationship: 'wife', wikiUrl: '', url: '' },
 				],
 				occupation: 'Restaurateur',
 				voicedBy: 'H. Jon Benjamin',
@@ -95,28 +98,27 @@ describe('Characters screen', () => {
 		render(<Characters />);
 		await flush();
 
-		expect(screen.getByText('Relatives: Linda Belcher')).toBeVisible();
-		expect(screen.getByText('Occupation: Restaurateur')).toBeVisible();
-		expect(screen.getByText('Voiced By: H. Jon Benjamin')).toBeVisible();
+		expect(
+			screen.getByText(
+				'Bob Belcher is a Restaurateur. First appeared in Human Flesh. Related to Linda Belcher (wife). Voiced by H. Jon Benjamin.',
+			),
+		).toBeVisible();
 	});
 
-	it('opens the wiki URL when a character card is pressed', async () => {
-		const openURLSpy = jest
-			.spyOn(Linking, 'openURL')
-			.mockResolvedValue(true as never);
+	it('navigates to the detail page (not the external wiki link) when a character card is pressed', async () => {
 		(getCharacters as jest.Mock).mockResolvedValue([baseCharacter]);
 		render(<Characters />);
 		await flush();
 
-		fireEvent.press(screen.getByText('Name: Bob Belcher'));
+		fireEvent.press(screen.getByText('Bob Belcher'));
 
-		expect(openURLSpy).toHaveBeenCalledWith('https://wiki/bob');
+		expect(mockPush).toHaveBeenCalledWith({
+			pathname: '/detail/[category]/[id]',
+			params: { category: 'characters', id: '1' },
+		});
 	});
 
-	it('tapping the favorite star calls addFavorite with the character category and id, not the wiki link', async () => {
-		const openURLSpy = jest
-			.spyOn(Linking, 'openURL')
-			.mockResolvedValue(true as never);
+	it('tapping the favorite star calls addFavorite with the character category and id, not navigation', async () => {
 		(getCharacters as jest.Mock).mockResolvedValue([baseCharacter]);
 		render(<Characters />);
 		await flush();
@@ -124,7 +126,7 @@ describe('Characters screen', () => {
 		fireEvent.press(screen.getByLabelText('Add to favorites'));
 
 		expect(mockAddFavorite).toHaveBeenCalledWith('character', 1);
-		expect(openURLSpy).not.toHaveBeenCalled();
+		expect(mockPush).not.toHaveBeenCalled();
 	});
 
 	it('shows an error state with a working retry when the fetch fails', async () => {
@@ -143,6 +145,6 @@ describe('Characters screen', () => {
 		});
 
 		expect(getCharacters).toHaveBeenCalledTimes(2);
-		expect(screen.getByText('Name: Bob Belcher')).toBeVisible();
+		expect(screen.getByText('Bob Belcher')).toBeVisible();
 	});
 });

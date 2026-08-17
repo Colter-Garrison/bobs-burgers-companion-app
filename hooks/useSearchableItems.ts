@@ -24,7 +24,6 @@ export interface SearchItem {
 	category: SearchCategory;
 	label: string;
 	image?: string;
-	linkUrl?: string;
 	// The item's raw numeric id from the external API and the backend's
 	// category enum value — distinct from `id`/`category` above, which
 	// are display/list-key concerns, not what favoriting needs.
@@ -130,7 +129,6 @@ export function useSearchableItems() {
 						id: `burger-${burger.id}`,
 						category: 'Burgers of the Day' as const,
 						label: burger.name,
-						linkUrl: burger.episodeUrl,
 						itemId: burger.id,
 						favoriteCategory: 'burger' as const,
 					}),
@@ -141,7 +139,6 @@ export function useSearchableItems() {
 						category: 'Characters' as const,
 						label: character.name,
 						image: character.image,
-						linkUrl: character.wikiUrl,
 						itemId: character.id,
 						favoriteCategory: 'character' as const,
 						gender: character.gender,
@@ -154,7 +151,6 @@ export function useSearchableItems() {
 						category: 'End Credits' as const,
 						label: `Season ${credit.season}, Episode ${credit.episode}`,
 						image: credit.image,
-						linkUrl: credit.episodeUrl,
 						itemId: credit.id,
 						favoriteCategory: 'end_credit' as const,
 					}),
@@ -164,7 +160,6 @@ export function useSearchableItems() {
 						id: `episode-${episode.id}`,
 						category: 'Episodes' as const,
 						label: episode.name,
-						linkUrl: episode.wikiUrl,
 						itemId: episode.id,
 						favoriteCategory: 'episode' as const,
 					}),
@@ -174,7 +169,6 @@ export function useSearchableItems() {
 					category: 'Pest Control Trucks' as const,
 					label: truck.name,
 					image: truck.image,
-					linkUrl: truck.episodeUrl,
 					itemId: truck.id,
 					favoriteCategory: 'pest_control_truck' as const,
 				})),
@@ -183,7 +177,6 @@ export function useSearchableItems() {
 					category: 'Stores Next Door' as const,
 					label: store.name,
 					image: store.image,
-					linkUrl: store.episodeUrl,
 					itemId: store.id,
 					favoriteCategory: 'store' as const,
 				})),

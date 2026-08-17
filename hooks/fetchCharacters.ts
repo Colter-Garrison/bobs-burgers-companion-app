@@ -15,6 +15,11 @@ export interface Character {
 	image: string;
 	gender: string;
 	hair: string;
+	// The raw API also returns these, but nothing used them until the
+	// detail page (app/detail/[category]/[id].tsx) wanted as much real
+	// data as it could show — both can be null for minor characters.
+	age: string | null;
+	nicknames: string[];
 	occupation: string;
 	allOccupations: string[];
 	firstEpisode: string;
@@ -24,3 +29,6 @@ export interface Character {
 
 export const getCharacters = () =>
 	fetchBobsBurgersApi<Character[]>('/characters?sortBy=name&OrderBy=asc');
+
+export const getCharacterById = (id: number) =>
+	fetchBobsBurgersApi<Character>(`/characters/${id}`);

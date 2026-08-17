@@ -12,3 +12,6 @@ export interface Store {
 
 export const getStoresNextDoor = () =>
 	fetchBobsBurgersApi<Store[]>('/storeNextDoor/');
+
+export const getStoreNextDoorById = (id: number) =>
+	fetchBobsBurgersApi<Store>(`/storeNextDoor/${id}`);

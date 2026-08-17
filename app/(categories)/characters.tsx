@@ -1,21 +1,17 @@
 import React from 'react';
-import {
-	Image,
-	Linking,
-	Pressable,
-	ScrollView,
-	Text,
-	View,
-} from 'react-native';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Character, getCharacters } from '../../hooks/fetchCharacters';
 import { useCategoryData } from '../../hooks/useCategoryData';
 import { useFavorites } from '../../hooks/useFavorites';
+import { composeCharacterShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
 import { OfflineBanner } from '../../components/OfflineBanner';
 
 export default function Characters() {
+	const router = useRouter();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const {
 		data: characters,
@@ -24,8 +20,12 @@ export default function Characters() {
 		retry,
 		cachedAt,
 	} = useCategoryData<Character>(getCharacters, 'characters');
+
 	const handlePress = (character: Character) => {
-		Linking.openURL(character.wikiUrl);
+		router.push({
+			pathname: '/detail/[category]/[id]',
+			params: { category: 'characters', id: String(character.id) },
+		});
 	};
 
 	if (loading) {
@@ -62,47 +62,14 @@ export default function Characters() {
 										/>
 									) : null}
 									<View className='max-w-[70%] flex-col md:max-w-[90%]'>
-										<Text className='font-chewy text-base text-bbRed'>
-											Name: {character.name}
-										</Text>
-										<Text>
-											{character.relatives.length > 0 ? (
-												<Text className='font-chewy text-base text-bbRed'>
-													Relatives:{' '}
-													{character.relatives
-														.map((relative) => relative.name)
-														.join(', ')}
-												</Text>
-											) : (
-												<Text className='font-chewy text-base text-bbRed'>
-													Relatives: None
-												</Text>
-											)}
-										</Text>
-										<Text>
-											{character.occupation ? (
-												<Text className='font-chewy text-base text-bbRed'>
-													Occupation: {character.occupation}
-												</Text>
-											) : (
-												<Text className='font-chewy text-base text-bbRed'>
-													Occupation: None
-												</Text>
-											)}
+										<Text
+											testID='card-title'
+											className='font-chewy text-base text-bbRed'
+										>
+											{character.name}
 										</Text>
 										<Text className='font-chewy text-base text-bbRed'>
-											First Episode: {character.firstEpisode}
-										</Text>
-										<Text>
-											{character.voicedBy ? (
-												<Text className='font-chewy text-base text-bbRed'>
-													Voiced By: {character.voicedBy}
-												</Text>
-											) : (
-												<Text className='font-chewy text-base text-bbRed'>
-													Voiced By: Unknown
-												</Text>
-											)}
+											{composeCharacterShortBio(character)}
 										</Text>
 									</View>
 								</Pressable>

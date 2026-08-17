@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import {
-	composeCharacterBlurb,
 	getLocalDateKey,
 	pickCharacterOfTheDay,
 } from '../lib/characterOfTheDay';
+import { composeCharacterShortBio } from '../lib/categoryBio';
 import { getCharacters } from './fetchCharacters';
 import { useCategoryData } from './useCategoryData';
 
@@ -20,7 +20,7 @@ export function useCharacterOfTheDay() {
 	);
 
 	const blurb = useMemo(
-		() => (character ? composeCharacterBlurb(character) : null),
+		() => (character ? composeCharacterShortBio(character) : null),
 		[character],
 	);
 

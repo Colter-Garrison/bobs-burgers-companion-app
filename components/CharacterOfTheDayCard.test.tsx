@@ -10,6 +10,8 @@ const character: Character = {
 	image: 'https://img',
 	gender: 'Male',
 	hair: 'Black',
+	age: null,
+	nicknames: [],
 	occupation: "Owner of Bob's Burgers",
 	allOccupations: [],
 	firstEpisode: '',

@@ -16,6 +16,7 @@ jest.mock('expo-router', () => ({
 describe('Burgers screen', () => {
 	const mockAddFavorite = jest.fn();
 	const mockRemoveFavorite = jest.fn();
+	const mockPush = jest.fn();
 
 	beforeEach(() => {
 		(useFavorites as jest.Mock).mockReturnValue({
@@ -24,7 +25,7 @@ describe('Burgers screen', () => {
 			removeFavorite: mockRemoveFavorite,
 		});
 		(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' });
-		(useRouter as jest.Mock).mockReturnValue({ push: jest.fn() });
+		(useRouter as jest.Mock).mockReturnValue({ push: mockPush });
 	});
 
 	afterEach(() => {
@@ -32,7 +33,7 @@ describe('Burgers screen', () => {
 		jest.clearAllMocks();
 	});
 
-	it('shows a skeleton while loading, then the list once the fetch resolves', async () => {
+	it('shows a skeleton while loading, then the list (name + bio blurb) once the fetch resolves', async () => {
 		(getBurgersOfTheDay as jest.Mock).mockResolvedValue([
 			{ id: 1, name: 'Test Burger', price: '$6.75', season: 1, episode: 1 },
 		]);
@@ -45,8 +46,12 @@ describe('Burgers screen', () => {
 			await Promise.resolve();
 		});
 
-		expect(screen.getByText('Name: Test Burger')).toBeVisible();
-		expect(screen.getByText('Price: $6.75')).toBeVisible();
+		expect(screen.getByText('Test Burger')).toBeVisible();
+		expect(
+			screen.getByText(
+				'Test Burger, priced at $6.75, was the Burger of the Day in Season 1, Episode 1.',
+			),
+		).toBeVisible();
 		expect(screen.queryByTestId('category-skeleton')).toBeNull();
 	});
 
@@ -81,7 +86,7 @@ describe('Burgers screen', () => {
 		});
 
 		expect(getBurgersOfTheDay).toHaveBeenCalledTimes(2);
-		expect(screen.getByText('Name: Test Burger')).toBeVisible();
+		expect(screen.getByText('Test Burger')).toBeVisible();
 	});
 
 	it('falls back to a saved copy (offline banner, not a hard error) when the fetch fails and a cache exists', async () => {
@@ -101,7 +106,7 @@ describe('Burgers screen', () => {
 		});
 
 		expect(screen.getByText(/You.re offline/)).toBeVisible();
-		expect(screen.getByText('Name: Saved Burger')).toBeVisible();
+		expect(screen.getByText('Saved Burger')).toBeVisible();
 		expect(screen.queryByText('boom')).toBeNull();
 	});
 
@@ -118,5 +123,23 @@ describe('Burgers screen', () => {
 		fireEvent.press(screen.getByLabelText('Add to favorites'));
 
 		expect(mockAddFavorite).toHaveBeenCalledWith('burger', 1);
+	});
+
+	it('tapping a card navigates to its detail page', async () => {
+		(getBurgersOfTheDay as jest.Mock).mockResolvedValue([
+			{ id: 1, name: 'Test Burger', price: '$6.75', season: 1, episode: 1 },
+		]);
+
+		render(<Burgers />);
+		await act(async () => {
+			await Promise.resolve();
+		});
+
+		fireEvent.press(screen.getByText('Test Burger'));
+
+		expect(mockPush).toHaveBeenCalledWith({
+			pathname: '/detail/[category]/[id]',
+			params: { category: 'burgers', id: '1' },
+		});
 	});
 });

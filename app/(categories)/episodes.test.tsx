@@ -1,4 +1,3 @@
-import { Linking } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 import Episodes from './episodes';
@@ -35,6 +34,7 @@ async function flush() {
 describe('Episodes screen', () => {
 	const mockAddFavorite = jest.fn();
 	const mockRemoveFavorite = jest.fn();
+	const mockPush = jest.fn();
 
 	beforeEach(() => {
 		(useFavorites as jest.Mock).mockReturnValue({
@@ -43,7 +43,7 @@ describe('Episodes screen', () => {
 			removeFavorite: mockRemoveFavorite,
 		});
 		(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' });
-		(useRouter as jest.Mock).mockReturnValue({ push: jest.fn() });
+		(useRouter as jest.Mock).mockReturnValue({ push: mockPush });
 	});
 
 	afterEach(() => {
@@ -51,7 +51,7 @@ describe('Episodes screen', () => {
 		jest.clearAllMocks();
 	});
 
-	it('shows a skeleton while loading, then the episode list', async () => {
+	it('shows a skeleton while loading, then the name and a bio blurb', async () => {
 		(getEpisodes as jest.Mock).mockResolvedValue([mockEpisode]);
 		render(<Episodes />);
 
@@ -59,14 +59,10 @@ describe('Episodes screen', () => {
 
 		await flush();
 
-		expect(screen.getByText('Name: Human Flesh')).toBeVisible();
+		expect(screen.getByText('Human Flesh')).toBeVisible();
 		expect(
-			screen.getByText("Description: It's a pilot episode."),
+			screen.getByText("It's a pilot episode. Season 1, Episode 1."),
 		).toBeVisible();
-		expect(screen.getByText('Air Date: 2011-01-09')).toBeVisible();
-		expect(screen.getByText('Season: 1')).toBeVisible();
-		expect(screen.getByText('Episode: 1')).toBeVisible();
-		expect(screen.getByText('Total Viewers: 9.02 million')).toBeVisible();
 	});
 
 	it('shows the "UH OH" empty state when there is no data', async () => {
@@ -76,23 +72,20 @@ describe('Episodes screen', () => {
 		expect(screen.getByText('Episode UH OH...')).toBeVisible();
 	});
 
-	it('opens the wiki URL when an episode card is pressed', async () => {
-		const openURLSpy = jest
-			.spyOn(Linking, 'openURL')
-			.mockResolvedValue(true as never);
+	it('navigates to the detail page (not the external wiki link) when an episode card is pressed', async () => {
 		(getEpisodes as jest.Mock).mockResolvedValue([mockEpisode]);
 		render(<Episodes />);
 		await flush();
 
-		fireEvent.press(screen.getByText('Name: Human Flesh'));
+		fireEvent.press(screen.getByText('Human Flesh'));
 
-		expect(openURLSpy).toHaveBeenCalledWith('https://wiki/human-flesh');
+		expect(mockPush).toHaveBeenCalledWith({
+			pathname: '/detail/[category]/[id]',
+			params: { category: 'episodes', id: '1' },
+		});
 	});
 
-	it('tapping the favorite star calls addFavorite with the episode category and id, not the wiki link', async () => {
-		const openURLSpy = jest
-			.spyOn(Linking, 'openURL')
-			.mockResolvedValue(true as never);
+	it('tapping the favorite star calls addFavorite with the episode category and id, not navigation', async () => {
 		(getEpisodes as jest.Mock).mockResolvedValue([mockEpisode]);
 		render(<Episodes />);
 		await flush();
@@ -100,7 +93,7 @@ describe('Episodes screen', () => {
 		fireEvent.press(screen.getByLabelText('Add to favorites'));
 
 		expect(mockAddFavorite).toHaveBeenCalledWith('episode', 1);
-		expect(openURLSpy).not.toHaveBeenCalled();
+		expect(mockPush).not.toHaveBeenCalled();
 	});
 
 	it('shows an error state with a working retry when the fetch fails', async () => {
@@ -119,6 +112,6 @@ describe('Episodes screen', () => {
 		});
 
 		expect(getEpisodes).toHaveBeenCalledTimes(2);
-		expect(screen.getByText('Name: Human Flesh')).toBeVisible();
+		expect(screen.getByText('Human Flesh')).toBeVisible();
 	});
 });

@@ -16,7 +16,7 @@ test('drawer link navigates to the category screen and back', async ({
 	// A real network round-trip to the third-party Bob's Burgers API is
 	// real here — wait for the real UI to settle rather than asserting
 	// immediately.
-	await expect(page.getByText(/Name:/).first()).toBeVisible({
+	await expect(page.getByLabel('Add to favorites').first()).toBeVisible({
 		timeout: 10_000,
 	});
 
@@ -35,7 +35,7 @@ test('a direct link to a category screen works (not just in-app navigation)', as
 	// simulated renderer can't verify at all.
 	await page.goto('/characters');
 
-	await expect(page.getByText(/Name:/).first()).toBeVisible({
+	await expect(page.getByLabel('Add to favorites').first()).toBeVisible({
 		timeout: 10_000,
 	});
 });

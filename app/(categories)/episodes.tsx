@@ -1,14 +1,17 @@
 import React from 'react';
-import { Linking, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Episode, getEpisodes } from '../../hooks/fetchEpisodes';
 import { useCategoryData } from '../../hooks/useCategoryData';
 import { useFavorites } from '../../hooks/useFavorites';
+import { composeEpisodeShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
 import { OfflineBanner } from '../../components/OfflineBanner';
 
 export default function Episodes() {
+	const router = useRouter();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const {
 		data: episodes,
@@ -17,8 +20,12 @@ export default function Episodes() {
 		retry,
 		cachedAt,
 	} = useCategoryData<Episode>(getEpisodes, 'episodes');
+
 	const handlePress = (episode: Episode) => {
-		Linking.openURL(episode.wikiUrl);
+		router.push({
+			pathname: '/detail/[category]/[id]',
+			params: { category: 'episodes', id: String(episode.id) },
+		});
 	};
 
 	if (loading) {
@@ -45,23 +52,14 @@ export default function Episodes() {
 								className='flex-1 flex-col'
 								onPress={() => handlePress(episode)}
 							>
-								<Text className='font-chewy text-base text-bbRed'>
-									Name: {episode.name}
+								<Text
+									testID='card-title'
+									className='font-chewy text-base text-bbRed'
+								>
+									{episode.name}
 								</Text>
 								<Text className='font-chewy text-base text-bbRed'>
-									Description: {episode.description}
-								</Text>
-								<Text className='font-chewy text-base text-bbRed'>
-									Air Date: {episode.airDate}
-								</Text>
-								<Text className='font-chewy text-base text-bbRed'>
-									Season: {episode.season}
-								</Text>
-								<Text className='font-chewy text-base text-bbRed'>
-									Episode: {episode.episode}
-								</Text>
-								<Text className='font-chewy text-base text-bbRed'>
-									Total Viewers: {episode.totalViewers}
+									{composeEpisodeShortBio(episode)}
 								</Text>
 							</Pressable>
 							<FavoriteButton

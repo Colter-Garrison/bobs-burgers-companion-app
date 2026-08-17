@@ -20,18 +20,13 @@ test('favoriting/unfavoriting on one screen stays in sync with Favorites and oth
 	await expect(page).toHaveURL('/');
 
 	await page.goto('/characters');
-	const firstNameText = page.getByText(/^Name:/).first();
+	const firstNameText = page.getByTestId('card-title').first();
 	await expect(firstNameText).toBeVisible({ timeout: 10_000 });
-	// The Favorites screen renders the bare character name (no "Name: "
-	// prefix) — see hooks/useSearchableItems.ts's `label: character.name`.
-	const characterName = (await firstNameText.textContent())!.replace(
-		/^Name:\s*/,
-		'',
-	);
+	const characterName = (await firstNameText.textContent())!;
 
 	// Favorite it here, then confirm it shows up on the Favorites screen.
 	// Document order matches: the first "Add to favorites" button belongs
-	// to the same card as the first "Name:" text.
+	// to the same card as the first card-title text.
 	await page.getByRole('button', { name: 'Add to favorites' }).first().click();
 	await page.goto('/favorites');
 	await expect(page.getByText(characterName)).toBeVisible();

@@ -14,3 +14,6 @@ export interface Episode {
 }
 
 export const getEpisodes = () => fetchBobsBurgersApi<Episode[]>('/episodes/');
+
+export const getEpisodeById = (id: number) =>
+	fetchBobsBurgersApi<Episode>(`/episodes/${id}`);

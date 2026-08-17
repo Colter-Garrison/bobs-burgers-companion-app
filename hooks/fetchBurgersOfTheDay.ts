@@ -12,3 +12,6 @@ export interface Burger {
 
 export const getBurgersOfTheDay = () =>
 	fetchBobsBurgersApi<Burger[]>('/burgerOfTheDay/');
+
+export const getBurgerOfTheDayById = (id: number) =>
+	fetchBobsBurgersApi<Burger>(`/burgerOfTheDay/${id}`);

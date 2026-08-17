@@ -30,3 +30,11 @@ export const getPestControlTrucks = async () => {
 		image: truck.image ? fixImageUrl(truck.image) : truck.image,
 	}));
 };
+
+export const getPestControlTruckById = async (id: number) => {
+	const truck = await fetchBobsBurgersApi<Truck>(`/pestControlTruck/${id}`);
+	return {
+		...truck,
+		image: truck.image ? fixImageUrl(truck.image) : truck.image,
+	};
+};

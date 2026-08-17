@@ -1,24 +1,17 @@
 import React from 'react';
-import { ScrollView, Text, View } from 'react-native';
-import { getBurgersOfTheDay } from '../../hooks/fetchBurgersOfTheDay';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Burger, getBurgersOfTheDay } from '../../hooks/fetchBurgersOfTheDay';
 import { useCategoryData } from '../../hooks/useCategoryData';
 import { useFavorites } from '../../hooks/useFavorites';
+import { composeBurgerShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
 import { OfflineBanner } from '../../components/OfflineBanner';
 
-interface Burger {
-	id: number;
-	name: string;
-	price: string;
-	season: number;
-	episode: number;
-	episodeUrl: string;
-	url: string;
-}
-
 export default function Burgers() {
+	const router = useRouter();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const {
 		data: burgers,
@@ -27,6 +20,13 @@ export default function Burgers() {
 		retry,
 		cachedAt,
 	} = useCategoryData<Burger>(getBurgersOfTheDay, 'burgers');
+
+	const handlePress = (burger: Burger) => {
+		router.push({
+			pathname: '/detail/[category]/[id]',
+			params: { category: 'burgers', id: String(burger.id) },
+		});
+	};
 
 	if (loading) {
 		return <CategorySkeleton />;
@@ -48,20 +48,20 @@ export default function Burgers() {
 							key={burger.id}
 							className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'
 						>
-							<View className='flex-1 flex-col'>
-								<Text className='font-chewy text-base text-bbRed'>
-									Name: {burger.name}
+							<Pressable
+								className='flex-1 flex-col'
+								onPress={() => handlePress(burger)}
+							>
+								<Text
+									testID='card-title'
+									className='font-chewy text-base text-bbRed'
+								>
+									{burger.name}
 								</Text>
 								<Text className='font-chewy text-base text-bbRed'>
-									Price: {burger.price}
+									{composeBurgerShortBio(burger)}
 								</Text>
-								<Text className='font-chewy text-base text-bbRed'>
-									Season: {burger.season}
-								</Text>
-								<Text className='font-chewy text-base text-bbRed'>
-									Episode: {burger.episode}
-								</Text>
-							</View>
+							</Pressable>
 							<FavoriteButton
 								favorited={isFavorited('burger', burger.id)}
 								onToggle={() =>

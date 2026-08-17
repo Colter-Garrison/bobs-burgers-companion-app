@@ -91,6 +91,17 @@ describe('Favorites screen', () => {
 		expect(screen.queryByText('Unfavorited Character')).toBeNull();
 	});
 
+	it('tapping a favorited card navigates to its detail page instead of opening an external link', () => {
+		render(<Favorites />);
+
+		fireEvent.press(screen.getByText('Favorited Burger'));
+
+		expect(mockPush).toHaveBeenCalledWith({
+			pathname: '/detail/[category]/[id]',
+			params: { category: 'burgers', id: '1' },
+		});
+	});
+
 	it('shows "No favorites yet." when nothing is favorited', () => {
 		(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => false,

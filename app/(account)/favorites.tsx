@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
-import { FlatList, Linking, Text, View } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 import { SearchItem, useSearchableItems } from '../../hooks/useSearchableItems';
+import { detailHref } from '../../lib/detailRoute';
 import { useFavorites } from '../../hooks/useFavorites';
 import { useAuth } from '../../hooks/useAuth';
 import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
@@ -60,11 +61,12 @@ export default function Favorites() {
 		}, []),
 	);
 
-	const handleResultPress = (item: SearchItem) => {
-		if (item.linkUrl) {
-			Linking.openURL(item.linkUrl);
-		}
-	};
+	const handleResultPress = useCallback(
+		(item: SearchItem) => {
+			router.push(detailHref(item.category, item.itemId));
+		},
+		[router],
+	);
 
 	const favoritedItems = useMemo(
 		() =>
@@ -106,7 +108,7 @@ export default function Favorites() {
 				onPress={() => handleResultPress(item)}
 			/>
 		),
-		[removeFavorite],
+		[removeFavorite, handleResultPress],
 	);
 
 	if (!token) {

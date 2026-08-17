@@ -40,6 +40,7 @@ describe('Home / search screen', () => {
 	const mockAddFavorite = jest.fn();
 	const mockRemoveFavorite = jest.fn();
 	const mockRetry = jest.fn();
+	const mockPush = jest.fn();
 
 	beforeEach(() => {
 		mockRetry.mockResolvedValue(undefined);
@@ -70,7 +71,7 @@ describe('Home / search screen', () => {
 			removeFavorite: mockRemoveFavorite,
 		});
 		(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' });
-		(useRouter as jest.Mock).mockReturnValue({ push: jest.fn() });
+		(useRouter as jest.Mock).mockReturnValue({ push: mockPush });
 		(useCharacterOfTheDay as jest.Mock).mockReturnValue({
 			character: {
 				id: 1,
@@ -80,6 +81,8 @@ describe('Home / search screen', () => {
 				image: 'https://img',
 				gender: 'Male',
 				hair: 'Black',
+				age: null,
+				nicknames: [],
 				occupation: '',
 				allOccupations: [],
 				firstEpisode: '',
@@ -146,6 +149,22 @@ describe('Home / search screen', () => {
 		await flush();
 
 		expect(screen.getByText('No results found.')).toBeVisible();
+	});
+
+	it('tapping a result card navigates to its detail page instead of opening an external link', async () => {
+		render(<Index />);
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search burgers, characters, episodes...'),
+			'bob',
+		);
+		await flush();
+
+		fireEvent.press(screen.getByText('Bob Belcher'));
+
+		expect(mockPush).toHaveBeenCalledWith({
+			pathname: '/detail/[category]/[id]',
+			params: { category: 'characters', id: '2' },
+		});
 	});
 
 	it("tapping a result's favorite star calls addFavorite with that item's category and id", async () => {

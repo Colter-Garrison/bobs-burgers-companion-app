@@ -22,6 +22,7 @@ async function flush() {
 describe('Stores screen', () => {
 	const mockAddFavorite = jest.fn();
 	const mockRemoveFavorite = jest.fn();
+	const mockPush = jest.fn();
 
 	beforeEach(() => {
 		(useFavorites as jest.Mock).mockReturnValue({
@@ -30,7 +31,7 @@ describe('Stores screen', () => {
 			removeFavorite: mockRemoveFavorite,
 		});
 		(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' });
-		(useRouter as jest.Mock).mockReturnValue({ push: jest.fn() });
+		(useRouter as jest.Mock).mockReturnValue({ push: mockPush });
 	});
 
 	afterEach(() => {
@@ -47,7 +48,7 @@ describe('Stores screen', () => {
 		await flush();
 	});
 
-	it('shows the store list, with an image when one is provided', async () => {
+	it('shows the name and a bio blurb, with an image when one is provided', async () => {
 		(getStoresNextDoor as jest.Mock).mockResolvedValue([
 			{
 				id: 1,
@@ -61,9 +62,12 @@ describe('Stores screen', () => {
 		render(<Stores />);
 		await flush();
 
-		expect(screen.getByText('Name: Test Store')).toBeVisible();
-		expect(screen.getByText('Season: 1')).toBeVisible();
-		expect(screen.getByText('Episode: 2')).toBeVisible();
+		expect(screen.getByText('Test Store')).toBeVisible();
+		expect(
+			screen.getByText(
+				'One of the ever-changing stores next door, seen in Season 1, Episode 2.',
+			),
+		).toBeVisible();
 		expect(screen.UNSAFE_queryByType(Image)).not.toBeNull();
 	});
 
@@ -89,6 +93,28 @@ describe('Stores screen', () => {
 		render(<Stores />);
 		await flush();
 		expect(screen.getByText('Store Next Door UH OH...')).toBeVisible();
+	});
+
+	it('navigates to the detail page when a card is pressed', async () => {
+		(getStoresNextDoor as jest.Mock).mockResolvedValue([
+			{
+				id: 1,
+				name: 'Test Store',
+				image: '',
+				season: 1,
+				episode: 2,
+				episodeUrl: '',
+			},
+		]);
+		render(<Stores />);
+		await flush();
+
+		fireEvent.press(screen.getByText('Test Store'));
+
+		expect(mockPush).toHaveBeenCalledWith({
+			pathname: '/detail/[category]/[id]',
+			params: { category: 'stores', id: '1' },
+		});
 	});
 
 	it('tapping the favorite star calls addFavorite with the store category and id', async () => {
@@ -135,6 +161,6 @@ describe('Stores screen', () => {
 		});
 
 		expect(getStoresNextDoor).toHaveBeenCalledTimes(2);
-		expect(screen.getByText('Name: Test Store')).toBeVisible();
+		expect(screen.getByText('Test Store')).toBeVisible();
 	});
 });

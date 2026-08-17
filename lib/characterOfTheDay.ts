@@ -1,7 +1,8 @@
 // Pure logic for the Home screen's "Character of the Day" card — kept
-// framework-free (no React) so the date math and blurb wording can be
-// tested directly, without rendering anything.
-import { Character } from '../hooks/fetchCharacters';
+// framework-free (no React) so the date math can be tested directly,
+// without rendering anything. The blurb text itself is composed by
+// lib/categoryBio.ts's composeCharacterShortBio, shared with the
+// Characters category screen's own list cards.
 
 // Local (device) date, not UTC — "today" should change at the user's own
 // midnight, not Greenwich's.
@@ -34,49 +35,4 @@ export function pickCharacterOfTheDay<T>(
 	if (items.length === 0) return null;
 	const index = hashString(dateKey) % items.length;
 	return items[index];
-}
-
-function startsWithVowelSound(word: string): boolean {
-	return /^[aeiou]/i.test(word);
-}
-
-// Composes a short bio from the character's own API fields — no AI, no
-// external call, just real data assembled into readable sentences.
-// Every clause is independently optional since minor characters are
-// often missing most of these fields (see lib/characterOfTheDay.test.ts
-// for the sparse-data cases this guards against).
-export function composeCharacterBlurb(character: Character): string {
-	const sentences: string[] = [];
-
-	const occupation = character.occupation || character.allOccupations?.[0];
-	sentences.push(
-		occupation
-			? `${character.name} is ${startsWithVowelSound(occupation) ? 'an' : 'a'} ${occupation}.`
-			: `${character.name} is a regular in the Bob's Burgers world.`,
-	);
-
-	if (character.firstEpisode) {
-		sentences.push(`First appeared in ${character.firstEpisode}.`);
-	}
-
-	if (character.relatives && character.relatives.length > 0) {
-		// Capped at 3 — some characters (the Belchers especially) have long
-		// enough relative lists that listing all of them would dwarf the
-		// rest of the blurb.
-		const names = character.relatives
-			.slice(0, 3)
-			.map((relative) =>
-				relative.relationship
-					? `${relative.name} (${relative.relationship})`
-					: relative.name,
-			)
-			.join(', ');
-		sentences.push(`Related to ${names}.`);
-	}
-
-	if (character.voicedBy) {
-		sentences.push(`Voiced by ${character.voicedBy}.`);
-	}
-
-	return sentences.join(' ');
 }

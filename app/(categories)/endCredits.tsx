@@ -1,17 +1,20 @@
 import React from 'react';
-import { Image, ScrollView, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import {
 	EndCredit,
 	getEndCreditsSequences,
 } from '../../hooks/fetchEndCreditsSequences';
 import { useCategoryData } from '../../hooks/useCategoryData';
 import { useFavorites } from '../../hooks/useFavorites';
+import { composeEndCreditShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
 import { OfflineBanner } from '../../components/OfflineBanner';
 
 export default function EndCredits() {
+	const router = useRouter();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const {
 		data: endCredits,
@@ -20,6 +23,13 @@ export default function EndCredits() {
 		retry,
 		cachedAt,
 	} = useCategoryData<EndCredit>(getEndCreditsSequences, 'endCredits');
+
+	const handlePress = (endCredit: EndCredit) => {
+		router.push({
+			pathname: '/detail/[category]/[id]',
+			params: { category: 'endCredits', id: String(endCredit.id) },
+		});
+	};
 
 	if (loading) {
 		return <CategorySkeleton />;
@@ -41,7 +51,10 @@ export default function EndCredits() {
 							key={credits.id}
 							className='flex-row items-center justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'
 						>
-							<View className='flex-1 flex-row items-center gap-2'>
+							<Pressable
+								className='flex-1 flex-row items-center gap-2'
+								onPress={() => handlePress(credits)}
+							>
 								{credits.image ? (
 									<Image
 										source={{ width: 100, height: 100, uri: credits.image }}
@@ -52,13 +65,10 @@ export default function EndCredits() {
 								) : null}
 								<View className='max-w-[70%] flex-col'>
 									<Text className='font-chewy text-base text-bbRed'>
-										Season: {credits.season}
-									</Text>
-									<Text className='font-chewy text-base text-bbRed'>
-										Episode: {credits.episode}
+										{composeEndCreditShortBio(credits)}
 									</Text>
 								</View>
-							</View>
+							</Pressable>
 							<FavoriteButton
 								favorited={isFavorited('end_credit', credits.id)}
 								onToggle={() =>

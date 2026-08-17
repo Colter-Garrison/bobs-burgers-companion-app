@@ -22,6 +22,7 @@ async function flush() {
 describe('EndCredits screen', () => {
 	const mockAddFavorite = jest.fn();
 	const mockRemoveFavorite = jest.fn();
+	const mockPush = jest.fn();
 
 	beforeEach(() => {
 		(useFavorites as jest.Mock).mockReturnValue({
@@ -30,7 +31,7 @@ describe('EndCredits screen', () => {
 			removeFavorite: mockRemoveFavorite,
 		});
 		(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' });
-		(useRouter as jest.Mock).mockReturnValue({ push: jest.fn() });
+		(useRouter as jest.Mock).mockReturnValue({ push: mockPush });
 	});
 
 	afterEach(() => {
@@ -47,7 +48,7 @@ describe('EndCredits screen', () => {
 		await flush();
 	});
 
-	it('shows the season/episode list, with an image when one is provided', async () => {
+	it('shows a bio blurb with season/episode, with an image when one is provided', async () => {
 		(getEndCreditsSequences as jest.Mock).mockResolvedValue([
 			{
 				id: 1,
@@ -60,8 +61,11 @@ describe('EndCredits screen', () => {
 		render(<EndCredits />);
 		await flush();
 
-		expect(screen.getByText('Season: 1')).toBeVisible();
-		expect(screen.getByText('Episode: 2')).toBeVisible();
+		expect(
+			screen.getByText(
+				'A hand-drawn end credits sequence from Season 1, Episode 2.',
+			),
+		).toBeVisible();
 		// No testID exists on the Image, so UNSAFE_queryByType is the way
 		// to assert on a host component by its React type directly.
 		expect(screen.UNSAFE_queryByType(Image)).not.toBeNull();
@@ -82,6 +86,25 @@ describe('EndCredits screen', () => {
 		render(<EndCredits />);
 		await flush();
 		expect(screen.getByText('End Credits UH OH...')).toBeVisible();
+	});
+
+	it('navigates to the detail page when a card is pressed', async () => {
+		(getEndCreditsSequences as jest.Mock).mockResolvedValue([
+			{ id: 1, image: '', season: 1, episode: 2, episodeUrl: '' },
+		]);
+		render(<EndCredits />);
+		await flush();
+
+		fireEvent.press(
+			screen.getByText(
+				'A hand-drawn end credits sequence from Season 1, Episode 2.',
+			),
+		);
+
+		expect(mockPush).toHaveBeenCalledWith({
+			pathname: '/detail/[category]/[id]',
+			params: { category: 'endCredits', id: '1' },
+		});
 	});
 
 	it('tapping the favorite star calls addFavorite with the end_credit category and id', async () => {
@@ -114,6 +137,10 @@ describe('EndCredits screen', () => {
 		});
 
 		expect(getEndCreditsSequences).toHaveBeenCalledTimes(2);
-		expect(screen.getByText('Season: 1')).toBeVisible();
+		expect(
+			screen.getByText(
+				'A hand-drawn end credits sequence from Season 1, Episode 2.',
+			),
+		).toBeVisible();
 	});
 });

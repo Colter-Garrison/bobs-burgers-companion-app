@@ -73,13 +73,6 @@ export default function RootLayout() {
 						}}
 					>
 						<Drawer.Screen name='index' options={{ title: 'Home' }} />
-						{/* Drawer.Screen's `name` must match the route's full name
-						as Expo Router computes it — which includes the
-						parenthesized group folder (e.g. "(categories)/burgers"),
-						even though the group is stripped from the actual URL
-						("/burgers"). Grouping app/ into (auth)/(account)/
-						(categories) folders was a pure file-organization
-						move — it didn't rename any route. */}
 						<Drawer.Screen
 							name='(categories)/burgers'
 							options={{ title: 'Burgers of the Day' }}
@@ -129,6 +122,17 @@ export default function RootLayout() {
 							name='(account)/favorites'
 							options={{
 								title: 'My Favorites',
+								drawerItemStyle: { display: 'none' },
+							}}
+						/>
+						{/* Not a real category to pick from the menu — reached only
+						by tapping a card, on a category screen or in search
+						results (see lib/detailRoute.ts). Hidden from the drawer
+						list the same way login/signup/account/favorites are. */}
+						<Drawer.Screen
+							name='detail/[category]/[id]'
+							options={{
+								title: 'Details',
 								drawerItemStyle: { display: 'none' },
 							}}
 						/>

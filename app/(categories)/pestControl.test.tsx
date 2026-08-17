@@ -22,6 +22,7 @@ async function flush() {
 describe('PestControl screen', () => {
 	const mockAddFavorite = jest.fn();
 	const mockRemoveFavorite = jest.fn();
+	const mockPush = jest.fn();
 
 	beforeEach(() => {
 		(useFavorites as jest.Mock).mockReturnValue({
@@ -30,7 +31,7 @@ describe('PestControl screen', () => {
 			removeFavorite: mockRemoveFavorite,
 		});
 		(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' });
-		(useRouter as jest.Mock).mockReturnValue({ push: jest.fn() });
+		(useRouter as jest.Mock).mockReturnValue({ push: mockPush });
 	});
 
 	afterEach(() => {
@@ -47,7 +48,7 @@ describe('PestControl screen', () => {
 		await flush();
 	});
 
-	it('shows the truck list, with an image when one is provided', async () => {
+	it('shows the name and a bio blurb, with an image when one is provided', async () => {
 		(getPestControlTrucks as jest.Mock).mockResolvedValue([
 			{
 				id: 1,
@@ -61,9 +62,10 @@ describe('PestControl screen', () => {
 		render(<PestControl />);
 		await flush();
 
-		expect(screen.getByText('Name: Test Truck')).toBeVisible();
-		expect(screen.getByText('Season: 1')).toBeVisible();
-		expect(screen.getByText('Episode: 2')).toBeVisible();
+		expect(screen.getByText('Test Truck')).toBeVisible();
+		expect(
+			screen.getByText("Spotted in Season 1, Episode 2 of Bob's Burgers."),
+		).toBeVisible();
 		expect(screen.UNSAFE_queryByType(Image)).not.toBeNull();
 	});
 
@@ -89,6 +91,28 @@ describe('PestControl screen', () => {
 		render(<PestControl />);
 		await flush();
 		expect(screen.getByText('Pest Control Truck UH OH...')).toBeVisible();
+	});
+
+	it('navigates to the detail page when a card is pressed', async () => {
+		(getPestControlTrucks as jest.Mock).mockResolvedValue([
+			{
+				id: 1,
+				name: 'Test Truck',
+				image: '',
+				season: 1,
+				episode: 2,
+				episodeUrl: '',
+			},
+		]);
+		render(<PestControl />);
+		await flush();
+
+		fireEvent.press(screen.getByText('Test Truck'));
+
+		expect(mockPush).toHaveBeenCalledWith({
+			pathname: '/detail/[category]/[id]',
+			params: { category: 'pestControl', id: '1' },
+		});
 	});
 
 	it('tapping the favorite star calls addFavorite with the pest_control_truck category and id', async () => {
@@ -135,6 +159,6 @@ describe('PestControl screen', () => {
 		});
 
 		expect(getPestControlTrucks).toHaveBeenCalledTimes(2);
-		expect(screen.getByText('Name: Test Truck')).toBeVisible();
+		expect(screen.getByText('Test Truck')).toBeVisible();
 	});
 });

@@ -22,7 +22,7 @@ test('a category screen falls back to its cached data when the API becomes unrea
 }) => {
 	// First visit succeeds normally, populating the on-device cache.
 	await page.goto('/burgers');
-	const firstBurgerName = page.getByText(/^Name:/).first();
+	const firstBurgerName = page.getByTestId('card-title').first();
 	await expect(firstBurgerName).toBeVisible({ timeout: 10_000 });
 	const rememberedName = await firstBurgerName.textContent();
 
@@ -36,7 +36,9 @@ test('a category screen falls back to its cached data when the API becomes unrea
 	await expect(page.getByText(/You.re offline/)).toBeVisible({
 		timeout: 10_000,
 	});
-	await expect(page.getByText(rememberedName!)).toBeVisible();
+	await expect(page.getByTestId('card-title').first()).toHaveText(
+		rememberedName!,
+	);
 });
 
 test('the Home search falls back to its cached data when the API becomes unreachable', async ({
@@ -77,7 +79,7 @@ test('the offline banner appears when connectivity is lost and clears automatica
 	page,
 }) => {
 	await page.goto('/burgers');
-	await expect(page.getByText(/^Name:/).first()).toBeVisible({
+	await expect(page.getByTestId('card-title').first()).toBeVisible({
 		timeout: 10_000,
 	});
 	await expect(page.getByText(/You.re offline/)).not.toBeVisible();

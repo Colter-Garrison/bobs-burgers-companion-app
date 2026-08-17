@@ -11,3 +11,6 @@ export interface EndCredit {
 
 export const getEndCreditsSequences = () =>
 	fetchBobsBurgersApi<EndCredit[]>('/endCreditsSequence/');
+
+export const getEndCreditsSequenceById = (id: number) =>
+	fetchBobsBurgersApi<EndCredit>(`/endCreditsSequence/${id}`);

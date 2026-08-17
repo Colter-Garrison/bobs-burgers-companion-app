@@ -1,14 +1,17 @@
 import React from 'react';
-import { Image, ScrollView, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Store, getStoresNextDoor } from '../../hooks/fetchStoresNextDoor';
 import { useCategoryData } from '../../hooks/useCategoryData';
 import { useFavorites } from '../../hooks/useFavorites';
+import { composeStoreShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
 import { OfflineBanner } from '../../components/OfflineBanner';
 
 export default function Stores() {
+	const router = useRouter();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const {
 		data: stores,
@@ -17,6 +20,13 @@ export default function Stores() {
 		retry,
 		cachedAt,
 	} = useCategoryData<Store>(getStoresNextDoor, 'stores');
+
+	const handlePress = (store: Store) => {
+		router.push({
+			pathname: '/detail/[category]/[id]',
+			params: { category: 'stores', id: String(store.id) },
+		});
+	};
 
 	if (loading) {
 		return <CategorySkeleton />;
@@ -38,7 +48,10 @@ export default function Stores() {
 							key={store.id}
 							className='flex-row items-center justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'
 						>
-							<View className='flex-1 flex-row items-center gap-2'>
+							<Pressable
+								className='flex-1 flex-row items-center gap-2'
+								onPress={() => handlePress(store)}
+							>
 								{store.image ? (
 									<Image
 										source={{ width: 100, height: 100, uri: store.image }}
@@ -48,17 +61,17 @@ export default function Stores() {
 									/>
 								) : null}
 								<View className='max-w-[70%] flex-col'>
-									<Text className='font-chewy text-base text-bbRed'>
-										Name: {store.name}
+									<Text
+										testID='card-title'
+										className='font-chewy text-base text-bbRed'
+									>
+										{store.name}
 									</Text>
 									<Text className='font-chewy text-base text-bbRed'>
-										Season: {store.season}
-									</Text>
-									<Text className='font-chewy text-base text-bbRed'>
-										Episode: {store.episode}
+										{composeStoreShortBio(store)}
 									</Text>
 								</View>
-							</View>
+							</Pressable>
 							<FavoriteButton
 								favorited={isFavorited('store', store.id)}
 								onToggle={() =>

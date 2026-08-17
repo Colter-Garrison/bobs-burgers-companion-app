@@ -1,14 +1,9 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import {
-	FlatList,
-	Linking,
-	Pressable,
-	Text,
-	TextInput,
-	View,
-} from 'react-native';
+import { FlatList, Pressable, Text, TextInput, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { SearchItem, useSearchableItems } from '../hooks/useSearchableItems';
+import { detailHref } from '../lib/detailRoute';
 import { useFavorites } from '../hooks/useFavorites';
 import { PAGE_SIZE, usePagination } from '../hooks/usePagination';
 import { useAttributeFilters } from '../hooks/useAttributeFilters';
@@ -21,6 +16,7 @@ import { CharacterOfTheDayCard } from '../components/CharacterOfTheDayCard';
 import { useCharacterOfTheDay } from '../hooks/useCharacterOfTheDay';
 
 export default function Index() {
+	const router = useRouter();
 	const { items, error, retry, cachedAt } = useSearchableItems();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const { character: characterOfTheDay, blurb: characterOfTheDayBlurb } =
@@ -72,11 +68,12 @@ export default function Index() {
 
 	const { visibleItems, loadMore } = usePagination(filteredItems);
 
-	const handleResultPress = (item: SearchItem) => {
-		if (item.linkUrl) {
-			Linking.openURL(item.linkUrl);
-		}
-	};
+	const handleResultPress = useCallback(
+		(item: SearchItem) => {
+			router.push(detailHref(item.category, item.itemId));
+		},
+		[router],
+	);
 
 	const isSearching = query.trim().length > 0;
 
@@ -142,7 +139,7 @@ export default function Index() {
 				onPress={() => handleResultPress(item)}
 			/>
 		),
-		[isFavorited, addFavorite, removeFavorite],
+		[isFavorited, addFavorite, removeFavorite, handleResultPress],
 	);
 
 	return (

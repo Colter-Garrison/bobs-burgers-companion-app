@@ -11,7 +11,7 @@ test('tapping a favorite star while logged out routes to the login screen', asyn
 }) => {
 	await page.goto('/burgers');
 
-	await expect(page.getByText(/Name:/).first()).toBeVisible({
+	await expect(page.getByLabel('Add to favorites').first()).toBeVisible({
 		timeout: 10_000,
 	});
 
