@@ -1,11 +1,14 @@
 import React from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
-import { Truck, getPestControlTrucks } from '../hooks/fetchPestControlTrucks';
-import { useCategoryData } from '../hooks/useCategoryData';
-import { useFavorites } from '../hooks/useFavorites';
-import { FavoriteButton } from '../components/FavoriteButton';
-import { CategorySkeleton } from '../components/CategorySkeleton';
-import { ErrorState } from '../components/ErrorState';
+import {
+	Truck,
+	getPestControlTrucks,
+} from '../../hooks/fetchPestControlTrucks';
+import { useCategoryData } from '../../hooks/useCategoryData';
+import { useFavorites } from '../../hooks/useFavorites';
+import { FavoriteButton } from '../../components/FavoriteButton';
+import { CategorySkeleton } from '../../components/CategorySkeleton';
+import { ErrorState } from '../../components/ErrorState';
 
 export default function PestControl() {
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();

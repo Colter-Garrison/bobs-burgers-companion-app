@@ -1,11 +1,11 @@
 import React from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
-import { Store, getStoresNextDoor } from '../hooks/fetchStoresNextDoor';
-import { useCategoryData } from '../hooks/useCategoryData';
-import { useFavorites } from '../hooks/useFavorites';
-import { FavoriteButton } from '../components/FavoriteButton';
-import { CategorySkeleton } from '../components/CategorySkeleton';
-import { ErrorState } from '../components/ErrorState';
+import { Store, getStoresNextDoor } from '../../hooks/fetchStoresNextDoor';
+import { useCategoryData } from '../../hooks/useCategoryData';
+import { useFavorites } from '../../hooks/useFavorites';
+import { FavoriteButton } from '../../components/FavoriteButton';
+import { CategorySkeleton } from '../../components/CategorySkeleton';
+import { ErrorState } from '../../components/ErrorState';
 
 export default function Stores() {
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();

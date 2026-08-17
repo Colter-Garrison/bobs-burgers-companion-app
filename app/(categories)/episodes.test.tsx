@@ -2,13 +2,13 @@ import { Linking } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 import Episodes from './episodes';
-import { getEpisodes } from '../hooks/fetchEpisodes';
-import { useFavorites } from '../hooks/useFavorites';
-import { useAuth } from '../hooks/useAuth';
+import { getEpisodes } from '../../hooks/fetchEpisodes';
+import { useFavorites } from '../../hooks/useFavorites';
+import { useAuth } from '../../hooks/useAuth';
 
-jest.mock('../hooks/fetchEpisodes');
-jest.mock('../hooks/useFavorites');
-jest.mock('../hooks/useAuth');
+jest.mock('../../hooks/fetchEpisodes');
+jest.mock('../../hooks/useFavorites');
+jest.mock('../../hooks/useAuth');
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));

@@ -12,20 +12,20 @@ import React from 'react';
 import { Platform } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
-import { AuthProvider } from '../hooks/useAuth';
-import { FavoritesProvider } from '../hooks/useFavorites';
-import { tokenStorage } from '../lib/tokenStorage';
-import { deleteAccountRequest, fetchFavorites } from '../lib/apiClient';
+import { AuthProvider } from '../../hooks/useAuth';
+import { FavoritesProvider } from '../../hooks/useFavorites';
+import { tokenStorage } from '../../lib/tokenStorage';
+import { deleteAccountRequest, fetchFavorites } from '../../lib/apiClient';
 import Account from './account';
 import Favorites from './favorites';
 
-jest.mock('../lib/tokenStorage');
-jest.mock('../lib/apiClient', () => ({
-	...jest.requireActual('../lib/apiClient'),
+jest.mock('../../lib/tokenStorage');
+jest.mock('../../lib/apiClient', () => ({
+	...jest.requireActual('../../lib/apiClient'),
 	deleteAccountRequest: jest.fn(),
 	fetchFavorites: jest.fn(),
 }));
-jest.mock('../hooks/useSearchableItems', () => ({
+jest.mock('../../hooks/useSearchableItems', () => ({
 	useSearchableItems: () => ({ items: [], loading: false }),
 }));
 jest.mock('expo-router', () => ({

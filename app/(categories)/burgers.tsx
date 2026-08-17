@@ -1,11 +1,11 @@
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import { getBurgersOfTheDay } from '../hooks/fetchBurgersOfTheDay';
-import { useCategoryData } from '../hooks/useCategoryData';
-import { useFavorites } from '../hooks/useFavorites';
-import { FavoriteButton } from '../components/FavoriteButton';
-import { CategorySkeleton } from '../components/CategorySkeleton';
-import { ErrorState } from '../components/ErrorState';
+import { getBurgersOfTheDay } from '../../hooks/fetchBurgersOfTheDay';
+import { useCategoryData } from '../../hooks/useCategoryData';
+import { useFavorites } from '../../hooks/useFavorites';
+import { FavoriteButton } from '../../components/FavoriteButton';
+import { CategorySkeleton } from '../../components/CategorySkeleton';
+import { ErrorState } from '../../components/ErrorState';
 
 interface Burger {
 	id: number;

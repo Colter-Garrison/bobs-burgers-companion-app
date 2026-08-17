@@ -1,13 +1,13 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 import Burgers from './burgers';
-import { getBurgersOfTheDay } from '../hooks/fetchBurgersOfTheDay';
-import { useFavorites } from '../hooks/useFavorites';
-import { useAuth } from '../hooks/useAuth';
+import { getBurgersOfTheDay } from '../../hooks/fetchBurgersOfTheDay';
+import { useFavorites } from '../../hooks/useFavorites';
+import { useAuth } from '../../hooks/useAuth';
 
-jest.mock('../hooks/fetchBurgersOfTheDay');
-jest.mock('../hooks/useFavorites');
-jest.mock('../hooks/useAuth');
+jest.mock('../../hooks/fetchBurgersOfTheDay');
+jest.mock('../../hooks/useFavorites');
+jest.mock('../../hooks/useAuth');
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));

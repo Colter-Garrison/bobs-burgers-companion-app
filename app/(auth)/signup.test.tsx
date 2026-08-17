@@ -1,12 +1,12 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
-import Login from './login';
-import { useAuth } from '../hooks/useAuth';
+import Signup from './signup';
+import { useAuth } from '../../hooks/useAuth';
 
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
-jest.mock('../hooks/useAuth');
+jest.mock('../../hooks/useAuth');
 
 // useFocusEffect is normally driven by real navigation focus events,
 // which don't exist in a bare RNTL render. Calling the callback directly
@@ -20,13 +20,13 @@ jest.mock('@react-navigation/native', () => ({
 	},
 }));
 
-describe('Login screen', () => {
+describe('Signup screen', () => {
 	const mockPush = jest.fn();
-	const mockLogin = jest.fn();
+	const mockSignup = jest.fn();
 
 	beforeEach(() => {
 		(useRouter as jest.Mock).mockReturnValue({ push: mockPush });
-		(useAuth as jest.Mock).mockReturnValue({ login: mockLogin });
+		(useAuth as jest.Mock).mockReturnValue({ signup: mockSignup });
 	});
 
 	afterEach(() => {
@@ -34,62 +34,65 @@ describe('Login screen', () => {
 	});
 
 	it('submits the entered email/password and navigates home on success', async () => {
-		mockLogin.mockResolvedValueOnce(undefined);
-		render(<Login />);
+		mockSignup.mockResolvedValueOnce(undefined);
+		render(<Signup />);
 
 		fireEvent.changeText(
 			screen.getByPlaceholderText('Email'),
-			'bob@bobsburgers.com',
+			'new@bobsburgers.com',
 		);
 		fireEvent.changeText(
-			screen.getByPlaceholderText('Password'),
+			screen.getByPlaceholderText('Password (min. 8 characters)'),
 			'correcthorse',
 		);
 		await act(async () => {
-			fireEvent.press(screen.getByRole('button', { name: 'Log In' }));
+			fireEvent.press(screen.getByRole('button', { name: 'Sign Up' }));
 		});
 
-		expect(mockLogin).toHaveBeenCalledWith(
-			'bob@bobsburgers.com',
+		expect(mockSignup).toHaveBeenCalledWith(
+			'new@bobsburgers.com',
 			'correcthorse',
 		);
 		expect(mockPush).toHaveBeenCalledWith('/');
 	});
 
 	it('shows an error message and does not navigate on failure', async () => {
-		mockLogin.mockRejectedValueOnce(new Error('Invalid email or password'));
-		render(<Login />);
+		mockSignup.mockRejectedValueOnce(new Error('Email already registered'));
+		render(<Signup />);
 
 		fireEvent.changeText(
 			screen.getByPlaceholderText('Email'),
-			'bob@bobsburgers.com',
+			'new@bobsburgers.com',
 		);
-		fireEvent.changeText(screen.getByPlaceholderText('Password'), 'wrong');
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Password (min. 8 characters)'),
+			'correcthorse',
+		);
 		await act(async () => {
-			fireEvent.press(screen.getByRole('button', { name: 'Log In' }));
+			fireEvent.press(screen.getByRole('button', { name: 'Sign Up' }));
 		});
 
-		expect(screen.getByText('Invalid email or password')).toBeVisible();
+		expect(screen.getByText('Email already registered')).toBeVisible();
 		expect(mockPush).not.toHaveBeenCalled();
 	});
 
-	it('navigates to Sign Up when the link is pressed', () => {
-		render(<Login />);
+	it('navigates to Log In when the link is pressed', () => {
+		render(<Signup />);
 
-		fireEvent.press(screen.getByText('Need an account? Sign Up'));
+		fireEvent.press(screen.getByText('Already have an account? Log In'));
 
-		expect(mockPush).toHaveBeenCalledWith('/signup');
+		expect(mockPush).toHaveBeenCalledWith('/login');
 	});
 
 	it('clears the email/password fields when the screen loses focus', () => {
-		render(<Login />);
+		render(<Signup />);
 
 		fireEvent.changeText(
 			screen.getByPlaceholderText('Email'),
-			'bob@bobsburgers.com',
+			'new@bobsburgers.com',
 		);
 		fireEvent.changeText(
-			screen.getByPlaceholderText('Password'),
+			screen.getByPlaceholderText('Password (min. 8 characters)'),
 			'correcthorse',
 		);
 
@@ -98,6 +101,8 @@ describe('Login screen', () => {
 		});
 
 		expect(screen.getByPlaceholderText('Email').props.value).toBe('');
-		expect(screen.getByPlaceholderText('Password').props.value).toBe('');
+		expect(
+			screen.getByPlaceholderText('Password (min. 8 characters)').props.value,
+		).toBe('');
 	});
 });

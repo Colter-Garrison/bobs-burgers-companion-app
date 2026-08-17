@@ -3,12 +3,12 @@ import { Image, ScrollView, Text, View } from 'react-native';
 import {
 	EndCredit,
 	getEndCreditsSequences,
-} from '../hooks/fetchEndCreditsSequences';
-import { useCategoryData } from '../hooks/useCategoryData';
-import { useFavorites } from '../hooks/useFavorites';
-import { FavoriteButton } from '../components/FavoriteButton';
-import { CategorySkeleton } from '../components/CategorySkeleton';
-import { ErrorState } from '../components/ErrorState';
+} from '../../hooks/fetchEndCreditsSequences';
+import { useCategoryData } from '../../hooks/useCategoryData';
+import { useFavorites } from '../../hooks/useFavorites';
+import { FavoriteButton } from '../../components/FavoriteButton';
+import { CategorySkeleton } from '../../components/CategorySkeleton';
+import { ErrorState } from '../../components/ErrorState';
 
 export default function EndCredits() {
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();

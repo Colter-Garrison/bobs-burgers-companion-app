@@ -2,15 +2,15 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { FlatList, Linking, Text, View } from 'react-native';
-import { SearchItem, useSearchableItems } from '../hooks/useSearchableItems';
-import { useFavorites } from '../hooks/useFavorites';
-import { useAuth } from '../hooks/useAuth';
-import { PAGE_SIZE, usePagination } from '../hooks/usePagination';
-import { useAttributeFilters } from '../hooks/useAttributeFilters';
-import { SearchResultCard } from '../components/SearchResultCard';
-import { CategoryFilter } from '../components/CategoryFilterPills';
-import { FilterPanel } from '../components/FilterPanel';
-import { CategorySkeleton } from '../components/CategorySkeleton';
+import { SearchItem, useSearchableItems } from '../../hooks/useSearchableItems';
+import { useFavorites } from '../../hooks/useFavorites';
+import { useAuth } from '../../hooks/useAuth';
+import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
+import { useAttributeFilters } from '../../hooks/useAttributeFilters';
+import { SearchResultCard } from '../../components/SearchResultCard';
+import { CategoryFilter } from '../../components/CategoryFilterPills';
+import { FilterPanel } from '../../components/FilterPanel';
+import { CategorySkeleton } from '../../components/CategorySkeleton';
 
 export default function Favorites() {
 	const router = useRouter();

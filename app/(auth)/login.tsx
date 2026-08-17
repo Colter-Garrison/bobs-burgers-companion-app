@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function Login() {
 	const router = useRouter();

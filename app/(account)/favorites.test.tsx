@@ -2,13 +2,13 @@ import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 import { FlatList } from 'react-native';
 import Favorites from './favorites';
-import { useSearchableItems } from '../hooks/useSearchableItems';
-import { useFavorites } from '../hooks/useFavorites';
-import { useAuth } from '../hooks/useAuth';
+import { useSearchableItems } from '../../hooks/useSearchableItems';
+import { useFavorites } from '../../hooks/useFavorites';
+import { useAuth } from '../../hooks/useAuth';
 
-jest.mock('../hooks/useSearchableItems');
-jest.mock('../hooks/useFavorites');
-jest.mock('../hooks/useAuth');
+jest.mock('../../hooks/useSearchableItems');
+jest.mock('../../hooks/useFavorites');
+jest.mock('../../hooks/useAuth');
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));

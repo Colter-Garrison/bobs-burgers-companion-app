@@ -2,12 +2,12 @@ import { Alert, Platform } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 import Account from './account';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
-jest.mock('../hooks/useAuth');
+jest.mock('../../hooks/useAuth');
 
 describe('Account screen', () => {
 	const mockPush = jest.fn();

@@ -73,50 +73,60 @@ export default function RootLayout() {
 						}}
 					>
 						<Drawer.Screen name='index' options={{ title: 'Home' }} />
+						{/* Drawer.Screen's `name` must match the route's full name
+						as Expo Router computes it — which includes the
+						parenthesized group folder (e.g. "(categories)/burgers"),
+						even though the group is stripped from the actual URL
+						("/burgers"). Grouping app/ into (auth)/(account)/
+						(categories) folders was a pure file-organization
+						move — it didn't rename any route. */}
 						<Drawer.Screen
-							name='burgers'
+							name='(categories)/burgers'
 							options={{ title: 'Burgers of the Day' }}
 						/>
 						<Drawer.Screen
-							name='characters'
+							name='(categories)/characters'
 							options={{ title: 'Characters' }}
 						/>
 						<Drawer.Screen
-							name='endCredits'
+							name='(categories)/endCredits'
 							options={{ title: 'End Credits' }}
 						/>
-						<Drawer.Screen name='episodes' options={{ title: 'Episodes' }} />
 						<Drawer.Screen
-							name='pestControl'
+							name='(categories)/episodes'
+							options={{ title: 'Episodes' }}
+						/>
+						<Drawer.Screen
+							name='(categories)/pestControl'
 							options={{ title: 'Pest Control Trucks' }}
 						/>
 						<Drawer.Screen
-							name='stores'
+							name='(categories)/stores'
 							options={{ title: 'Stores Next Door' }}
 						/>
 						<Drawer.Screen
-							name='login'
+							name='(auth)/login'
 							options={{
 								title: 'Log In',
 								drawerItemStyle: { display: 'none' },
 							}}
 						/>
 						<Drawer.Screen
-							name='signup'
+							name='(auth)/signup'
 							options={{
 								title: 'Sign Up',
 								drawerItemStyle: { display: 'none' },
 							}}
 						/>
 						<Drawer.Screen
-							name='account'
+							name='(account)/account'
 							options={{
 								title: 'Account',
 								drawerItemStyle: { display: 'none' },
 							}}
 						/>
 						<Drawer.Screen
-							name='favorites'
+							name='(account)/favorites'
 							options={{
 								title: 'My Favorites',
 								drawerItemStyle: { display: 'none' },
