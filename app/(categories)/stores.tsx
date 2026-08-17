@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import {
+	FlatList,
 	Image,
 	Pressable,
-	ScrollView,
 	Text,
 	TextInput,
 	View,
@@ -13,6 +13,7 @@ import { Store, getStoresNextDoor } from '../../hooks/fetchStoresNextDoor';
 import { useCategoryData } from '../../hooks/useCategoryData';
 import { useCategorySearch } from '../../hooks/useCategorySearch';
 import { useAttributeFilters } from '../../hooks/useAttributeFilters';
+import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
 import { useFavorites } from '../../hooks/useFavorites';
 import { composeStoreShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
@@ -58,13 +59,57 @@ export default function Stores() {
 		searchedStores,
 		(store) => store.name,
 	);
+	const { visibleItems, loadMore } = usePagination(visibleStores);
 
-	const handlePress = (store: Store) => {
-		router.push({
-			pathname: '/detail/[category]/[id]',
-			params: { category: 'stores', id: String(store.id) },
-		});
-	};
+	const handlePress = useCallback(
+		(store: Store) => {
+			router.push({
+				pathname: '/detail/[category]/[id]',
+				params: { category: 'stores', id: String(store.id) },
+			});
+		},
+		[router],
+	);
+
+	const renderItem = useCallback(
+		({ item: store }: { item: Store }) => (
+			<View className='flex-row items-center justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'>
+				<Pressable
+					className='flex-1 flex-row items-center gap-2'
+					onPress={() => handlePress(store)}
+				>
+					{store.image ? (
+						<Image
+							source={{ width: 100, height: 100, uri: store.image }}
+							width={100}
+							height={100}
+							resizeMode='contain'
+						/>
+					) : null}
+					<View className='max-w-[70%] flex-col'>
+						<Text
+							testID='card-title'
+							className='font-chewy text-base text-bbRed'
+						>
+							{store.name}
+						</Text>
+						<Text className='font-chewy text-base text-bbRed'>
+							{composeStoreShortBio(store)}
+						</Text>
+					</View>
+				</Pressable>
+				<FavoriteButton
+					favorited={isFavorited('store', store.id)}
+					onToggle={() =>
+						isFavorited('store', store.id)
+							? removeFavorite('store', store.id)
+							: addFavorite('store', store.id)
+					}
+				/>
+			</View>
+		),
+		[isFavorited, addFavorite, removeFavorite, handlePress],
+	);
 
 	if (loading) {
 		return <CategorySkeleton />;
@@ -75,75 +120,45 @@ export default function Stores() {
 	}
 
 	return (
-		<ScrollView className='bg-bbGreen'>
-			<View className='flex-col gap-2 p-2'>
-				<TextInput
-					placeholder='Search Stores Next Door...'
-					placeholderTextColor='#E8242F'
-					value={query}
-					onChangeText={setQuery}
-					className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
-				/>
-				<FilterPanel
-					sortDirection={attributeFilters.sortDirection}
-					onToggleSort={attributeFilters.toggleSort}
-					genders={attributeFilters.genders}
-					hairColors={attributeFilters.hairColors}
-					onToggleGender={attributeFilters.toggleGender}
-					onToggleHair={attributeFilters.toggleHair}
-					activeCount={attributeFilters.activeCount}
-				/>
-				{cachedAt ? (
-					<OfflineBanner cachedAt={cachedAt} onRetry={retry} />
-				) : null}
-				{visibleStores.length > 0 ? (
-					visibleStores.map((store) => (
-						<View
-							key={store.id}
-							className='flex-row items-center justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'
-						>
-							<Pressable
-								className='flex-1 flex-row items-center gap-2'
-								onPress={() => handlePress(store)}
-							>
-								{store.image ? (
-									<Image
-										source={{ width: 100, height: 100, uri: store.image }}
-										width={100}
-										height={100}
-										resizeMode='contain'
-									/>
-								) : null}
-								<View className='max-w-[70%] flex-col'>
-									<Text
-										testID='card-title'
-										className='font-chewy text-base text-bbRed'
-									>
-										{store.name}
-									</Text>
-									<Text className='font-chewy text-base text-bbRed'>
-										{composeStoreShortBio(store)}
-									</Text>
-								</View>
-							</Pressable>
-							<FavoriteButton
-								favorited={isFavorited('store', store.id)}
-								onToggle={() =>
-									isFavorited('store', store.id)
-										? removeFavorite('store', store.id)
-										: addFavorite('store', store.id)
-								}
-							/>
-						</View>
-					))
-				) : (
-					<View className='flex-1 flex-col items-center justify-center'>
-						<Text className='font-chewy text-[44px]'>
-							Store Next Door UH OH...
-						</Text>
-					</View>
-				)}
-			</View>
-		</ScrollView>
+		<FlatList
+			className='flex-1 bg-bbGreen'
+			contentContainerClassName='flex-col gap-2 p-2'
+			data={visibleItems}
+			renderItem={renderItem}
+			keyExtractor={(store) => String(store.id)}
+			onEndReached={loadMore}
+			onEndReachedThreshold={0.5}
+			initialNumToRender={PAGE_SIZE}
+			ListHeaderComponent={
+				<View className='flex-col gap-2'>
+					<TextInput
+						placeholder='Search Stores Next Door...'
+						placeholderTextColor='#E8242F'
+						value={query}
+						onChangeText={setQuery}
+						className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
+					/>
+					<FilterPanel
+						sortDirection={attributeFilters.sortDirection}
+						onToggleSort={attributeFilters.toggleSort}
+						genders={attributeFilters.genders}
+						hairColors={attributeFilters.hairColors}
+						onToggleGender={attributeFilters.toggleGender}
+						onToggleHair={attributeFilters.toggleHair}
+						activeCount={attributeFilters.activeCount}
+					/>
+					{cachedAt ? (
+						<OfflineBanner cachedAt={cachedAt} onRetry={retry} />
+					) : null}
+				</View>
+			}
+			ListEmptyComponent={
+				<View className='flex-1 flex-col items-center justify-center'>
+					<Text className='font-chewy text-[44px]'>
+						Store Next Door UH OH...
+					</Text>
+				</View>
+			}
+		/>
 	);
 }

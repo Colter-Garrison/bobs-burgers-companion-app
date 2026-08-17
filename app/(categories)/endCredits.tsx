@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import {
+	FlatList,
 	Image,
 	Pressable,
-	ScrollView,
 	Text,
 	TextInput,
 	View,
@@ -16,6 +16,7 @@ import {
 import { useCategoryData } from '../../hooks/useCategoryData';
 import { useCategorySearch } from '../../hooks/useCategorySearch';
 import { useAttributeFilters } from '../../hooks/useAttributeFilters';
+import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
 import { useFavorites } from '../../hooks/useFavorites';
 import { composeEndCreditShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
@@ -61,13 +62,51 @@ export default function EndCredits() {
 		searchedEndCredits,
 		getSearchableText,
 	);
+	const { visibleItems, loadMore } = usePagination(visibleEndCredits);
 
-	const handlePress = (endCredit: EndCredit) => {
-		router.push({
-			pathname: '/detail/[category]/[id]',
-			params: { category: 'endCredits', id: String(endCredit.id) },
-		});
-	};
+	const handlePress = useCallback(
+		(endCredit: EndCredit) => {
+			router.push({
+				pathname: '/detail/[category]/[id]',
+				params: { category: 'endCredits', id: String(endCredit.id) },
+			});
+		},
+		[router],
+	);
+
+	const renderItem = useCallback(
+		({ item: credits }: { item: EndCredit }) => (
+			<View className='flex-row items-center justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'>
+				<Pressable
+					className='flex-1 flex-row items-center gap-2'
+					onPress={() => handlePress(credits)}
+				>
+					{credits.image ? (
+						<Image
+							source={{ width: 100, height: 100, uri: credits.image }}
+							width={100}
+							height={100}
+							resizeMode='contain'
+						/>
+					) : null}
+					<View className='max-w-[70%] flex-col'>
+						<Text className='font-chewy text-base text-bbRed'>
+							{composeEndCreditShortBio(credits)}
+						</Text>
+					</View>
+				</Pressable>
+				<FavoriteButton
+					favorited={isFavorited('end_credit', credits.id)}
+					onToggle={() =>
+						isFavorited('end_credit', credits.id)
+							? removeFavorite('end_credit', credits.id)
+							: addFavorite('end_credit', credits.id)
+					}
+				/>
+			</View>
+		),
+		[isFavorited, addFavorite, removeFavorite, handlePress],
+	);
 
 	if (loading) {
 		return <CategorySkeleton />;
@@ -78,67 +117,43 @@ export default function EndCredits() {
 	}
 
 	return (
-		<ScrollView className='bg-bbGreen'>
-			<View className='flex-col gap-2 p-2'>
-				<TextInput
-					placeholder='Search End Credits...'
-					placeholderTextColor='#E8242F'
-					value={query}
-					onChangeText={setQuery}
-					className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
-				/>
-				<FilterPanel
-					sortDirection={attributeFilters.sortDirection}
-					onToggleSort={attributeFilters.toggleSort}
-					genders={attributeFilters.genders}
-					hairColors={attributeFilters.hairColors}
-					onToggleGender={attributeFilters.toggleGender}
-					onToggleHair={attributeFilters.toggleHair}
-					activeCount={attributeFilters.activeCount}
-				/>
-				{cachedAt ? (
-					<OfflineBanner cachedAt={cachedAt} onRetry={retry} />
-				) : null}
-				{visibleEndCredits.length > 0 ? (
-					visibleEndCredits.map((credits) => (
-						<View
-							key={credits.id}
-							className='flex-row items-center justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'
-						>
-							<Pressable
-								className='flex-1 flex-row items-center gap-2'
-								onPress={() => handlePress(credits)}
-							>
-								{credits.image ? (
-									<Image
-										source={{ width: 100, height: 100, uri: credits.image }}
-										width={100}
-										height={100}
-										resizeMode='contain'
-									/>
-								) : null}
-								<View className='max-w-[70%] flex-col'>
-									<Text className='font-chewy text-base text-bbRed'>
-										{composeEndCreditShortBio(credits)}
-									</Text>
-								</View>
-							</Pressable>
-							<FavoriteButton
-								favorited={isFavorited('end_credit', credits.id)}
-								onToggle={() =>
-									isFavorited('end_credit', credits.id)
-										? removeFavorite('end_credit', credits.id)
-										: addFavorite('end_credit', credits.id)
-								}
-							/>
-						</View>
-					))
-				) : (
-					<View className='flex-1 flex-col items-center justify-center'>
-						<Text className='font-chewy text-[44px]'>End Credits UH OH...</Text>
-					</View>
-				)}
-			</View>
-		</ScrollView>
+		<FlatList
+			className='flex-1 bg-bbGreen'
+			contentContainerClassName='flex-col gap-2 p-2'
+			data={visibleItems}
+			renderItem={renderItem}
+			keyExtractor={(credits) => String(credits.id)}
+			onEndReached={loadMore}
+			onEndReachedThreshold={0.5}
+			initialNumToRender={PAGE_SIZE}
+			ListHeaderComponent={
+				<View className='flex-col gap-2'>
+					<TextInput
+						placeholder='Search End Credits...'
+						placeholderTextColor='#E8242F'
+						value={query}
+						onChangeText={setQuery}
+						className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
+					/>
+					<FilterPanel
+						sortDirection={attributeFilters.sortDirection}
+						onToggleSort={attributeFilters.toggleSort}
+						genders={attributeFilters.genders}
+						hairColors={attributeFilters.hairColors}
+						onToggleGender={attributeFilters.toggleGender}
+						onToggleHair={attributeFilters.toggleHair}
+						activeCount={attributeFilters.activeCount}
+					/>
+					{cachedAt ? (
+						<OfflineBanner cachedAt={cachedAt} onRetry={retry} />
+					) : null}
+				</View>
+			}
+			ListEmptyComponent={
+				<View className='flex-1 flex-col items-center justify-center'>
+					<Text className='font-chewy text-[44px]'>End Credits UH OH...</Text>
+				</View>
+			}
+		/>
 	);
 }

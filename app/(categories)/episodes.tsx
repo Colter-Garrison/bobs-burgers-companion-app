@@ -1,11 +1,12 @@
 import React, { useCallback } from 'react';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { FlatList, Pressable, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { Episode, getEpisodes } from '../../hooks/fetchEpisodes';
 import { useCategoryData } from '../../hooks/useCategoryData';
 import { useCategorySearch } from '../../hooks/useCategorySearch';
 import { useAttributeFilters } from '../../hooks/useAttributeFilters';
+import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
 import { useFavorites } from '../../hooks/useFavorites';
 import { composeEpisodeShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
@@ -51,13 +52,44 @@ export default function Episodes() {
 		searchedEpisodes,
 		(episode) => episode.name,
 	);
+	const { visibleItems, loadMore } = usePagination(visibleEpisodes);
 
-	const handlePress = (episode: Episode) => {
-		router.push({
-			pathname: '/detail/[category]/[id]',
-			params: { category: 'episodes', id: String(episode.id) },
-		});
-	};
+	const handlePress = useCallback(
+		(episode: Episode) => {
+			router.push({
+				pathname: '/detail/[category]/[id]',
+				params: { category: 'episodes', id: String(episode.id) },
+			});
+		},
+		[router],
+	);
+
+	const renderItem = useCallback(
+		({ item: episode }: { item: Episode }) => (
+			<View className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'>
+				<Pressable
+					className='flex-1 flex-col'
+					onPress={() => handlePress(episode)}
+				>
+					<Text testID='card-title' className='font-chewy text-base text-bbRed'>
+						{episode.name}
+					</Text>
+					<Text className='font-chewy text-base text-bbRed'>
+						{composeEpisodeShortBio(episode)}
+					</Text>
+				</Pressable>
+				<FavoriteButton
+					favorited={isFavorited('episode', episode.id)}
+					onToggle={() =>
+						isFavorited('episode', episode.id)
+							? removeFavorite('episode', episode.id)
+							: addFavorite('episode', episode.id)
+					}
+				/>
+			</View>
+		),
+		[isFavorited, addFavorite, removeFavorite, handlePress],
+	);
 
 	if (loading) {
 		return <CategorySkeleton />;
@@ -68,63 +100,43 @@ export default function Episodes() {
 	}
 
 	return (
-		<ScrollView className='bg-bbGreen'>
-			<View className='flex-col gap-2 p-2'>
-				<TextInput
-					placeholder='Search Episodes...'
-					placeholderTextColor='#E8242F'
-					value={query}
-					onChangeText={setQuery}
-					className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
-				/>
-				<FilterPanel
-					sortDirection={attributeFilters.sortDirection}
-					onToggleSort={attributeFilters.toggleSort}
-					genders={attributeFilters.genders}
-					hairColors={attributeFilters.hairColors}
-					onToggleGender={attributeFilters.toggleGender}
-					onToggleHair={attributeFilters.toggleHair}
-					activeCount={attributeFilters.activeCount}
-				/>
-				{cachedAt ? (
-					<OfflineBanner cachedAt={cachedAt} onRetry={retry} />
-				) : null}
-				{visibleEpisodes.length > 0 ? (
-					visibleEpisodes.map((episode) => (
-						<View
-							key={episode.id}
-							className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'
-						>
-							<Pressable
-								className='flex-1 flex-col'
-								onPress={() => handlePress(episode)}
-							>
-								<Text
-									testID='card-title'
-									className='font-chewy text-base text-bbRed'
-								>
-									{episode.name}
-								</Text>
-								<Text className='font-chewy text-base text-bbRed'>
-									{composeEpisodeShortBio(episode)}
-								</Text>
-							</Pressable>
-							<FavoriteButton
-								favorited={isFavorited('episode', episode.id)}
-								onToggle={() =>
-									isFavorited('episode', episode.id)
-										? removeFavorite('episode', episode.id)
-										: addFavorite('episode', episode.id)
-								}
-							/>
-						</View>
-					))
-				) : (
-					<View className='flex-1 flex-col items-center justify-center'>
-						<Text className='font-chewy text-[44px]'>Episode UH OH...</Text>
-					</View>
-				)}
-			</View>
-		</ScrollView>
+		<FlatList
+			className='flex-1 bg-bbGreen'
+			contentContainerClassName='flex-col gap-2 p-2'
+			data={visibleItems}
+			renderItem={renderItem}
+			keyExtractor={(episode) => String(episode.id)}
+			onEndReached={loadMore}
+			onEndReachedThreshold={0.5}
+			initialNumToRender={PAGE_SIZE}
+			ListHeaderComponent={
+				<View className='flex-col gap-2'>
+					<TextInput
+						placeholder='Search Episodes...'
+						placeholderTextColor='#E8242F'
+						value={query}
+						onChangeText={setQuery}
+						className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
+					/>
+					<FilterPanel
+						sortDirection={attributeFilters.sortDirection}
+						onToggleSort={attributeFilters.toggleSort}
+						genders={attributeFilters.genders}
+						hairColors={attributeFilters.hairColors}
+						onToggleGender={attributeFilters.toggleGender}
+						onToggleHair={attributeFilters.toggleHair}
+						activeCount={attributeFilters.activeCount}
+					/>
+					{cachedAt ? (
+						<OfflineBanner cachedAt={cachedAt} onRetry={retry} />
+					) : null}
+				</View>
+			}
+			ListEmptyComponent={
+				<View className='flex-1 flex-col items-center justify-center'>
+					<Text className='font-chewy text-[44px]'>Episode UH OH...</Text>
+				</View>
+			}
+		/>
 	);
 }

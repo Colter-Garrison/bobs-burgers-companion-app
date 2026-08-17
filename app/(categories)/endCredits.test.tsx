@@ -1,4 +1,4 @@
-import { Image } from 'react-native';
+import { FlatList, Image } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 import EndCredits from './endCredits';
@@ -233,5 +233,42 @@ describe('EndCredits screen', () => {
 				'A hand-drawn end credits sequence from Season 1, Episode 2.',
 			),
 		).toBeVisible();
+	});
+
+	it('shows only the first page of end credits, revealing more as the list is scrolled', async () => {
+		const manyEndCredits = Array.from({ length: 25 }, (_, i) => ({
+			id: i,
+			image: '',
+			season: 1,
+			episode: i + 1,
+			episodeUrl: '',
+		}));
+		(getEndCreditsSequences as jest.Mock).mockResolvedValue(manyEndCredits);
+
+		render(<EndCredits />);
+		await flush();
+
+		expect(
+			screen.getByText(
+				'A hand-drawn end credits sequence from Season 1, Episode 1.',
+			),
+		).toBeVisible();
+		expect(
+			screen.getByText(
+				'A hand-drawn end credits sequence from Season 1, Episode 20.',
+			),
+		).toBeVisible();
+		expect(
+			screen.queryByText(
+				'A hand-drawn end credits sequence from Season 1, Episode 21.',
+			),
+		).toBeNull();
+		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(20);
+
+		act(() => {
+			screen.UNSAFE_getByType(FlatList).props.onEndReached();
+		});
+
+		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(25);
 	});
 });

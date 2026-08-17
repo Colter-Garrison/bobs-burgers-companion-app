@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import {
+	FlatList,
 	Image,
 	Pressable,
-	ScrollView,
 	Text,
 	TextInput,
 	View,
@@ -16,6 +16,7 @@ import {
 import { useCategoryData } from '../../hooks/useCategoryData';
 import { useCategorySearch } from '../../hooks/useCategorySearch';
 import { useAttributeFilters } from '../../hooks/useAttributeFilters';
+import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
 import { useFavorites } from '../../hooks/useFavorites';
 import { composeTruckShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
@@ -61,13 +62,57 @@ export default function PestControl() {
 		searchedTrucks,
 		(truck) => truck.name,
 	);
+	const { visibleItems, loadMore } = usePagination(visibleTrucks);
 
-	const handlePress = (truck: Truck) => {
-		router.push({
-			pathname: '/detail/[category]/[id]',
-			params: { category: 'pestControl', id: String(truck.id) },
-		});
-	};
+	const handlePress = useCallback(
+		(truck: Truck) => {
+			router.push({
+				pathname: '/detail/[category]/[id]',
+				params: { category: 'pestControl', id: String(truck.id) },
+			});
+		},
+		[router],
+	);
+
+	const renderItem = useCallback(
+		({ item: truck }: { item: Truck }) => (
+			<View className='flex-row items-center justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'>
+				<Pressable
+					className='flex-1 flex-row items-center gap-2'
+					onPress={() => handlePress(truck)}
+				>
+					{truck.image ? (
+						<Image
+							source={{ width: 100, height: 100, uri: truck.image }}
+							width={100}
+							height={100}
+							resizeMode='contain'
+						/>
+					) : null}
+					<View className='max-w-[70%] flex-col'>
+						<Text
+							testID='card-title'
+							className='font-chewy text-base text-bbRed'
+						>
+							{truck.name}
+						</Text>
+						<Text className='font-chewy text-base text-bbRed'>
+							{composeTruckShortBio(truck)}
+						</Text>
+					</View>
+				</Pressable>
+				<FavoriteButton
+					favorited={isFavorited('pest_control_truck', truck.id)}
+					onToggle={() =>
+						isFavorited('pest_control_truck', truck.id)
+							? removeFavorite('pest_control_truck', truck.id)
+							: addFavorite('pest_control_truck', truck.id)
+					}
+				/>
+			</View>
+		),
+		[isFavorited, addFavorite, removeFavorite, handlePress],
+	);
 
 	if (loading) {
 		return <CategorySkeleton />;
@@ -78,75 +123,45 @@ export default function PestControl() {
 	}
 
 	return (
-		<ScrollView className='bg-bbGreen'>
-			<View className='flex-col gap-2 p-2'>
-				<TextInput
-					placeholder='Search Pest Control Trucks...'
-					placeholderTextColor='#E8242F'
-					value={query}
-					onChangeText={setQuery}
-					className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
-				/>
-				<FilterPanel
-					sortDirection={attributeFilters.sortDirection}
-					onToggleSort={attributeFilters.toggleSort}
-					genders={attributeFilters.genders}
-					hairColors={attributeFilters.hairColors}
-					onToggleGender={attributeFilters.toggleGender}
-					onToggleHair={attributeFilters.toggleHair}
-					activeCount={attributeFilters.activeCount}
-				/>
-				{cachedAt ? (
-					<OfflineBanner cachedAt={cachedAt} onRetry={retry} />
-				) : null}
-				{visibleTrucks.length > 0 ? (
-					visibleTrucks.map((truck) => (
-						<View
-							key={truck.id}
-							className='flex-row items-center justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'
-						>
-							<Pressable
-								className='flex-1 flex-row items-center gap-2'
-								onPress={() => handlePress(truck)}
-							>
-								{truck.image ? (
-									<Image
-										source={{ width: 100, height: 100, uri: truck.image }}
-										width={100}
-										height={100}
-										resizeMode='contain'
-									/>
-								) : null}
-								<View className='max-w-[70%] flex-col'>
-									<Text
-										testID='card-title'
-										className='font-chewy text-base text-bbRed'
-									>
-										{truck.name}
-									</Text>
-									<Text className='font-chewy text-base text-bbRed'>
-										{composeTruckShortBio(truck)}
-									</Text>
-								</View>
-							</Pressable>
-							<FavoriteButton
-								favorited={isFavorited('pest_control_truck', truck.id)}
-								onToggle={() =>
-									isFavorited('pest_control_truck', truck.id)
-										? removeFavorite('pest_control_truck', truck.id)
-										: addFavorite('pest_control_truck', truck.id)
-								}
-							/>
-						</View>
-					))
-				) : (
-					<View className='flex-1 flex-col items-center justify-center'>
-						<Text className='font-chewy text-[44px]'>
-							Pest Control Truck UH OH...
-						</Text>
-					</View>
-				)}
-			</View>
-		</ScrollView>
+		<FlatList
+			className='flex-1 bg-bbGreen'
+			contentContainerClassName='flex-col gap-2 p-2'
+			data={visibleItems}
+			renderItem={renderItem}
+			keyExtractor={(truck) => String(truck.id)}
+			onEndReached={loadMore}
+			onEndReachedThreshold={0.5}
+			initialNumToRender={PAGE_SIZE}
+			ListHeaderComponent={
+				<View className='flex-col gap-2'>
+					<TextInput
+						placeholder='Search Pest Control Trucks...'
+						placeholderTextColor='#E8242F'
+						value={query}
+						onChangeText={setQuery}
+						className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
+					/>
+					<FilterPanel
+						sortDirection={attributeFilters.sortDirection}
+						onToggleSort={attributeFilters.toggleSort}
+						genders={attributeFilters.genders}
+						hairColors={attributeFilters.hairColors}
+						onToggleGender={attributeFilters.toggleGender}
+						onToggleHair={attributeFilters.toggleHair}
+						activeCount={attributeFilters.activeCount}
+					/>
+					{cachedAt ? (
+						<OfflineBanner cachedAt={cachedAt} onRetry={retry} />
+					) : null}
+				</View>
+			}
+			ListEmptyComponent={
+				<View className='flex-1 flex-col items-center justify-center'>
+					<Text className='font-chewy text-[44px]'>
+						Pest Control Truck UH OH...
+					</Text>
+				</View>
+			}
+		/>
 	);
 }

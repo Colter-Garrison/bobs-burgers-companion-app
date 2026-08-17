@@ -1,4 +1,4 @@
-import { Image } from 'react-native';
+import { FlatList, Image } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 import PestControl from './pestControl';
@@ -262,5 +262,31 @@ describe('PestControl screen', () => {
 			screen.getByPlaceholderText('Search Pest Control Trucks...').props.value,
 		).toBe('');
 		expect(screen.getByText('Other Truck')).toBeVisible();
+	});
+
+	it('shows only the first page of trucks, revealing more as the list is scrolled', async () => {
+		const manyTrucks = Array.from({ length: 25 }, (_, i) => ({
+			id: i,
+			name: `Truck Number ${i}`,
+			image: '',
+			season: 1,
+			episode: 1,
+			episodeUrl: '',
+		}));
+		(getPestControlTrucks as jest.Mock).mockResolvedValue(manyTrucks);
+
+		render(<PestControl />);
+		await flush();
+
+		expect(screen.getByText('Truck Number 0')).toBeVisible();
+		expect(screen.getByText('Truck Number 19')).toBeVisible();
+		expect(screen.queryByText('Truck Number 20')).toBeNull();
+		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(20);
+
+		act(() => {
+			screen.UNSAFE_getByType(FlatList).props.onEndReached();
+		});
+
+		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(25);
 	});
 });
