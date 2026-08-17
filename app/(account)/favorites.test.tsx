@@ -186,6 +186,8 @@ describe('Favorites screen', () => {
 		expect(screen.getByText('Linda Belcher')).toBeVisible();
 
 		fireEvent.press(screen.getByLabelText('Show filter options'));
+		// Gender/hair filters only appear once narrowed to Characters.
+		fireEvent.press(screen.getByLabelText('Filter by Characters'));
 		fireEvent.press(screen.getByLabelText('Filter by gender: Female'));
 
 		expect(screen.queryByText('Bob Belcher')).toBeNull();
@@ -231,6 +233,7 @@ describe('Favorites screen', () => {
 		render(<Favorites />);
 
 		fireEvent.press(screen.getByLabelText('Show filter options'));
+		fireEvent.press(screen.getByLabelText('Filter by Characters'));
 		fireEvent.press(screen.getByLabelText('Filter by gender: Female'));
 		expect(screen.queryByText('Bob Belcher')).toBeNull();
 
@@ -294,5 +297,40 @@ describe('Favorites screen', () => {
 		});
 
 		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(25);
+	});
+
+	it('search bar only narrows among favorited items, not the full item list', () => {
+		(useFavorites as jest.Mock).mockReturnValue({
+			isFavorited: () => true,
+			removeFavorite: mockRemoveFavorite,
+			loading: false,
+		});
+		render(<Favorites />);
+
+		expect(screen.getByText('Favorited Burger')).toBeVisible();
+		expect(screen.getByText('Unfavorited Character')).toBeVisible();
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search your favorites...'),
+			'favorited burger',
+		);
+
+		expect(screen.getByText('Favorited Burger')).toBeVisible();
+		expect(screen.queryByText('Unfavorited Character')).toBeNull();
+	});
+
+	it('hides Gender/Hair Color filters until the Characters category pill is selected', () => {
+		(useFavorites as jest.Mock).mockReturnValue({
+			isFavorited: () => true,
+			removeFavorite: mockRemoveFavorite,
+			loading: false,
+		});
+		render(<Favorites />);
+
+		fireEvent.press(screen.getByLabelText('Show filter options'));
+		expect(screen.queryByLabelText('Filter by gender: Male')).toBeNull();
+
+		fireEvent.press(screen.getByLabelText('Filter by Characters'));
+		expect(screen.getByLabelText('Filter by gender: Male')).toBeVisible();
 	});
 });

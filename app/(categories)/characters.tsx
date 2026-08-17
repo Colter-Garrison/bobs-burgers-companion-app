@@ -1,14 +1,28 @@
-import React from 'react';
-import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import React, { useCallback } from 'react';
+import {
+	Image,
+	Pressable,
+	ScrollView,
+	Text,
+	TextInput,
+	View,
+} from 'react-native';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { Character, getCharacters } from '../../hooks/fetchCharacters';
 import { useCategoryData } from '../../hooks/useCategoryData';
+import { useCategorySearch } from '../../hooks/useCategorySearch';
+import { useAttributeFilters } from '../../hooks/useAttributeFilters';
 import { useFavorites } from '../../hooks/useFavorites';
 import { composeCharacterShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
+import { FilterPanel } from '../../components/FilterPanel';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
 import { OfflineBanner } from '../../components/OfflineBanner';
+
+const getSearchableText = (character: Character) =>
+	`${character.name} ${composeCharacterShortBio(character)}`;
 
 export default function Characters() {
 	const router = useRouter();
@@ -20,6 +34,30 @@ export default function Characters() {
 		retry,
 		cachedAt,
 	} = useCategoryData<Character>(getCharacters, 'characters');
+	const {
+		query,
+		setQuery,
+		filteredItems: searchedCharacters,
+	} = useCategorySearch(characters, getSearchableText);
+	const attributeFilters = useAttributeFilters<Character>();
+
+	// Same reasoning as app/index.tsx: this is a Drawer.Screen that stays
+	// mounted when you navigate away, so a typed-in query/filter/sort
+	// would otherwise still be sitting here the next time you land back.
+	useFocusEffect(
+		useCallback(() => {
+			return () => {
+				setQuery('');
+				attributeFilters.reset();
+			};
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+		}, []),
+	);
+
+	const visibleCharacters = attributeFilters.sortItems(
+		searchedCharacters.filter(attributeFilters.matches),
+		(character) => character.name,
+	);
 
 	const handlePress = (character: Character) => {
 		router.push({
@@ -39,11 +77,28 @@ export default function Characters() {
 	return (
 		<ScrollView className='bg-bbGreen'>
 			<View className='flex-col gap-2 p-2'>
+				<TextInput
+					placeholder='Search Characters...'
+					placeholderTextColor='#E8242F'
+					value={query}
+					onChangeText={setQuery}
+					className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
+				/>
+				<FilterPanel
+					showGenderHairFilters
+					sortDirection={attributeFilters.sortDirection}
+					onToggleSort={attributeFilters.toggleSort}
+					genders={attributeFilters.genders}
+					hairColors={attributeFilters.hairColors}
+					onToggleGender={attributeFilters.toggleGender}
+					onToggleHair={attributeFilters.toggleHair}
+					activeCount={attributeFilters.activeCount}
+				/>
 				{cachedAt ? (
 					<OfflineBanner cachedAt={cachedAt} onRetry={retry} />
 				) : null}
-				{characters.length > 0 ? (
-					characters.map((character) => {
+				{visibleCharacters.length > 0 ? (
+					visibleCharacters.map((character) => {
 						return (
 							<View
 								key={character.id}

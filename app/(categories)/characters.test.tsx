@@ -12,6 +12,16 @@ jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
 
+// See app/index.test.tsx's identical mock for why this is needed: a bare
+// RNTL render has no real navigation container, and characters.tsx now
+// calls useFocusEffect to clear its search query/filters on blur.
+let focusEffectCleanup: (() => void) | undefined;
+jest.mock('@react-navigation/native', () => ({
+	useFocusEffect: (callback: () => void | (() => void)) => {
+		focusEffectCleanup = callback() ?? undefined;
+	},
+}));
+
 const baseCharacter = {
 	id: 1,
 	name: 'Bob Belcher',
@@ -145,6 +155,69 @@ describe('Characters screen', () => {
 		});
 
 		expect(getCharacters).toHaveBeenCalledTimes(2);
+		expect(screen.getByText('Bob Belcher')).toBeVisible();
+	});
+
+	it('search bar narrows the list to characters matching the query', async () => {
+		(getCharacters as jest.Mock).mockResolvedValue([
+			baseCharacter,
+			{ ...baseCharacter, id: 2, name: 'Linda Belcher' },
+		]);
+		render(<Characters />);
+		await flush();
+
+		expect(screen.getByText('Bob Belcher')).toBeVisible();
+		expect(screen.getByText('Linda Belcher')).toBeVisible();
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search Characters...'),
+			'linda',
+		);
+
+		expect(screen.queryByText('Bob Belcher')).toBeNull();
+		expect(screen.getByText('Linda Belcher')).toBeVisible();
+	});
+
+	it('Filter By shows Gender and Hair Color, with no category picker', async () => {
+		(getCharacters as jest.Mock).mockResolvedValue([
+			baseCharacter,
+			{ ...baseCharacter, id: 2, name: 'Linda Belcher', gender: 'Female' },
+		]);
+		render(<Characters />);
+		await flush();
+		fireEvent.press(screen.getByLabelText('Show filter options'));
+
+		expect(screen.queryByLabelText('Filter by Characters')).toBeNull();
+		expect(screen.getByLabelText('Filter by gender: Male')).toBeVisible();
+		expect(screen.getByLabelText('Filter by hair color: Blonde')).toBeVisible();
+
+		fireEvent.press(screen.getByLabelText('Filter by gender: Female'));
+
+		expect(screen.queryByText('Bob Belcher')).toBeNull();
+		expect(screen.getByText('Linda Belcher')).toBeVisible();
+	});
+
+	it('clears the search query and filters when the screen loses focus', async () => {
+		(getCharacters as jest.Mock).mockResolvedValue([
+			baseCharacter,
+			{ ...baseCharacter, id: 2, name: 'Linda Belcher' },
+		]);
+		render(<Characters />);
+		await flush();
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search Characters...'),
+			'linda',
+		);
+		expect(screen.queryByText('Bob Belcher')).toBeNull();
+
+		act(() => {
+			focusEffectCleanup?.();
+		});
+
+		expect(
+			screen.getByPlaceholderText('Search Characters...').props.value,
+		).toBe('');
 		expect(screen.getByText('Bob Belcher')).toBeVisible();
 	});
 });

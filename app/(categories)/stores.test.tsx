@@ -13,6 +13,16 @@ jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
 
+// See app/index.test.tsx's identical mock for why this is needed: a bare
+// RNTL render has no real navigation container, and stores.tsx now
+// calls useFocusEffect to clear its search query/sort on blur.
+let focusEffectCleanup: (() => void) | undefined;
+jest.mock('@react-navigation/native', () => ({
+	useFocusEffect: (callback: () => void | (() => void)) => {
+		focusEffectCleanup = callback() ?? undefined;
+	},
+}));
+
 async function flush() {
 	await act(async () => {
 		await Promise.resolve();
@@ -162,5 +172,97 @@ describe('Stores screen', () => {
 
 		expect(getStoresNextDoor).toHaveBeenCalledTimes(2);
 		expect(screen.getByText('Test Store')).toBeVisible();
+	});
+
+	it('search bar narrows the list to stores matching the query', async () => {
+		(getStoresNextDoor as jest.Mock).mockResolvedValue([
+			{
+				id: 1,
+				name: 'Test Store',
+				image: '',
+				season: 1,
+				episode: 2,
+				episodeUrl: '',
+			},
+			{
+				id: 2,
+				name: 'Other Store',
+				image: '',
+				season: 1,
+				episode: 3,
+				episodeUrl: '',
+			},
+		]);
+		render(<Stores />);
+		await flush();
+
+		expect(screen.getByText('Test Store')).toBeVisible();
+		expect(screen.getByText('Other Store')).toBeVisible();
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search Stores Next Door...'),
+			'test',
+		);
+
+		expect(screen.getByText('Test Store')).toBeVisible();
+		expect(screen.queryByText('Other Store')).toBeNull();
+	});
+
+	it('Filter By only offers Sort, with no category or gender/hair options', async () => {
+		(getStoresNextDoor as jest.Mock).mockResolvedValue([
+			{
+				id: 1,
+				name: 'Test Store',
+				image: '',
+				season: 1,
+				episode: 2,
+				episodeUrl: '',
+			},
+		]);
+		render(<Stores />);
+		await flush();
+		fireEvent.press(screen.getByLabelText('Show filter options'));
+
+		expect(screen.getByLabelText('Tap to sort A to Z')).toBeVisible();
+		expect(screen.queryByLabelText('Filter by Characters')).toBeNull();
+		expect(screen.queryByLabelText('Filter by gender: Male')).toBeNull();
+	});
+
+	it('clears the search query when the screen loses focus', async () => {
+		(getStoresNextDoor as jest.Mock).mockResolvedValue([
+			{
+				id: 1,
+				name: 'Test Store',
+				image: '',
+				season: 1,
+				episode: 2,
+				episodeUrl: '',
+			},
+			{
+				id: 2,
+				name: 'Other Store',
+				image: '',
+				season: 1,
+				episode: 3,
+				episodeUrl: '',
+			},
+		]);
+		render(<Stores />);
+		await flush();
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search Stores Next Door...'),
+			'test',
+		);
+		expect(screen.queryByText('Other Store')).toBeNull();
+
+		act(() => {
+			focusEffectCleanup?.();
+		});
+
+		expect(
+			screen.getByPlaceholderText('Search Stores Next Door...').props.value,
+		).toBe('');
+		expect(screen.getByText('Other Store')).toBeVisible();
 	});
 });

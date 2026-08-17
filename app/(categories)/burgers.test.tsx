@@ -13,6 +13,22 @@ jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
 
+// See app/index.test.tsx's identical mock for why this is needed: a bare
+// RNTL render has no real navigation container, and burgers.tsx now calls
+// useFocusEffect to clear its search query/sort on blur.
+let focusEffectCleanup: (() => void) | undefined;
+jest.mock('@react-navigation/native', () => ({
+	useFocusEffect: (callback: () => void | (() => void)) => {
+		focusEffectCleanup = callback() ?? undefined;
+	},
+}));
+
+async function flush() {
+	await act(async () => {
+		await Promise.resolve();
+	});
+}
+
 describe('Burgers screen', () => {
 	const mockAddFavorite = jest.fn();
 	const mockRemoveFavorite = jest.fn();
@@ -141,5 +157,77 @@ describe('Burgers screen', () => {
 			pathname: '/detail/[category]/[id]',
 			params: { category: 'burgers', id: '1' },
 		});
+	});
+
+	it('search bar narrows the list to burgers matching the query, and shows everything when cleared', async () => {
+		(getBurgersOfTheDay as jest.Mock).mockResolvedValue([
+			{ id: 1, name: 'Test Burger', price: '$6.75', season: 1, episode: 1 },
+			{ id: 2, name: 'Other Burger', price: '$5.00', season: 1, episode: 2 },
+		]);
+
+		render(<Burgers />);
+		await flush();
+
+		expect(screen.getByText('Test Burger')).toBeVisible();
+		expect(screen.getByText('Other Burger')).toBeVisible();
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search Burgers of the Day...'),
+			'test',
+		);
+
+		expect(screen.getByText('Test Burger')).toBeVisible();
+		expect(screen.queryByText('Other Burger')).toBeNull();
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search Burgers of the Day...'),
+			'',
+		);
+
+		expect(screen.getByText('Other Burger')).toBeVisible();
+	});
+
+	it('Filter By only offers Sort, with no category or gender/hair options', async () => {
+		(getBurgersOfTheDay as jest.Mock).mockResolvedValue([
+			{ id: 1, name: 'Test Burger', price: '$6.75', season: 1, episode: 1 },
+			{ id: 2, name: 'Other Burger', price: '$5.00', season: 1, episode: 2 },
+		]);
+
+		render(<Burgers />);
+		await flush();
+		fireEvent.press(screen.getByLabelText('Show filter options'));
+
+		expect(screen.getByLabelText('Tap to sort A to Z')).toBeVisible();
+		expect(screen.queryByLabelText('Filter by Characters')).toBeNull();
+		expect(screen.queryByLabelText('Filter by gender: Male')).toBeNull();
+
+		fireEvent.press(screen.getByLabelText('Tap to sort A to Z'));
+
+		expect(screen.getByText('Other Burger')).toBeVisible();
+	});
+
+	it('clears the search query and sort when the screen loses focus', async () => {
+		(getBurgersOfTheDay as jest.Mock).mockResolvedValue([
+			{ id: 1, name: 'Test Burger', price: '$6.75', season: 1, episode: 1 },
+			{ id: 2, name: 'Other Burger', price: '$5.00', season: 1, episode: 2 },
+		]);
+
+		render(<Burgers />);
+		await flush();
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search Burgers of the Day...'),
+			'test',
+		);
+		expect(screen.queryByText('Other Burger')).toBeNull();
+
+		act(() => {
+			focusEffectCleanup?.();
+		});
+
+		expect(
+			screen.getByPlaceholderText('Search Burgers of the Day...').props.value,
+		).toBe('');
+		expect(screen.getByText('Other Burger')).toBeVisible();
 	});
 });

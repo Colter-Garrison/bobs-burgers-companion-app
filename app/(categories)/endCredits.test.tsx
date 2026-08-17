@@ -13,6 +13,16 @@ jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
 
+// See app/index.test.tsx's identical mock for why this is needed: a bare
+// RNTL render has no real navigation container, and endCredits.tsx now
+// calls useFocusEffect to clear its search query/sort on blur.
+let focusEffectCleanup: (() => void) | undefined;
+jest.mock('@react-navigation/native', () => ({
+	useFocusEffect: (callback: () => void | (() => void)) => {
+		focusEffectCleanup = callback() ?? undefined;
+	},
+}));
+
 async function flush() {
 	await act(async () => {
 		await Promise.resolve();
@@ -137,6 +147,87 @@ describe('EndCredits screen', () => {
 		});
 
 		expect(getEndCreditsSequences).toHaveBeenCalledTimes(2);
+		expect(
+			screen.getByText(
+				'A hand-drawn end credits sequence from Season 1, Episode 2.',
+			),
+		).toBeVisible();
+	});
+
+	it('search bar narrows the list to end credits matching the query', async () => {
+		(getEndCreditsSequences as jest.Mock).mockResolvedValue([
+			{ id: 1, image: '', season: 1, episode: 2, episodeUrl: '' },
+			{ id: 2, image: '', season: 3, episode: 4, episodeUrl: '' },
+		]);
+		render(<EndCredits />);
+		await flush();
+
+		expect(
+			screen.getByText(
+				'A hand-drawn end credits sequence from Season 1, Episode 2.',
+			),
+		).toBeVisible();
+		expect(
+			screen.getByText(
+				'A hand-drawn end credits sequence from Season 3, Episode 4.',
+			),
+		).toBeVisible();
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search End Credits...'),
+			'season 3',
+		);
+
+		expect(
+			screen.queryByText(
+				'A hand-drawn end credits sequence from Season 1, Episode 2.',
+			),
+		).toBeNull();
+		expect(
+			screen.getByText(
+				'A hand-drawn end credits sequence from Season 3, Episode 4.',
+			),
+		).toBeVisible();
+	});
+
+	it('Filter By only offers Sort, with no category or gender/hair options', async () => {
+		(getEndCreditsSequences as jest.Mock).mockResolvedValue([
+			{ id: 1, image: '', season: 1, episode: 2, episodeUrl: '' },
+		]);
+		render(<EndCredits />);
+		await flush();
+		fireEvent.press(screen.getByLabelText('Show filter options'));
+
+		expect(screen.getByLabelText('Tap to sort A to Z')).toBeVisible();
+		expect(screen.queryByLabelText('Filter by Characters')).toBeNull();
+		expect(screen.queryByLabelText('Filter by gender: Male')).toBeNull();
+	});
+
+	it('clears the search query when the screen loses focus', async () => {
+		(getEndCreditsSequences as jest.Mock).mockResolvedValue([
+			{ id: 1, image: '', season: 1, episode: 2, episodeUrl: '' },
+			{ id: 2, image: '', season: 3, episode: 4, episodeUrl: '' },
+		]);
+		render(<EndCredits />);
+		await flush();
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search End Credits...'),
+			'season 3',
+		);
+		expect(
+			screen.queryByText(
+				'A hand-drawn end credits sequence from Season 1, Episode 2.',
+			),
+		).toBeNull();
+
+		act(() => {
+			focusEffectCleanup?.();
+		});
+
+		expect(
+			screen.getByPlaceholderText('Search End Credits...').props.value,
+		).toBe('');
 		expect(
 			screen.getByText(
 				'A hand-drawn end credits sequence from Season 1, Episode 2.',

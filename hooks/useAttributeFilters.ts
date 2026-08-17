@@ -1,5 +1,4 @@
 import { useCallback, useState } from 'react';
-import { SearchItem } from './useSearchableItems';
 
 // Only Characters carry gender/hair at all, so these filters have no
 // effect on the other five categories' items — they just pass through
@@ -52,7 +51,18 @@ function hairSubstringsFor(option: HairOption): string[] {
 	return [option.toLowerCase()];
 }
 
-export function useAttributeFilters() {
+// Generic over T (unconstrained, rather than `T extends { gender?,
+// hair? }`) so this one hook serves both Home/Favorites' SearchItem
+// lists and, now, the six single-category screens' own raw item types
+// (Character, Burger, Episode, ...) — most of which have neither field
+// at all. TypeScript's "weak type" detection rejects a real type with
+// zero overlap (e.g. Burger) against an all-optional constraint like
+// that, even though it's exactly the intended case here, so matches()
+// reads item.gender/item.hair through a narrow internal cast instead.
+// sortItems takes an explicit key extractor for the same underlying
+// reason: there's no single field name ("label" vs "name" vs a composed
+// bio) common across all of them.
+export function useAttributeFilters<T>() {
 	const [genders, setGenders] = useState<Set<GenderOption>>(new Set());
 	const [hairColors, setHairColors] = useState<Set<HairOption>>(new Set());
 	const [sortDirection, setSortDirection] = useState<SortDirection | null>(
@@ -83,19 +93,26 @@ export function useAttributeFilters() {
 	// or the search query), every active facet must match — the standard
 	// faceted-filter combination.
 	const matches = useCallback(
-		(item: SearchItem) => {
+		(item: T) => {
+			// See the function comment above the hook itself for why this
+			// reads through a cast rather than a generic constraint.
+			const { gender, hair: hairValue } = item as {
+				gender?: string;
+				hair?: string;
+			};
+
 			if (genders.size > 0) {
 				if (
-					!item.gender ||
-					![...genders].some((option) => matchesWord(item.gender!, option))
+					!gender ||
+					![...genders].some((option) => matchesWord(gender, option))
 				) {
 					return false;
 				}
 			}
 
 			if (hairColors.size > 0) {
-				if (!item.hair) return false;
-				const hair = item.hair.toLowerCase();
+				if (!hairValue) return false;
+				const hair = hairValue.toLowerCase();
 				const matchesAny = [...hairColors].some((option) => {
 					if (option === 'Other') {
 						return !HAIR_OPTIONS.filter((o) => o !== 'Other').some(
@@ -114,9 +131,11 @@ export function useAttributeFilters() {
 	);
 
 	const sortItems = useCallback(
-		(items: SearchItem[]) => {
+		(items: T[], getSortKey: (item: T) => string) => {
 			if (!sortDirection) return items;
-			const sorted = [...items].sort((a, b) => a.label.localeCompare(b.label));
+			const sorted = [...items].sort((a, b) =>
+				getSortKey(a).localeCompare(getSortKey(b)),
+			);
 			return sortDirection === 'desc' ? sorted.reverse() : sorted;
 		},
 		[sortDirection],

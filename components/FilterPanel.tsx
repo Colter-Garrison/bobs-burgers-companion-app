@@ -11,8 +11,17 @@ import {
 import { CategoryFilterPills, CategoryFilter } from './CategoryFilterPills';
 
 interface FilterPanelProps {
-	categoryFilter: CategoryFilter;
-	onSelectCategory: (category: CategoryFilter) => void;
+	// Omitted entirely on a single-category screen (Burgers, Characters,
+	// End Credits, Episodes, Pest Control Trucks, Stores) — there's
+	// nothing to pick a category FROM when the screen already is one.
+	// Home and Favorites, which search/filter across all six, pass both.
+	categoryFilter?: CategoryFilter;
+	onSelectCategory?: (category: CategoryFilter) => void;
+	// Only Characters carry gender/hair — Home/Favorites derive this from
+	// categoryFilter === 'Characters'; the standalone Characters screen
+	// passes true unconditionally (no category picker to derive it
+	// from); the other five category screens pass false (or omit it).
+	showGenderHairFilters?: boolean;
 	genders: Set<GenderOption>;
 	hairColors: Set<HairOption>;
 	sortDirection: SortDirection | null;
@@ -32,11 +41,10 @@ const pillTextClassName = (isSelected: boolean) =>
 		? 'font-chewy text-[14px] text-bbYellow'
 		: 'font-chewy text-[14px] text-bbRed';
 
-// Only Characters carry gender/hair at all — these filters have no effect
-// on the other five categories' items (see hooks/useAttributeFilters.ts).
 export function FilterPanel({
 	categoryFilter,
 	onSelectCategory,
+	showGenderHairFilters = false,
 	genders,
 	hairColors,
 	sortDirection,
@@ -50,7 +58,8 @@ export function FilterPanel({
 	// this panel instead of always sitting visible on its own — otherwise
 	// a collapsed panel with a category chosen would look like nothing
 	// was filtered.
-	const displayCount = activeCount + (categoryFilter === 'All' ? 0 : 1);
+	const displayCount =
+		activeCount + (categoryFilter && categoryFilter !== 'All' ? 1 : 0);
 
 	return (
 		<View className='gap-2 p-2'>
@@ -82,67 +91,77 @@ export function FilterPanel({
 
 			{isExpanded ? (
 				<View className='gap-2' testID='filter-panel-options'>
-					<View className='gap-1'>
-						<Text className='font-chewy text-[12px] text-bbRed'>Category</Text>
-						<CategoryFilterPills
-							selected={categoryFilter}
-							onSelect={onSelectCategory}
-						/>
-					</View>
-
-					<View className='gap-1'>
-						<Text className='font-chewy text-[12px] text-bbRed'>Gender</Text>
-						<View
-							className='gap-2'
-							style={{ flexDirection: 'row', flexWrap: 'wrap' }}
-						>
-							{GENDER_OPTIONS.map((option) => {
-								const isSelected = genders.has(option);
-								return (
-									<Pressable
-										key={option}
-										onPress={() => onToggleGender(option)}
-										accessibilityRole='button'
-										accessibilityLabel={`Filter by gender: ${option}`}
-										accessibilityState={{ selected: isSelected }}
-										className={pillClassName(isSelected)}
-									>
-										<Text className={pillTextClassName(isSelected)}>
-											{option}
-										</Text>
-									</Pressable>
-								);
-							})}
+					{categoryFilter && onSelectCategory ? (
+						<View className='gap-1'>
+							<Text className='font-chewy text-[12px] text-bbRed'>
+								Category
+							</Text>
+							<CategoryFilterPills
+								selected={categoryFilter}
+								onSelect={onSelectCategory}
+							/>
 						</View>
-					</View>
+					) : null}
 
-					<View className='gap-1'>
-						<Text className='font-chewy text-[12px] text-bbRed'>
-							Hair Color
-						</Text>
-						<View
-							className='gap-2'
-							style={{ flexDirection: 'row', flexWrap: 'wrap' }}
-						>
-							{HAIR_OPTIONS.map((option) => {
-								const isSelected = hairColors.has(option);
-								return (
-									<Pressable
-										key={option}
-										onPress={() => onToggleHair(option)}
-										accessibilityRole='button'
-										accessibilityLabel={`Filter by hair color: ${option}`}
-										accessibilityState={{ selected: isSelected }}
-										className={pillClassName(isSelected)}
-									>
-										<Text className={pillTextClassName(isSelected)}>
-											{option}
-										</Text>
-									</Pressable>
-								);
-							})}
-						</View>
-					</View>
+					{showGenderHairFilters ? (
+						<>
+							<View className='gap-1'>
+								<Text className='font-chewy text-[12px] text-bbRed'>
+									Gender
+								</Text>
+								<View
+									className='gap-2'
+									style={{ flexDirection: 'row', flexWrap: 'wrap' }}
+								>
+									{GENDER_OPTIONS.map((option) => {
+										const isSelected = genders.has(option);
+										return (
+											<Pressable
+												key={option}
+												onPress={() => onToggleGender(option)}
+												accessibilityRole='button'
+												accessibilityLabel={`Filter by gender: ${option}`}
+												accessibilityState={{ selected: isSelected }}
+												className={pillClassName(isSelected)}
+											>
+												<Text className={pillTextClassName(isSelected)}>
+													{option}
+												</Text>
+											</Pressable>
+										);
+									})}
+								</View>
+							</View>
+
+							<View className='gap-1'>
+								<Text className='font-chewy text-[12px] text-bbRed'>
+									Hair Color
+								</Text>
+								<View
+									className='gap-2'
+									style={{ flexDirection: 'row', flexWrap: 'wrap' }}
+								>
+									{HAIR_OPTIONS.map((option) => {
+										const isSelected = hairColors.has(option);
+										return (
+											<Pressable
+												key={option}
+												onPress={() => onToggleHair(option)}
+												accessibilityRole='button'
+												accessibilityLabel={`Filter by hair color: ${option}`}
+												accessibilityState={{ selected: isSelected }}
+												className={pillClassName(isSelected)}
+											>
+												<Text className={pillTextClassName(isSelected)}>
+													{option}
+												</Text>
+											</Pressable>
+										);
+									})}
+								</View>
+							</View>
+						</>
+					) : null}
 
 					<View className='gap-1'>
 						<Text className='font-chewy text-[12px] text-bbRed'>Sort</Text>

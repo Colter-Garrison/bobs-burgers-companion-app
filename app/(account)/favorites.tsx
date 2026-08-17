@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
-import { FlatList, Text, View } from 'react-native';
+import { FlatList, Text, TextInput, View } from 'react-native';
 import { SearchItem, useSearchableItems } from '../../hooks/useSearchableItems';
 import { detailHref } from '../../lib/detailRoute';
 import { useFavorites } from '../../hooks/useFavorites';
@@ -29,7 +29,8 @@ export default function Favorites() {
 		loading: favoritesLoading,
 	} = useFavorites();
 	const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('All');
-	const attributeFilters = useAttributeFilters();
+	const [query, setQuery] = useState('');
+	const attributeFilters = useAttributeFilters<SearchItem>();
 
 	// Reachable by direct URL, not just the drawer link (which already
 	// hides itself when logged out) — same guard as app/account.tsx,
@@ -52,6 +53,7 @@ export default function Favorites() {
 		useCallback(() => {
 			return () => {
 				setCategoryFilter('All');
+				setQuery('');
 				attributeFilters.reset();
 			};
 			// attributeFilters.reset is stable (useCallback with no deps in
@@ -68,30 +70,35 @@ export default function Favorites() {
 		[router],
 	);
 
-	const favoritedItems = useMemo(
-		() =>
-			attributeFilters.sortItems(
-				items
-					.filter((item) => isFavorited(item.favoriteCategory, item.itemId))
-					.filter(
-						(item) =>
-							categoryFilter === 'All' || item.category === categoryFilter,
-					)
-					.filter(attributeFilters.matches),
-			),
+	const favoritedItems = useMemo(() => {
+		const trimmedQuery = query.trim().toLowerCase();
+		return attributeFilters.sortItems(
+			items
+				.filter((item) => isFavorited(item.favoriteCategory, item.itemId))
+				.filter(
+					(item) =>
+						categoryFilter === 'All' || item.category === categoryFilter,
+				)
+				.filter(
+					(item) =>
+						!trimmedQuery || item.label.toLowerCase().includes(trimmedQuery),
+				)
+				.filter(attributeFilters.matches),
+			(item) => item.label,
+		);
 		// attributeFilters itself is a fresh object every render — its
 		// `matches`/`sortItems` functions are what this actually reads,
 		// and those are independently memoized (stable unless the
 		// filters/sort they close over actually changed).
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[
-			items,
-			isFavorited,
-			categoryFilter,
-			attributeFilters.matches,
-			attributeFilters.sortItems,
-		],
-	);
+	}, [
+		items,
+		isFavorited,
+		categoryFilter,
+		query,
+		attributeFilters.matches,
+		attributeFilters.sortItems,
+	]);
 	const { visibleItems, loadMore } = usePagination(favoritedItems);
 	const loading = itemsLoading || favoritesLoading;
 
@@ -135,9 +142,17 @@ export default function Favorites() {
 			initialNumToRender={PAGE_SIZE}
 			ListHeaderComponent={
 				<View className='gap-[10px]'>
+					<TextInput
+						placeholder='Search your favorites...'
+						placeholderTextColor='#E8242F'
+						value={query}
+						onChangeText={setQuery}
+						className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
+					/>
 					<FilterPanel
 						categoryFilter={categoryFilter}
 						onSelectCategory={setCategoryFilter}
+						showGenderHairFilters={categoryFilter === 'Characters'}
 						genders={attributeFilters.genders}
 						hairColors={attributeFilters.hairColors}
 						sortDirection={attributeFilters.sortDirection}

@@ -1,14 +1,28 @@
-import React from 'react';
-import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import React, { useCallback } from 'react';
+import {
+	Image,
+	Pressable,
+	ScrollView,
+	Text,
+	TextInput,
+	View,
+} from 'react-native';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { Store, getStoresNextDoor } from '../../hooks/fetchStoresNextDoor';
 import { useCategoryData } from '../../hooks/useCategoryData';
+import { useCategorySearch } from '../../hooks/useCategorySearch';
+import { useAttributeFilters } from '../../hooks/useAttributeFilters';
 import { useFavorites } from '../../hooks/useFavorites';
 import { composeStoreShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
+import { FilterPanel } from '../../components/FilterPanel';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
 import { OfflineBanner } from '../../components/OfflineBanner';
+
+const getSearchableText = (store: Store) =>
+	`${store.name} ${composeStoreShortBio(store)}`;
 
 export default function Stores() {
 	const router = useRouter();
@@ -20,6 +34,30 @@ export default function Stores() {
 		retry,
 		cachedAt,
 	} = useCategoryData<Store>(getStoresNextDoor, 'stores');
+	const {
+		query,
+		setQuery,
+		filteredItems: searchedStores,
+	} = useCategorySearch(stores, getSearchableText);
+	const attributeFilters = useAttributeFilters<Store>();
+
+	// Same reasoning as app/index.tsx: this is a Drawer.Screen that stays
+	// mounted when you navigate away, so a typed-in query/sort would
+	// otherwise still be sitting here the next time you land back here.
+	useFocusEffect(
+		useCallback(() => {
+			return () => {
+				setQuery('');
+				attributeFilters.reset();
+			};
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+		}, []),
+	);
+
+	const visibleStores = attributeFilters.sortItems(
+		searchedStores,
+		(store) => store.name,
+	);
 
 	const handlePress = (store: Store) => {
 		router.push({
@@ -39,11 +77,27 @@ export default function Stores() {
 	return (
 		<ScrollView className='bg-bbGreen'>
 			<View className='flex-col gap-2 p-2'>
+				<TextInput
+					placeholder='Search Stores Next Door...'
+					placeholderTextColor='#E8242F'
+					value={query}
+					onChangeText={setQuery}
+					className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
+				/>
+				<FilterPanel
+					sortDirection={attributeFilters.sortDirection}
+					onToggleSort={attributeFilters.toggleSort}
+					genders={attributeFilters.genders}
+					hairColors={attributeFilters.hairColors}
+					onToggleGender={attributeFilters.toggleGender}
+					onToggleHair={attributeFilters.toggleHair}
+					activeCount={attributeFilters.activeCount}
+				/>
 				{cachedAt ? (
 					<OfflineBanner cachedAt={cachedAt} onRetry={retry} />
 				) : null}
-				{stores.length > 0 ? (
-					stores.map((store) => (
+				{visibleStores.length > 0 ? (
+					visibleStores.map((store) => (
 						<View
 							key={store.id}
 							className='flex-row items-center justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'

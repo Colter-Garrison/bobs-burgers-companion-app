@@ -13,6 +13,16 @@ jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
 
+// See app/index.test.tsx's identical mock for why this is needed: a bare
+// RNTL render has no real navigation container, and pestControl.tsx now
+// calls useFocusEffect to clear its search query/sort on blur.
+let focusEffectCleanup: (() => void) | undefined;
+jest.mock('@react-navigation/native', () => ({
+	useFocusEffect: (callback: () => void | (() => void)) => {
+		focusEffectCleanup = callback() ?? undefined;
+	},
+}));
+
 async function flush() {
 	await act(async () => {
 		await Promise.resolve();
@@ -160,5 +170,97 @@ describe('PestControl screen', () => {
 
 		expect(getPestControlTrucks).toHaveBeenCalledTimes(2);
 		expect(screen.getByText('Test Truck')).toBeVisible();
+	});
+
+	it('search bar narrows the list to trucks matching the query', async () => {
+		(getPestControlTrucks as jest.Mock).mockResolvedValue([
+			{
+				id: 1,
+				name: 'Test Truck',
+				image: '',
+				season: 1,
+				episode: 2,
+				episodeUrl: '',
+			},
+			{
+				id: 2,
+				name: 'Other Truck',
+				image: '',
+				season: 1,
+				episode: 3,
+				episodeUrl: '',
+			},
+		]);
+		render(<PestControl />);
+		await flush();
+
+		expect(screen.getByText('Test Truck')).toBeVisible();
+		expect(screen.getByText('Other Truck')).toBeVisible();
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search Pest Control Trucks...'),
+			'test',
+		);
+
+		expect(screen.getByText('Test Truck')).toBeVisible();
+		expect(screen.queryByText('Other Truck')).toBeNull();
+	});
+
+	it('Filter By only offers Sort, with no category or gender/hair options', async () => {
+		(getPestControlTrucks as jest.Mock).mockResolvedValue([
+			{
+				id: 1,
+				name: 'Test Truck',
+				image: '',
+				season: 1,
+				episode: 2,
+				episodeUrl: '',
+			},
+		]);
+		render(<PestControl />);
+		await flush();
+		fireEvent.press(screen.getByLabelText('Show filter options'));
+
+		expect(screen.getByLabelText('Tap to sort A to Z')).toBeVisible();
+		expect(screen.queryByLabelText('Filter by Characters')).toBeNull();
+		expect(screen.queryByLabelText('Filter by gender: Male')).toBeNull();
+	});
+
+	it('clears the search query when the screen loses focus', async () => {
+		(getPestControlTrucks as jest.Mock).mockResolvedValue([
+			{
+				id: 1,
+				name: 'Test Truck',
+				image: '',
+				season: 1,
+				episode: 2,
+				episodeUrl: '',
+			},
+			{
+				id: 2,
+				name: 'Other Truck',
+				image: '',
+				season: 1,
+				episode: 3,
+				episodeUrl: '',
+			},
+		]);
+		render(<PestControl />);
+		await flush();
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search Pest Control Trucks...'),
+			'test',
+		);
+		expect(screen.queryByText('Other Truck')).toBeNull();
+
+		act(() => {
+			focusEffectCleanup?.();
+		});
+
+		expect(
+			screen.getByPlaceholderText('Search Pest Control Trucks...').props.value,
+		).toBe('');
+		expect(screen.getByText('Other Truck')).toBeVisible();
 	});
 });

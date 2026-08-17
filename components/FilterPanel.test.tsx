@@ -10,6 +10,7 @@ describe('FilterPanel', () => {
 	const baseProps = {
 		categoryFilter: 'All' as const,
 		onSelectCategory: mockOnSelectCategory,
+		showGenderHairFilters: true,
 		genders: new Set<'Male' | 'Female'>(),
 		hairColors: new Set<
 			'Blonde' | 'Brown' | 'Black' | 'Red' | 'Gray' | 'Bald' | 'Other'
@@ -123,5 +124,86 @@ describe('FilterPanel', () => {
 			screen.getByLabelText('Filter by hair color: Red').props
 				.accessibilityState,
 		).toEqual({ selected: true });
+	});
+
+	// Regression coverage for the two new scoped-down configurations: the
+	// standalone Characters screen (gender/hair, no category picker) and
+	// the other five single-category screens (Sort only, no category
+	// picker, no gender/hair — those fields don't exist on their data).
+	describe('scoped-down configurations', () => {
+		it('omits the Category section entirely when categoryFilter/onSelectCategory are not provided', () => {
+			render(
+				<FilterPanel
+					showGenderHairFilters
+					genders={new Set()}
+					hairColors={new Set()}
+					sortDirection={null}
+					onToggleGender={mockOnToggleGender}
+					onToggleHair={mockOnToggleHair}
+					onToggleSort={mockOnToggleSort}
+					activeCount={0}
+				/>,
+			);
+			fireEvent.press(screen.getByLabelText('Show filter options'));
+
+			expect(screen.queryByLabelText('Filter by Characters')).toBeNull();
+			expect(screen.getByLabelText('Filter by gender: Male')).toBeVisible();
+		});
+
+		it('omits Gender/Hair Color when showGenderHairFilters is false, keeping only Sort', () => {
+			render(
+				<FilterPanel
+					showGenderHairFilters={false}
+					genders={new Set()}
+					hairColors={new Set()}
+					sortDirection={null}
+					onToggleGender={mockOnToggleGender}
+					onToggleHair={mockOnToggleHair}
+					onToggleSort={mockOnToggleSort}
+					activeCount={0}
+				/>,
+			);
+			fireEvent.press(screen.getByLabelText('Show filter options'));
+
+			expect(screen.queryByLabelText('Filter by gender: Male')).toBeNull();
+			expect(
+				screen.queryByLabelText('Filter by hair color: Blonde'),
+			).toBeNull();
+			expect(screen.getByLabelText('Tap to sort A to Z')).toBeVisible();
+		});
+
+		it('defaults showGenderHairFilters to false when omitted entirely', () => {
+			render(
+				<FilterPanel
+					genders={new Set()}
+					hairColors={new Set()}
+					sortDirection={null}
+					onToggleGender={mockOnToggleGender}
+					onToggleHair={mockOnToggleHair}
+					onToggleSort={mockOnToggleSort}
+					activeCount={0}
+				/>,
+			);
+			fireEvent.press(screen.getByLabelText('Show filter options'));
+
+			expect(screen.queryByLabelText('Filter by gender: Male')).toBeNull();
+		});
+
+		it('does not count category toward the badge when there is no category picker at all', () => {
+			render(
+				<FilterPanel
+					showGenderHairFilters
+					genders={new Set()}
+					hairColors={new Set()}
+					sortDirection='asc'
+					onToggleGender={mockOnToggleGender}
+					onToggleHair={mockOnToggleHair}
+					onToggleSort={mockOnToggleSort}
+					activeCount={1}
+				/>,
+			);
+
+			expect(screen.getByText('Filter By (1)')).toBeVisible();
+		});
 	});
 });

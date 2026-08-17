@@ -21,6 +21,21 @@ describe('useAttributeFilters', () => {
 		expect(result.current.matches(item)).toBe(true);
 	});
 
+	// Regression coverage: the five non-Character category screens
+	// (Burgers, End Credits, Episodes, Pest Control Trucks, Stores) use
+	// this same hook for their Sort-only Filter By pill, with item types
+	// that have no gender/hair fields at all — unlike Character or
+	// SearchItem, which at least have them as optional strings.
+	it('matches items of a type with no gender/hair fields at all, since those filters never activate for them', () => {
+		interface Burger {
+			id: number;
+			name: string;
+		}
+		const { result } = renderHook(() => useAttributeFilters<Burger>());
+
+		expect(result.current.matches({ id: 1, name: 'Test Burger' })).toBe(true);
+	});
+
 	describe('gender', () => {
 		it('matches items whose gender field contains the selected option, case-insensitively', () => {
 			const { result } = renderHook(() => useAttributeFilters());
@@ -141,34 +156,30 @@ describe('useAttributeFilters', () => {
 			makeCharacter({ id: 'b', label: 'Bob' }),
 		];
 
-		it('leaves order unchanged when no sort direction is active', () => {
-			const { result } = renderHook(() => useAttributeFilters());
+		const byLabel = (item: SearchItem) => item.label;
 
-			expect(result.current.sortItems(items).map((i) => i.label)).toEqual([
-				'Charlie',
-				'Alice',
-				'Bob',
-			]);
+		it('leaves order unchanged when no sort direction is active', () => {
+			const { result } = renderHook(() => useAttributeFilters<SearchItem>());
+
+			expect(
+				result.current.sortItems(items, byLabel).map((i) => i.label),
+			).toEqual(['Charlie', 'Alice', 'Bob']);
 		});
 
 		it('sorts ascending on the first toggle, descending on the second', () => {
-			const { result } = renderHook(() => useAttributeFilters());
+			const { result } = renderHook(() => useAttributeFilters<SearchItem>());
 
 			act(() => result.current.toggleSort());
 			expect(result.current.sortDirection).toBe('asc');
-			expect(result.current.sortItems(items).map((i) => i.label)).toEqual([
-				'Alice',
-				'Bob',
-				'Charlie',
-			]);
+			expect(
+				result.current.sortItems(items, byLabel).map((i) => i.label),
+			).toEqual(['Alice', 'Bob', 'Charlie']);
 
 			act(() => result.current.toggleSort());
 			expect(result.current.sortDirection).toBe('desc');
-			expect(result.current.sortItems(items).map((i) => i.label)).toEqual([
-				'Charlie',
-				'Bob',
-				'Alice',
-			]);
+			expect(
+				result.current.sortItems(items, byLabel).map((i) => i.label),
+			).toEqual(['Charlie', 'Bob', 'Alice']);
 		});
 	});
 

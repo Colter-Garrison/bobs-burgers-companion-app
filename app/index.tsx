@@ -23,7 +23,7 @@ export default function Index() {
 		useCharacterOfTheDay();
 	const [query, setQuery] = useState('');
 	const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('All');
-	const attributeFilters = useAttributeFilters();
+	const attributeFilters = useAttributeFilters<SearchItem>();
 
 	// Same reasoning as login.tsx/signup.tsx: Home is a Drawer.Screen that
 	// stays mounted when you navigate away, so a typed-in query (and a
@@ -52,7 +52,7 @@ export default function Index() {
 				(item) => categoryFilter === 'All' || item.category === categoryFilter,
 			)
 			.filter(attributeFilters.matches);
-		return attributeFilters.sortItems(matching);
+		return attributeFilters.sortItems(matching, (item) => item.label);
 		// attributeFilters itself is a fresh object every render — its
 		// `matches`/`sortItems` functions are what this actually reads,
 		// and those are independently memoized (stable unless the
@@ -169,6 +169,7 @@ export default function Index() {
 					<FilterPanel
 						categoryFilter={categoryFilter}
 						onSelectCategory={setCategoryFilter}
+						showGenderHairFilters={categoryFilter === 'Characters'}
 						genders={attributeFilters.genders}
 						hairColors={attributeFilters.hairColors}
 						sortDirection={attributeFilters.sortDirection}

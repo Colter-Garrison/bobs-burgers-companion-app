@@ -12,6 +12,16 @@ jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
 
+// See app/index.test.tsx's identical mock for why this is needed: a bare
+// RNTL render has no real navigation container, and episodes.tsx now
+// calls useFocusEffect to clear its search query/sort on blur.
+let focusEffectCleanup: (() => void) | undefined;
+jest.mock('@react-navigation/native', () => ({
+	useFocusEffect: (callback: () => void | (() => void)) => {
+		focusEffectCleanup = callback() ?? undefined;
+	},
+}));
+
 const mockEpisode = {
 	id: 1,
 	name: 'Human Flesh',
@@ -112,6 +122,61 @@ describe('Episodes screen', () => {
 		});
 
 		expect(getEpisodes).toHaveBeenCalledTimes(2);
+		expect(screen.getByText('Human Flesh')).toBeVisible();
+	});
+
+	it('search bar narrows the list to episodes matching the query', async () => {
+		(getEpisodes as jest.Mock).mockResolvedValue([
+			mockEpisode,
+			{ ...mockEpisode, id: 2, name: 'Sacred Cow' },
+		]);
+		render(<Episodes />);
+		await flush();
+
+		expect(screen.getByText('Human Flesh')).toBeVisible();
+		expect(screen.getByText('Sacred Cow')).toBeVisible();
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search Episodes...'),
+			'sacred',
+		);
+
+		expect(screen.queryByText('Human Flesh')).toBeNull();
+		expect(screen.getByText('Sacred Cow')).toBeVisible();
+	});
+
+	it('Filter By only offers Sort, with no category or gender/hair options', async () => {
+		(getEpisodes as jest.Mock).mockResolvedValue([mockEpisode]);
+		render(<Episodes />);
+		await flush();
+		fireEvent.press(screen.getByLabelText('Show filter options'));
+
+		expect(screen.getByLabelText('Tap to sort A to Z')).toBeVisible();
+		expect(screen.queryByLabelText('Filter by Characters')).toBeNull();
+		expect(screen.queryByLabelText('Filter by gender: Male')).toBeNull();
+	});
+
+	it('clears the search query when the screen loses focus', async () => {
+		(getEpisodes as jest.Mock).mockResolvedValue([
+			mockEpisode,
+			{ ...mockEpisode, id: 2, name: 'Sacred Cow' },
+		]);
+		render(<Episodes />);
+		await flush();
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search Episodes...'),
+			'sacred',
+		);
+		expect(screen.queryByText('Human Flesh')).toBeNull();
+
+		act(() => {
+			focusEffectCleanup?.();
+		});
+
+		expect(screen.getByPlaceholderText('Search Episodes...').props.value).toBe(
+			'',
+		);
 		expect(screen.getByText('Human Flesh')).toBeVisible();
 	});
 });

@@ -361,6 +361,9 @@ describe('Home / search screen', () => {
 		expect(screen.getByText('Linda Belcher')).toBeVisible();
 
 		fireEvent.press(screen.getByLabelText('Show filter options'));
+		// Gender/hair filters only appear once the user has narrowed to
+		// Characters — they're meaningless for the other five categories.
+		fireEvent.press(screen.getByLabelText('Filter by Characters'));
 		fireEvent.press(screen.getByLabelText('Filter by gender: Male'));
 
 		expect(screen.getByText('Bob Belcher')).toBeVisible();
@@ -477,6 +480,7 @@ describe('Home / search screen', () => {
 		);
 		await flush();
 		fireEvent.press(screen.getByLabelText('Show filter options'));
+		fireEvent.press(screen.getByLabelText('Filter by Characters'));
 		fireEvent.press(screen.getByLabelText('Filter by gender: Male'));
 		expect(screen.queryByText('Linda Belcher')).toBeNull();
 
@@ -492,5 +496,21 @@ describe('Home / search screen', () => {
 
 		expect(screen.getByText('Bob Belcher')).toBeVisible();
 		expect(screen.getByText('Linda Belcher')).toBeVisible();
+	});
+
+	it('hides Gender/Hair Color filters until the Characters category pill is selected', async () => {
+		render(<Index />);
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search burgers, characters, episodes...'),
+			'b',
+		);
+		await flush();
+		fireEvent.press(screen.getByLabelText('Show filter options'));
+
+		expect(screen.queryByLabelText('Filter by gender: Male')).toBeNull();
+
+		fireEvent.press(screen.getByLabelText('Filter by Characters'));
+
+		expect(screen.getByLabelText('Filter by gender: Male')).toBeVisible();
 	});
 });
