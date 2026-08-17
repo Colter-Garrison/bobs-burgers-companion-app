@@ -5,10 +5,12 @@ import Index from './index';
 import { useSearchableItems } from '../hooks/useSearchableItems';
 import { useFavorites } from '../hooks/useFavorites';
 import { useAuth } from '../hooks/useAuth';
+import { useCharacterOfTheDay } from '../hooks/useCharacterOfTheDay';
 
 jest.mock('../hooks/useSearchableItems');
 jest.mock('../hooks/useFavorites');
 jest.mock('../hooks/useAuth');
+jest.mock('../hooks/useCharacterOfTheDay');
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
@@ -69,6 +71,23 @@ describe('Home / search screen', () => {
 		});
 		(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' });
 		(useRouter as jest.Mock).mockReturnValue({ push: jest.fn() });
+		(useCharacterOfTheDay as jest.Mock).mockReturnValue({
+			character: {
+				id: 1,
+				name: 'Character of the Day Bob',
+				relatives: [],
+				wikiUrl: 'https://wiki',
+				image: 'https://img',
+				gender: 'Male',
+				hair: 'Black',
+				occupation: '',
+				allOccupations: [],
+				firstEpisode: '',
+				voicedBy: '',
+				url: 'https://url',
+			},
+			blurb: 'A great blurb about Bob.',
+		});
 	});
 
 	afterEach(() => {
@@ -79,6 +98,29 @@ describe('Home / search screen', () => {
 		render(<Index />);
 		expect(screen.queryByText('No results found.')).toBeNull();
 		expect(screen.queryByText('Test Burger')).toBeNull();
+	});
+
+	it('shows the Character of the Day card when the search bar is empty', () => {
+		render(<Index />);
+
+		expect(screen.getByText('Character of the Day')).toBeVisible();
+		expect(screen.getByText('Character of the Day Bob')).toBeVisible();
+		expect(screen.getByText('A great blurb about Bob.')).toBeVisible();
+	});
+
+	it('hides the Character of the Day card once the user starts typing, and brings it back when cleared', async () => {
+		render(<Index />);
+		expect(screen.getByText('Character of the Day')).toBeVisible();
+
+		const input = screen.getByPlaceholderText(
+			'Search burgers, characters, episodes...',
+		);
+		fireEvent.changeText(input, 'bob');
+		await flush();
+		expect(screen.queryByText('Character of the Day')).toBeNull();
+
+		fireEvent.changeText(input, '');
+		expect(screen.getByText('Character of the Day')).toBeVisible();
 	});
 
 	it('live-filters as the user types, case-insensitively, on partial matches', async () => {

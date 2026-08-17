@@ -17,10 +17,14 @@ import { CategoryFilter } from '../components/CategoryFilterPills';
 import { FilterPanel } from '../components/FilterPanel';
 import { CategorySkeleton } from '../components/CategorySkeleton';
 import { OfflineBanner } from '../components/OfflineBanner';
+import { CharacterOfTheDayCard } from '../components/CharacterOfTheDayCard';
+import { useCharacterOfTheDay } from '../hooks/useCharacterOfTheDay';
 
 export default function Index() {
 	const { items, error, retry, cachedAt } = useSearchableItems();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
+	const { character: characterOfTheDay, blurb: characterOfTheDayBlurb } =
+		useCharacterOfTheDay();
 	const [query, setQuery] = useState('');
 	const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('All');
 	const attributeFilters = useAttributeFilters();
@@ -199,6 +203,11 @@ export default function Index() {
 			ListEmptyComponent={
 				isSearching && !searchLoading ? (
 					<Text className='font-chewy text-bbRed'>No results found.</Text>
+				) : !isSearching && characterOfTheDay && characterOfTheDayBlurb ? (
+					<CharacterOfTheDayCard
+						character={characterOfTheDay}
+						blurb={characterOfTheDayBlurb}
+					/>
 				) : null
 			}
 		/>
