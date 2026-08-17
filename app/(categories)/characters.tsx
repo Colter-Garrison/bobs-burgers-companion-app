@@ -21,8 +21,11 @@ import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
 import { OfflineBanner } from '../../components/OfflineBanner';
 
-const getSearchableText = (character: Character) =>
-	`${character.name} ${composeCharacterShortBio(character)}`;
+// Name only, not the bio — the bio's "First appeared in <episode title>"
+// and relatives text pulls in unrelated matches (e.g. searching "Linda"
+// surfacing every character who first appeared in an episode with
+// "Linda" in the title), which isn't what a character name search means.
+const getSearchableText = (character: Character) => character.name;
 
 export default function Characters() {
 	const router = useRouter();

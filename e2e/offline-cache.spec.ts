@@ -23,7 +23,7 @@ test('a category screen falls back to its cached data when the API becomes unrea
 	// First visit succeeds normally, populating the on-device cache.
 	await page.goto('/burgers');
 	const firstBurgerName = page.getByTestId('card-title').first();
-	await expect(firstBurgerName).toBeVisible({ timeout: 10_000 });
+	await expect(firstBurgerName).toBeVisible({ timeout: 20_000 });
 	const rememberedName = await firstBurgerName.textContent();
 
 	await page.route(`**://${API_HOST}/**`, (route) => route.abort());
@@ -44,13 +44,35 @@ test('a category screen falls back to its cached data when the API becomes unrea
 test('the Home search falls back to its cached data when the API becomes unreachable', async ({
 	page,
 }) => {
-	await page.goto('/');
 	const search = page.getByPlaceholder(
 		'Search burgers, characters, episodes...',
 	);
-	await search.fill('bob');
+
+	// useSearchableItems.ts only saves its offline-fallback cache once all
+	// six category fetches succeed together (a deliberate choice — see the
+	// comment there on why a partial snapshot isn't saved). That makes
+	// this test's setup step six times more exposed to a single flaky
+	// third-party response than a one-category screen's equivalent test
+	// below — a transient failure on just one of the six silently skips
+	// the cache save without failing anything visible yet, and only
+	// surfaces later as a missing offline fallback. Retrying the load
+	// until it's demonstrably clean (no partial-failure banner) keeps
+	// that flakiness from leaking into the actual behavior under test.
+	let loadedCleanly = false;
+	for (let attempt = 0; attempt < 3 && !loadedCleanly; attempt++) {
+		if (attempt > 0) await page.reload();
+		await page.goto('/');
+		await search.fill('bob');
+		await expect(page.getByText(/bob/i).first()).toBeVisible({
+			timeout: 15_000,
+		});
+		loadedCleanly = !(await page
+			.getByText('Some results may be missing.')
+			.isVisible());
+	}
+	expect(loadedCleanly).toBe(true);
+
 	const firstResult = page.getByText(/bob/i).first();
-	await expect(firstResult).toBeVisible({ timeout: 10_000 });
 	const rememberedText = await firstResult.textContent();
 
 	await page.route(`**://${API_HOST}/**`, (route) => route.abort());
@@ -79,8 +101,10 @@ test('the offline banner appears when connectivity is lost and clears automatica
 	page,
 }) => {
 	await page.goto('/burgers');
+	// Generous timeout to absorb ordinary third-party API latency for
+	// this real (not mocked) initial load — see the file-level comment.
 	await expect(page.getByTestId('card-title').first()).toBeVisible({
-		timeout: 10_000,
+		timeout: 20_000,
 	});
 	await expect(page.getByText(/You.re offline/)).not.toBeVisible();
 

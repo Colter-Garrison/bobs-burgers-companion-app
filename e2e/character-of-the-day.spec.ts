@@ -11,8 +11,12 @@ test('the Character of the Day card shows on Home and hides/returns with the sea
 }) => {
 	await page.goto('/');
 
+	// A real round-trip to the third-party Characters endpoint, not a
+	// mock (see offline-cache.spec.ts for the fuller rationale) — a
+	// generous timeout absorbs ordinary third-party latency without
+	// weakening what's actually under test below.
 	await expect(page.getByText('Character of the Day')).toBeVisible({
-		timeout: 10_000,
+		timeout: 20_000,
 	});
 
 	const search = page.getByPlaceholder(
