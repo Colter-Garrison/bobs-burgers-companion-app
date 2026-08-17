@@ -11,11 +11,17 @@ import { SearchResultCard } from '../../components/SearchResultCard';
 import { CategoryFilter } from '../../components/CategoryFilterPills';
 import { FilterPanel } from '../../components/FilterPanel';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
+import { OfflineBanner } from '../../components/OfflineBanner';
 
 export default function Favorites() {
 	const router = useRouter();
 	const { token, loading: authLoading } = useAuth();
-	const { items, loading: itemsLoading } = useSearchableItems();
+	const {
+		items,
+		loading: itemsLoading,
+		cachedAt,
+		retry,
+	} = useSearchableItems();
 	const {
 		isFavorited,
 		removeFavorite,
@@ -126,7 +132,7 @@ export default function Favorites() {
 			// the whole current page should mount together.
 			initialNumToRender={PAGE_SIZE}
 			ListHeaderComponent={
-				<View>
+				<View className='gap-[10px]'>
 					<FilterPanel
 						categoryFilter={categoryFilter}
 						onSelectCategory={setCategoryFilter}
@@ -138,6 +144,9 @@ export default function Favorites() {
 						onToggleSort={attributeFilters.toggleSort}
 						activeCount={attributeFilters.activeCount}
 					/>
+					{cachedAt ? (
+						<OfflineBanner cachedAt={cachedAt} onRetry={retry} />
+					) : null}
 				</View>
 			}
 			ListEmptyComponent={

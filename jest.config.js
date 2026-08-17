@@ -9,7 +9,19 @@ module.exports = {
 	// instead of letting Jest fail to resolve it.
 	moduleNameMapper: {
 		'\\.css$': '<rootDir>/jest/cssStub.js',
+		// Both ship an official jest mock, but only as a plain module —
+		// nothing wires it in automatically. Mapping the real import to the
+		// mock here (rather than each test file calling jest.mock() itself)
+		// means every test gets a working mock by default, including
+		// screen tests that exercise useCategoryData/useNetworkStatus
+		// indirectly without importing either package themselves.
+		'^@react-native-async-storage/async-storage$':
+			'@react-native-async-storage/async-storage/jest/async-storage-mock',
+		'^@react-native-community/netinfo$':
+			'@react-native-community/netinfo/jest/netinfo-mock',
 	},
+
+	setupFilesAfterEnv: ['<rootDir>/jest/asyncStorageReset.js'],
 
 	// Jest's default testMatch recursively scans the whole repo for any
 	// *.test.ts(x) or *.spec.ts(x) file by filename alone — it has no

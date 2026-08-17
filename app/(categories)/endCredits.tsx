@@ -9,6 +9,7 @@ import { useFavorites } from '../../hooks/useFavorites';
 import { FavoriteButton } from '../../components/FavoriteButton';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
+import { OfflineBanner } from '../../components/OfflineBanner';
 
 export default function EndCredits() {
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
@@ -17,7 +18,8 @@ export default function EndCredits() {
 		loading,
 		error,
 		retry,
-	} = useCategoryData<EndCredit>(getEndCreditsSequences);
+		cachedAt,
+	} = useCategoryData<EndCredit>(getEndCreditsSequences, 'endCredits');
 
 	if (loading) {
 		return <CategorySkeleton />;
@@ -30,6 +32,9 @@ export default function EndCredits() {
 	return (
 		<ScrollView className='bg-bbGreen'>
 			<View className='flex-col gap-2 p-2'>
+				{cachedAt ? (
+					<OfflineBanner cachedAt={cachedAt} onRetry={retry} />
+				) : null}
 				{endCredits.length > 0 ? (
 					endCredits.map((credits) => (
 						<View

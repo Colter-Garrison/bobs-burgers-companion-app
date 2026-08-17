@@ -6,6 +6,7 @@ import { useFavorites } from '../../hooks/useFavorites';
 import { FavoriteButton } from '../../components/FavoriteButton';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
+import { OfflineBanner } from '../../components/OfflineBanner';
 
 interface Burger {
 	id: number;
@@ -24,7 +25,8 @@ export default function Burgers() {
 		loading,
 		error,
 		retry,
-	} = useCategoryData<Burger>(getBurgersOfTheDay);
+		cachedAt,
+	} = useCategoryData<Burger>(getBurgersOfTheDay, 'burgers');
 
 	if (loading) {
 		return <CategorySkeleton />;
@@ -37,6 +39,9 @@ export default function Burgers() {
 	return (
 		<ScrollView className='bg-bbGreen'>
 			<View className='flex-col gap-2 p-2'>
+				{cachedAt ? (
+					<OfflineBanner cachedAt={cachedAt} onRetry={retry} />
+				) : null}
 				{burgers.length > 0 ? (
 					burgers.map((burger) => (
 						<View

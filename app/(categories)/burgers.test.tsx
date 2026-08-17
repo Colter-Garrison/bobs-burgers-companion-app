@@ -4,6 +4,7 @@ import Burgers from './burgers';
 import { getBurgersOfTheDay } from '../../hooks/fetchBurgersOfTheDay';
 import { useFavorites } from '../../hooks/useFavorites';
 import { useAuth } from '../../hooks/useAuth';
+import { saveToCache } from '../../lib/dataCache';
 
 jest.mock('../../hooks/fetchBurgersOfTheDay');
 jest.mock('../../hooks/useFavorites');
@@ -81,6 +82,27 @@ describe('Burgers screen', () => {
 
 		expect(getBurgersOfTheDay).toHaveBeenCalledTimes(2);
 		expect(screen.getByText('Name: Test Burger')).toBeVisible();
+	});
+
+	it('falls back to a saved copy (offline banner, not a hard error) when the fetch fails and a cache exists', async () => {
+		// Seeds the cache directly rather than going through a first
+		// successful render+fetch cycle — this is what
+		// hooks/useCategoryData.ts itself writes on a successful fetch
+		// (see lib/dataCache.ts), simulating "the app already saved this
+		// during an earlier, successful visit."
+		await saveToCache('burgers', [
+			{ id: 1, name: 'Saved Burger', price: '$5.00', season: 1, episode: 1 },
+		]);
+		(getBurgersOfTheDay as jest.Mock).mockRejectedValue(new Error('boom'));
+
+		render(<Burgers />);
+		await act(async () => {
+			await Promise.resolve();
+		});
+
+		expect(screen.getByText(/You.re offline/)).toBeVisible();
+		expect(screen.getByText('Name: Saved Burger')).toBeVisible();
+		expect(screen.queryByText('boom')).toBeNull();
 	});
 
 	it('tapping the favorite star calls addFavorite with the burger category and id', async () => {

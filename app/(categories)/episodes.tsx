@@ -6,6 +6,7 @@ import { useFavorites } from '../../hooks/useFavorites';
 import { FavoriteButton } from '../../components/FavoriteButton';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
+import { OfflineBanner } from '../../components/OfflineBanner';
 
 export default function Episodes() {
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
@@ -14,7 +15,8 @@ export default function Episodes() {
 		loading,
 		error,
 		retry,
-	} = useCategoryData<Episode>(getEpisodes);
+		cachedAt,
+	} = useCategoryData<Episode>(getEpisodes, 'episodes');
 	const handlePress = (episode: Episode) => {
 		Linking.openURL(episode.wikiUrl);
 	};
@@ -30,6 +32,9 @@ export default function Episodes() {
 	return (
 		<ScrollView className='bg-bbGreen'>
 			<View className='flex-col gap-2 p-2'>
+				{cachedAt ? (
+					<OfflineBanner cachedAt={cachedAt} onRetry={retry} />
+				) : null}
 				{episodes.length > 0 ? (
 					episodes.map((episode) => (
 						<View

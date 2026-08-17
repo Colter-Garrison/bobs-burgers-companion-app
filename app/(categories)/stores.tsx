@@ -6,6 +6,7 @@ import { useFavorites } from '../../hooks/useFavorites';
 import { FavoriteButton } from '../../components/FavoriteButton';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
+import { OfflineBanner } from '../../components/OfflineBanner';
 
 export default function Stores() {
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
@@ -14,7 +15,8 @@ export default function Stores() {
 		loading,
 		error,
 		retry,
-	} = useCategoryData<Store>(getStoresNextDoor);
+		cachedAt,
+	} = useCategoryData<Store>(getStoresNextDoor, 'stores');
 
 	if (loading) {
 		return <CategorySkeleton />;
@@ -27,6 +29,9 @@ export default function Stores() {
 	return (
 		<ScrollView className='bg-bbGreen'>
 			<View className='flex-col gap-2 p-2'>
+				{cachedAt ? (
+					<OfflineBanner cachedAt={cachedAt} onRetry={retry} />
+				) : null}
 				{stores.length > 0 ? (
 					stores.map((store) => (
 						<View

@@ -16,9 +16,10 @@ import { SearchResultCard } from '../components/SearchResultCard';
 import { CategoryFilter } from '../components/CategoryFilterPills';
 import { FilterPanel } from '../components/FilterPanel';
 import { CategorySkeleton } from '../components/CategorySkeleton';
+import { OfflineBanner } from '../components/OfflineBanner';
 
 export default function Index() {
-	const { items, error, retry } = useSearchableItems();
+	const { items, error, retry, cachedAt } = useSearchableItems();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const [query, setQuery] = useState('');
 	const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('All');
@@ -177,6 +178,9 @@ export default function Index() {
 					/>
 					{isSearching && searchLoading ? (
 						<CategorySkeleton count={3} fullScreen={false} />
+					) : null}
+					{isSearching && !searchLoading && cachedAt ? (
+						<OfflineBanner cachedAt={cachedAt} onRetry={retry} />
 					) : null}
 					{isSearching && !searchLoading && error ? (
 						// Some categories failed to load, but the ones that

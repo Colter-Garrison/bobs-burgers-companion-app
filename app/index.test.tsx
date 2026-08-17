@@ -210,6 +210,34 @@ describe('Home / search screen', () => {
 		expect(mockRetry).toHaveBeenCalled();
 	});
 
+	it('shows an offline banner (not a hard error) when the results came from the cache', async () => {
+		(useSearchableItems as jest.Mock).mockReturnValue({
+			loading: false,
+			error: null,
+			retry: mockRetry,
+			cachedAt: new Date('2024-01-01T12:00:00').getTime(),
+			items: [
+				{
+					id: 'burger-1',
+					category: 'Burgers of the Day',
+					label: 'Test Burger',
+					itemId: 1,
+					favoriteCategory: 'burger',
+				},
+			],
+		});
+		render(<Index />);
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search burgers, characters, episodes...'),
+			'burger',
+		);
+		await flush();
+
+		expect(screen.getByText(/You.re offline/)).toBeVisible();
+		expect(screen.getByText('Test Burger')).toBeVisible();
+	});
+
 	it('shows the Filter By pill even before the user has typed a search query', () => {
 		render(<Index />);
 		expect(screen.getByLabelText('Show filter options')).toBeVisible();
