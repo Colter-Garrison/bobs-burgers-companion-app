@@ -2,86 +2,69 @@
 
 ## Overview
 
-A React Native app built with Expo, styled with NativeWind (Tailwind for RN),
-using the Bob's Burgers API (https://www.bobsburgersapi.com/). Deployed to web via
-Netlify. Cross-platform target: iOS, Android, and web.
+A React Native app built with Expo, styled with NativeWind (Tailwind for RN), using the Bob's Burgers API (https://www bobsburgersapi.com/). Deployed to web via Netlify. Cross-platform target: iOS, Android, and web.
 
 ## Tech stack
 
 - React Native + Expo
 - TypeScript
 - Styling: NativeWind (Tailwind for RN)
-- Backend: Node/Express + PostgreSQL (`server/`), a standalone project
-  (its own package.json, not wired into the Expo app yet). Drizzle ORM,
-  hand-rolled email/password + JWT auth (bcrypt). See `server/` for the
-  route list; run `npm run dev` inside `server/` and
-  `server/scripts/smoke-test.sh` to verify it end-to-end.
+- Backend: Node/Express + PostgreSQL (`server/`), a standalone project (its own package.json, not wired into the Expo app yet). Drizzle ORM, hand-rolled email/password + JWT auth (bcrypt). See `server/` for the route list; run `npm run dev` inside `server/` and `server/scripts/smoke-test.sh` to verify it end-to-end.
 - Package manager: npm
-- Linting/formatting: ESLint (`eslint-config-expo`, legacy `.eslintrc.js` —
-  this project is on Expo SDK 51, which predates `eslint-config-expo`'s flat
-  config support) + Prettier, bridged via `eslint-plugin-prettier` so
-  formatting issues surface as lint errors. Run `npm run lint` before
-  considering any change done; `npx eslint . --fix` applies safe fixes.
+- Linting/formatting: ESLint (`eslint-config-expo`, legacy `.eslintrc.js` — this project is on Expo SDK 51, which predates `eslint-config-expo`'s flat config support) + Prettier, bridged via `eslint-plugin-prettier` so formatting issues surface as lint errors. Run `npm run lint` before considering any change done; `npx eslint . --fix` applies safe fixes.
 
 ## Conventions
 
-- Match existing file/folder structure under `app/` (Expo Router convention) —
-  don't introduce a different routing or folder pattern without asking first.
-- Use TypeScript strictly — no `any` unless there's no reasonable alternative,
-  and explain why if you do.
+- Match existing file/folder structure under `app/` (Expo Router convention) — don't introduce a different routing or folder pattern without asking first.
+- Use TypeScript strictly — no `any` unless there's no reasonable alternative, and explain why if you do.
 - Prefer functional components and hooks; no class components.
 - Keep components small and focused; extract shared logic into `hooks/`.
+- After completing a task in "Current priorities (in order)" cross off the task we completed instead of deleting it and renumbering the tasks.
+- You can spin up Playwright, the front-end and back-end server, or anything else you need to self-verify but make sure to stop the process when you're done.
 
 ## Current priorities (in order)
 
-1. Add testing (Jest + React Native Testing Library for units/components,
-   Playwright for the web build)
-2. Add GitHub Actions CI workflow that runs tests on push
-3. Favorites sync across devices (exercises the auth/backend end-to-end —
-   this is where the Expo app actually gets wired up to the `server/`
-   backend: login/signup screens, token storage, calling the favorites
-   endpoints)
-4. Visual/style redesign now that we're on NativeWind
-5. Loading/error states done properly (skeleton loaders, retry logic)
-6. Offline support / cached data
-7. "Random burger of the day" generator (AI-assisted feature)
-8. Migrate authentication from hand-rolled email/password + JWT to Better
-   Auth, once the above priorities are done. (Note: Lucia is deprecated as
-   of March 2025 — don't use it. Auth.js is maintenance-only. Better Auth
-   is the current recommended option for new projects.)
+1. ~~Fix the bugs associated with favoriting that're described under "Home screen"~~ DONE
+2. ~~Update the hamburger menu to have log-in/sign-up at the top of the hamburger, that changes to "Hello: users email" once they're logged in, the account button is no longer there and instead you get to accounts by clicking the "Hello: users email", a new link to Favorites if a user is logged in that sits below the other six categories, and a log-out button at the bottom of the hamburger menu.~~ DONE (drawer colors from priority #3 were folded into this too, at the user's request)
+3. ~~Visual/style redesign now that we're on NativeWind. Including updating the fonts and colors of the entire hamburger menu to match the rest of the app.~~ DONE (Home, the six categories, and Favorites now share the same bbYellow/bbRed boxed look; Hello/Log In/Sign Up/Log Out stay plain text; Log Out is pinned to the very bottom of the drawer)
+4. ~~Loading/error states done properly (skeleton loaders, retry logic) and git rid of the hard coded 3 second loader. Make the app as quick and performant as possible.~~ DONE (shared useCategoryData hook + CategorySkeleton/ErrorState components across all 6 category screens and Home; fetch hooks now throw with a 10s timeout instead of silently swallowing errors; Home's search uses Promise.allSettled so one category failing doesn't blank out the rest)
+5. ~~Refactor the Search bar and Favorites Screen. Add a Filter By pill that opens up filtering options for the user. Also, limit the amount of items loaded on the Home Screen and Favorites screen. The API has both filter options and limit options, so make sure to reference that. I'm thinking we should limit the results to 10, maybe 20?, results and if a user scrolls to the bottom of those, show 10, or 20? more, so on and so forth. Finally,refactor how we're currently mapping through filtered items. It's better to make the mapping functionality a seperate function at the top of app/index.tsx then pass that into a FlatList.~~ DONE (category filter pills + FlatList pagination, page size 20, on both screens; shared SearchResultCard/CategoryFilterPills components and a usePagination hook; the underlying fetch still pulls everything, since the API has no server-side text search — confirmed via testing — so client-side filtering needs the full dataset in memory to stay correct. Follow-up refinement: drawer now shows only "Log In" instead of "Log In"/"Sign Up" stacked; category pills always show, wrap instead of overflowing, and have more horizontal padding; added an A-Z/Z-A sort toggle and a "Filter By" panel for Characters' gender/hair color, on both Home and Favorites — see hooks/useAttributeFilters.ts and components/FilterPanel.tsx. Age filtering was explicitly skipped — the API's age field is too inconsistently formatted to filter reliably. Second follow-up refinement: Gender/Hair Color filters now only appear once the Characters category pill is selected (Home and Favorites), or unconditionally on the standalone Characters screen — they're meaningless for the other five categories, whose items don't carry those fields at all. Those other five category screens (Burgers, End Credits, Episodes, Pest Control Trucks, Stores) and Characters each gained their own search bar, scoped to just that screen's own already-loaded data (not a full re-fetch), plus a Filter By pill — Sort-only for the five, Sort + Gender/Hair Color for Characters. FilterPanel.tsx's category-picker and gender/hair sections are now both optional/conditional (`categoryFilter`/`onSelectCategory` and `showGenderHairFilters` props) so one component serves all these shapes; the new hooks/useCategorySearch.ts hook covers the six category screens' "search just this list" need, deliberately different from Home's own search — it shows everything by default and narrows on typing, rather than requiring a query before showing anything, since browsing the full category is still these screens' primary job)
+6. ~~Refactor the repo so it's not so busy. Add folders where appropriate to match engineering team standards for a RN repo. For example under app/ there should be a folder for Accounts, with account related files in there, etc.~~ DONE (scoped to app/, per the user's own choice when asked — components/ and hooks/ aren't busy enough yet to warrant it. Used Expo Router's route groups — parenthesized folders like `(auth)/` — since they organize files without changing any URL: app/(auth)/ holds login.tsx + signup.tsx, app/(account)/ holds account.tsx + favorites.tsx + loggedOutGuards.test.tsx, app/(categories)/ holds the six category screens. index.tsx, _layout.tsx, and +html.tsx stay at the app/ root, the last two because Expo Router requires it. One non-obvious catch: Drawer.Screen's `name` in _layout.tsx has to match the route's full name including the group prefix — e.g. `(categories)/burgers`, not just `burgers` — even though the group is stripped from the actual URL)
+7. ~~Offline support / cached data~~ DONE (scoped to the six Bob's Burgers API categories, per the user's own choice when asked — Favorites is live per-user data behind auth, a separate problem. New deps: @react-native-async-storage/async-storage (persists data across app restarts — this app had nothing that survived a relaunch before except the auth token) and @react-native-community/netinfo (detects online/offline; RN has no built-in equivalent of the browser's navigator.onLine). Strategy is network-first, cache-as-fallback, chosen by the user over cache-first/stale-while-revalidate for simplicity: every screen still tries a live fetch first, and only falls back to the last successful snapshot (lib/dataCache.ts) if that fetch fails or the device is already known to be offline (skips waiting out the 10s timeout in that case). hooks/useCategoryData.ts and hooks/useSearchableItems.ts both got this treatment; components/OfflineBanner.tsx shows above the list — not instead of it, unlike ErrorState — since there's real data to show, just not fresh. Verified for real with a Playwright test that reloads the page against a genuinely blocked API request, not just mocks — see e2e/offline-cache.spec.ts)
+8. ~~"Random burger of the day" generator (AI-assisted feature)~~ DONE, redefined by the user along the way: Burgers of the Day have no images, so this became a "Character of the Day" card on Home instead — shown centered in place of search results while the search bar is empty, hidden the moment the user types, restored when cleared. Same character for everyone on a given calendar day (deterministic pick seeded from the local date — lib/characterOfTheDay.ts), not a per-device random roll, so it needs no server-side coordination. The "AI-assisted" part was dropped for now — the user didn't want to pay for/manage an API key yet — so the blurb is composed from the character's own real API fields (occupation, first episode, relatives, voice actor) via a template, not a live AI call. That keeps the door open to swapping in real AI generation later without touching the rest of the feature (image, daily selection, show/hide behavior), since it's isolated behind hooks/useCharacterOfTheDay.ts. Reuses the same cache/offline infrastructure as priority #7 (useCategoryData with cacheKey 'characters') for free.
+9. ~~Update how all the cards read for all six categories to be a little bio blurb (like Character of the Day), instead of the current "Label: value" layout. Also change what happens when a user clicks a card, whether from the search bar or a category screen: instead of going to the bobs-burgers-fandom page, take them to a more detailed in-app view with all the data the API has, summarized in a longer bio, with a link to the bobs-burgers-fandom page from there.~~ DONE (all six category screens now show name + a short bio-style blurb — same style as Character of the Day, and literally the same function for Characters — instead of "Label: value" lines; see lib/categoryBio.ts for the six short/long bio composers. Every card, on a category screen or in Home/Favorites search results, now pushes app/detail/[category]/[id].tsx instead of opening an external link. That page shows a longer bio built from every field the API returns, plus a "View on Fandom" link — the user's own wiki page for Characters/Episodes, or (Burgers/End Credits/Pest Control Trucks/Stores have no wiki page of their own, per the user's own call when asked) the page for the episode they're from instead, resolved via a second fetch. Reuses priority #7's cache/offline machinery through a new single-item hook, hooks/useCategoryItem.ts. First pass wrapped the whole app in a new Stack-nested-inside-Drawer just to get a back arrow + swipe-back gesture on the detail page — correctly called out by the user as overkill for what they asked for, and reverted: the detail page is now just another (hidden-from-the-menu) screen on the existing Drawer, no new navigator, no back arrow, no swipe gesture. One real, worth-knowing consequence of that simpler shape, found while testing: since Drawer screens are peers rather than a stack, the browser/OS back button from a detail page doesn't reliably return to the exact category screen it was opened from — it can land on whichever drawer screen was open before instead. Not fixed, since fixing it properly is exactly the Stack-wrapping complexity that was just backed out; the hamburger menu is the reliable way back. Supersedes the old priority #12, which asked for a version of this same feature — see below.)
+10. Add "dark mode/light mode" option
+11. Migrate authentication from hand-rolled email/password + JWT to Better Auth, once the above priorities are done. (Note: Lucia is deprecated as of March 2025 — don't use it. Auth.js is maintenance-only. Better Auth is the current recommended option for new projects.)
+12. Check the accessibility of the app, updating anything needed to make it as accessible as possible. Think about things like a user using a screen reader, or a user who navigates the app with features other than touch, or a user who's colorblind.
+13. ~~Update what happens when a user clicks a card in the Search bar results. It should take them to a screen with an ai synopsis on that episode/character/store next door/pest control truck or anything else the user clicks. From there the card should have a clickable link to the bobs-burgers-fandom-page. Ideally each synopsis page will have an image associated with the thing clicked on on the left, with the synopsis of the thing clicked on to the right of it. It should have the same red border, yellow background, and red font that everything else does with the green on the back of the screen.~~ DONE via priority #9 above, when the user asked for a fuller version of this same feature (also covering category-screen cards, not just search results). "AI synopsis" became a template-composed bio instead, matching priority #8's own AI-declined precedent. The image-left/synopsis-right layout wasn't carried over — the detail page instead matches Character of the Day's stacked card layout (image on top, text below), for visual consistency with the rest of the app rather than a new one-off layout.
 
 ## Screen designs
 
 ### Home screen
 
-- Search bar front and center (primary focus of the screen), live-filtering:
-  a list directly on the Home screen filters in place as the user types,
-  narrowing with each additional letter — not a static bar that navigates
-  to a separate results screen. Covers all six categories: "Burgers of the
-  Day", "Characters", "End Credits", "Episodes", "Pest Control Trucks", and
-  "Stores Next Door".
+- Search bar front and center (primary focus of the screen), live-filtering: a list directly on the Home screen filters in place as the user types, narrowing with each additional letter — not a static bar that navigates to a separate results screen. Covers all six categories: "Burgers of the Day", "Characters", "End Credits", "Episodes", "Pest Control Trucks", and "Stores Next Door".
 - Hamburger menu (nav drawer) containing:
-  - Login / Signup — build as a UI placeholder now (nav item + a stub
-    screen); the `server/` backend now exists, so wire this up to it as
-    part of priority #3 (favorites sync) above.
-  - Links to all six category screens: "Burgers of the Day", "Characters",
-    "End Credits", "Episodes", "Pest Control Trucks", "Stores Next Door"
-- This replaces the current Home screen layout — ask before removing any
-  existing functionality that isn't accounted for above.
+  - Login / Signup — build in the same way as most conventional apps, having login/signup at the top of the hamburger menu. Once the user is logged in it should show "Hello: users email" instead of login/signup. The log-in and sign-up fields should clear if a user navigates away from those screens or if they log in. Currently when you log in then log out the users email and password are still saved in the field. This should be styled with the same font and color scheme as the rest of the app with bbRed, bbYellow, and bbGreen.
+  - Instead of a seperate Account button change it so the "Hello: users email" is clickable and navigates to the users profile page where they can delete their account.
+  - Links to all six category screens: "Burgers of the Day", "Characters", "End Credits", "Episodes", "Pest Control Trucks", "Stores Next Door"
+  - When a user is logged in a new link shuold appear at the bottom called "Favorites" where they can see any thing they've favorited. There's currently a bug associated with this feature where after you favorite something, then navigate to Favorites, then un-favorite the thing, it dissapears from Favorites (good, this is what we want), but the star is still selected when you see it in the other menues (bad, this is a bug). Also, when you try to re-favorite an item after you've unfavorited it it does not populate in Favorites again (bad, this is a bug).
+  - When a user is logged in there should be a Log Out button at the very bottom of the drawer for them to log out with.
+- This replaces the current Home screen layout — ask before removing any existing functionality that isn't accounted for above.
 
 ## Working style
 
 - I'm new to AI-assisted coding — explain non-obvious changes as you make them.
 - Make one focused change at a time rather than bundling unrelated changes together.
-- Show me the plan before large multi-file changes; smaller changes are fine to
-  just make directly.
+- Show me the plan before large multi-file changes; smaller changes are fine to just make directly.
 - After changes, remind me to run lint/tests before I commit.
 
 ## Testing
 
-- Test runner: (to be set up — Jest + React Native Testing Library)
-- E2E: (to be set up — Playwright, targeting the Expo web build)
-- Once test infra exists: new features should come with tests; don't skip this.
+- Frontend unit/component tests: Jest (`jest-expo` preset) + React Native Testing Library. Run `npm test` (watch mode) or `npm run test:ci` (single run). Hook tests live next to their source (`hooks/*.test.ts`); screen tests live next to their source (`app/*.test.tsx`).
+- Frontend E2E: Playwright, targeting the real static `expo export` build served locally (mirrors what Netlify actually serves in production). Run `npm run test:e2e`. Specs live in `e2e/`.
+- Backend tests: Vitest + Supertest, run against the app's real Express instance (`server/src/app.ts`) and the real dev Neon database, with per-test cleanup. Run `npm test` from `server/`. Tests live in `server/test/`. `server/scripts/smoke-test.sh` remains as a manual full-lifecycle sanity check against a running dev server.
+- New features should come with tests; don't skip this.
+- CI: GitHub Actions (`.github/workflows/ci.yml`) runs all three suites (frontend typecheck/lint/Jest/Playwright, backend typecheck/Vitest) on every push to `main`/`dev` and on every pull request. The backend job needs `DATABASE_URL` and `JWT_SECRET` set as GitHub repo secrets (same values as `server/.env`) — without them, the backend job fails at the `npm test` step.
 
 ## Do not
 

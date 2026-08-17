@@ -1,11 +1,16 @@
-export const getEndCreditsSequences = async () => {
-	try {
-		const response = await fetch(
-			'https://bobsburgers-api.herokuapp.com/endCreditsSequence/',
-		);
-		const data = await response.json();
-		return data;
-	} catch (error) {
-		console.error('Error fetching end credits sequences:', error);
-	}
-};
+import { fetchBobsBurgersApi } from '../lib/bobsBurgersApi';
+
+export interface EndCredit {
+	id: number;
+	image: string;
+	season: number;
+	episode: number;
+	episodeUrl: string;
+	url: string;
+}
+
+export const getEndCreditsSequences = () =>
+	fetchBobsBurgersApi<EndCredit[]>('/endCreditsSequence/');
+
+export const getEndCreditsSequenceById = (id: number) =>
+	fetchBobsBurgersApi<EndCredit>(`/endCreditsSequence/${id}`);

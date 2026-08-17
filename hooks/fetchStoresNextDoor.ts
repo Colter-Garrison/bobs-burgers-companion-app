@@ -1,11 +1,17 @@
-export const getStoresNextDoor = async () => {
-	try {
-		const response = await fetch(
-			'https://bobsburgers-api.herokuapp.com/storeNextDoor/',
-		);
-		const data = await response.json();
-		return data;
-	} catch (error) {
-		console.error('Error fetching stores next door:', error);
-	}
-};
+import { fetchBobsBurgersApi } from '../lib/bobsBurgersApi';
+
+export interface Store {
+	id: number;
+	name: string;
+	image: string;
+	season: number;
+	episode: number;
+	episodeUrl: string;
+	url: string;
+}
+
+export const getStoresNextDoor = () =>
+	fetchBobsBurgersApi<Store[]>('/storeNextDoor/');
+
+export const getStoreNextDoorById = (id: number) =>
+	fetchBobsBurgersApi<Store>(`/storeNextDoor/${id}`);
