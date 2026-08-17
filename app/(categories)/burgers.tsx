@@ -1,11 +1,12 @@
 import React, { useCallback } from 'react';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { FlatList, Pressable, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { Burger, getBurgersOfTheDay } from '../../hooks/fetchBurgersOfTheDay';
 import { useCategoryData } from '../../hooks/useCategoryData';
 import { useCategorySearch } from '../../hooks/useCategorySearch';
 import { useAttributeFilters } from '../../hooks/useAttributeFilters';
+import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
 import { useFavorites } from '../../hooks/useFavorites';
 import { composeBurgerShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
@@ -51,13 +52,47 @@ export default function Burgers() {
 		searchedBurgers,
 		(burger) => burger.name,
 	);
+	const { visibleItems, loadMore } = usePagination(visibleBurgers);
 
-	const handlePress = (burger: Burger) => {
-		router.push({
-			pathname: '/detail/[category]/[id]',
-			params: { category: 'burgers', id: String(burger.id) },
-		});
-	};
+	const handlePress = useCallback(
+		(burger: Burger) => {
+			router.push({
+				pathname: '/detail/[category]/[id]',
+				params: { category: 'burgers', id: String(burger.id) },
+			});
+		},
+		[router],
+	);
+
+	// Defined once, up front, and handed to FlatList as `renderItem` —
+	// matching app/index.tsx's own list, rather than an inline arrow
+	// function rebuilt on every render.
+	const renderItem = useCallback(
+		({ item: burger }: { item: Burger }) => (
+			<View className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'>
+				<Pressable
+					className='flex-1 flex-col'
+					onPress={() => handlePress(burger)}
+				>
+					<Text testID='card-title' className='font-chewy text-base text-bbRed'>
+						{burger.name}
+					</Text>
+					<Text className='font-chewy text-base text-bbRed'>
+						{composeBurgerShortBio(burger)}
+					</Text>
+				</Pressable>
+				<FavoriteButton
+					favorited={isFavorited('burger', burger.id)}
+					onToggle={() =>
+						isFavorited('burger', burger.id)
+							? removeFavorite('burger', burger.id)
+							: addFavorite('burger', burger.id)
+					}
+				/>
+			</View>
+		),
+		[isFavorited, addFavorite, removeFavorite, handlePress],
+	);
 
 	if (loading) {
 		return <CategorySkeleton />;
@@ -68,65 +103,49 @@ export default function Burgers() {
 	}
 
 	return (
-		<ScrollView className='bg-bbGreen'>
-			<View className='flex-col gap-2 p-2'>
-				<TextInput
-					placeholder='Search Burgers of the Day...'
-					placeholderTextColor='#E8242F'
-					value={query}
-					onChangeText={setQuery}
-					className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
-				/>
-				<FilterPanel
-					sortDirection={attributeFilters.sortDirection}
-					onToggleSort={attributeFilters.toggleSort}
-					genders={attributeFilters.genders}
-					hairColors={attributeFilters.hairColors}
-					onToggleGender={attributeFilters.toggleGender}
-					onToggleHair={attributeFilters.toggleHair}
-					activeCount={attributeFilters.activeCount}
-				/>
-				{cachedAt ? (
-					<OfflineBanner cachedAt={cachedAt} onRetry={retry} />
-				) : null}
-				{visibleBurgers.length > 0 ? (
-					visibleBurgers.map((burger) => (
-						<View
-							key={burger.id}
-							className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'
-						>
-							<Pressable
-								className='flex-1 flex-col'
-								onPress={() => handlePress(burger)}
-							>
-								<Text
-									testID='card-title'
-									className='font-chewy text-base text-bbRed'
-								>
-									{burger.name}
-								</Text>
-								<Text className='font-chewy text-base text-bbRed'>
-									{composeBurgerShortBio(burger)}
-								</Text>
-							</Pressable>
-							<FavoriteButton
-								favorited={isFavorited('burger', burger.id)}
-								onToggle={() =>
-									isFavorited('burger', burger.id)
-										? removeFavorite('burger', burger.id)
-										: addFavorite('burger', burger.id)
-								}
-							/>
-						</View>
-					))
-				) : (
-					<View className='flex-1 flex-col items-center justify-center'>
-						<Text className='font-chewy text-[44px]'>
-							Burger of the Day UH OH...
-						</Text>
-					</View>
-				)}
-			</View>
-		</ScrollView>
+		<FlatList
+			className='flex-1 bg-bbGreen'
+			contentContainerClassName='flex-col gap-2 p-2'
+			data={visibleItems}
+			renderItem={renderItem}
+			keyExtractor={(burger) => String(burger.id)}
+			onEndReached={loadMore}
+			onEndReachedThreshold={0.5}
+			// usePagination already caps `data` to one page at a time, so
+			// there's no need for FlatList's own default windowing
+			// (initialNumToRender=10) to further sub-render within that —
+			// the whole current page should mount together.
+			initialNumToRender={PAGE_SIZE}
+			ListHeaderComponent={
+				<View className='flex-col gap-2'>
+					<TextInput
+						placeholder='Search Burgers of the Day...'
+						placeholderTextColor='#E8242F'
+						value={query}
+						onChangeText={setQuery}
+						className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
+					/>
+					<FilterPanel
+						sortDirection={attributeFilters.sortDirection}
+						onToggleSort={attributeFilters.toggleSort}
+						genders={attributeFilters.genders}
+						hairColors={attributeFilters.hairColors}
+						onToggleGender={attributeFilters.toggleGender}
+						onToggleHair={attributeFilters.toggleHair}
+						activeCount={attributeFilters.activeCount}
+					/>
+					{cachedAt ? (
+						<OfflineBanner cachedAt={cachedAt} onRetry={retry} />
+					) : null}
+				</View>
+			}
+			ListEmptyComponent={
+				<View className='flex-1 flex-col items-center justify-center'>
+					<Text className='font-chewy text-[44px]'>
+						Burger of the Day UH OH...
+					</Text>
+				</View>
+			}
+		/>
 	);
 }

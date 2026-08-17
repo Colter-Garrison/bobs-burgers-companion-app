@@ -70,6 +70,21 @@ export default function Favorites() {
 		[router],
 	);
 
+	// See app/index.tsx's identical handler for why this is needed:
+	// Gender/Hair Color selections must not silently persist (and keep
+	// filtering) once the category picker moves away from "Characters".
+	const handleSelectCategory = useCallback(
+		(category: CategoryFilter) => {
+			setCategoryFilter(category);
+			if (category !== 'Characters') {
+				attributeFilters.clearGenderHair();
+			}
+		},
+		// attributeFilters.clearGenderHair is stable (useCallback, no deps)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[],
+	);
+
 	const favoritedItems = useMemo(() => {
 		const trimmedQuery = query.trim().toLowerCase();
 		return attributeFilters.sortItems(
@@ -151,7 +166,7 @@ export default function Favorites() {
 					/>
 					<FilterPanel
 						categoryFilter={categoryFilter}
-						onSelectCategory={setCategoryFilter}
+						onSelectCategory={handleSelectCategory}
 						showGenderHairFilters={categoryFilter === 'Characters'}
 						genders={attributeFilters.genders}
 						hairColors={attributeFilters.hairColors}

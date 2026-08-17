@@ -513,4 +513,48 @@ describe('Home / search screen', () => {
 
 		expect(screen.getByLabelText('Filter by gender: Male')).toBeVisible();
 	});
+
+	it('clears gender/hair filters when switching the category away from Characters, instead of silently still applying them', async () => {
+		(useSearchableItems as jest.Mock).mockReturnValue({
+			loading: false,
+			error: null,
+			retry: mockRetry,
+			items: [
+				{
+					id: 'character-1',
+					category: 'Characters',
+					label: 'Bob Belcher',
+					itemId: 1,
+					favoriteCategory: 'character',
+					gender: 'Male',
+				},
+				{
+					id: 'burger-1',
+					category: 'Burgers of the Day',
+					label: 'Test Burger',
+					itemId: 1,
+					favoriteCategory: 'burger',
+				},
+			],
+		});
+		render(<Index />);
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText('Search burgers, characters, episodes...'),
+			'e',
+		);
+		await flush();
+		fireEvent.press(screen.getByLabelText('Show filter options'));
+		fireEvent.press(screen.getByLabelText('Filter by Characters'));
+		fireEvent.press(screen.getByLabelText('Filter by gender: Male'));
+
+		expect(screen.getByText('Bob Belcher')).toBeVisible();
+		expect(screen.queryByText('Test Burger')).toBeNull();
+
+		// Burgers has no gender field at all — if the Male selection were
+		// still silently active here, this would show nothing.
+		fireEvent.press(screen.getByLabelText('Filter by Burgers of the Day'));
+
+		expect(screen.getByText('Test Burger')).toBeVisible();
+	});
 });

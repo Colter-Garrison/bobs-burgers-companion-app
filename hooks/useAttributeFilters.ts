@@ -87,6 +87,19 @@ export function useAttributeFilters<T>() {
 		setSortDirection(null);
 	}, []);
 
+	// Narrower than reset() — leaves sort untouched. Callers (Home,
+	// Favorites) use this when the category picker moves away from
+	// "Characters": gender/hair selections stop being visible in the UI
+	// at that point (FilterPanel's showGenderHairFilters goes false), but
+	// without this they'd silently keep filtering — every other
+	// category's items lack gender/hair fields entirely, so matches()
+	// would reject all of them and the list would just go empty with no
+	// visible explanation why.
+	const clearGenderHair = useCallback(() => {
+		setGenders(new Set());
+		setHairColors(new Set());
+	}, []);
+
 	// Within a facet (any selected gender, any selected hair color), a
 	// match on any one selection is enough — OR. Across facets (gender
 	// AND hair AND whatever the caller applies separately, like category
@@ -153,6 +166,7 @@ export function useAttributeFilters<T>() {
 		matches,
 		sortItems,
 		reset,
+		clearGenderHair,
 		activeCount,
 	};
 }

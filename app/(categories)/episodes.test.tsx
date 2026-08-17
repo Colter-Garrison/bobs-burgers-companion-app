@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
+import { FlatList } from 'react-native';
 import Episodes from './episodes';
 import { getEpisodes } from '../../hooks/fetchEpisodes';
 import { useFavorites } from '../../hooks/useFavorites';
@@ -178,5 +179,28 @@ describe('Episodes screen', () => {
 			'',
 		);
 		expect(screen.getByText('Human Flesh')).toBeVisible();
+	});
+
+	it('shows only the first page of episodes, revealing more as the list is scrolled', async () => {
+		const manyEpisodes = Array.from({ length: 25 }, (_, i) => ({
+			...mockEpisode,
+			id: i,
+			name: `Episode Number ${i}`,
+		}));
+		(getEpisodes as jest.Mock).mockResolvedValue(manyEpisodes);
+
+		render(<Episodes />);
+		await flush();
+
+		expect(screen.getByText('Episode Number 0')).toBeVisible();
+		expect(screen.getByText('Episode Number 19')).toBeVisible();
+		expect(screen.queryByText('Episode Number 20')).toBeNull();
+		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(20);
+
+		act(() => {
+			screen.UNSAFE_getByType(FlatList).props.onEndReached();
+		});
+
+		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(25);
 	});
 });

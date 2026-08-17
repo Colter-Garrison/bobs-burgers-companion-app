@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
+import { FlatList } from 'react-native';
 import Burgers from './burgers';
 import { getBurgersOfTheDay } from '../../hooks/fetchBurgersOfTheDay';
 import { useFavorites } from '../../hooks/useFavorites';
@@ -229,5 +230,34 @@ describe('Burgers screen', () => {
 			screen.getByPlaceholderText('Search Burgers of the Day...').props.value,
 		).toBe('');
 		expect(screen.getByText('Other Burger')).toBeVisible();
+	});
+
+	it('shows only the first page of burgers, revealing more as the list is scrolled', async () => {
+		const manyBurgers = Array.from({ length: 25 }, (_, i) => ({
+			id: i,
+			name: `Burger Number ${i}`,
+			price: '$5.00',
+			season: 1,
+			episode: 1,
+		}));
+		(getBurgersOfTheDay as jest.Mock).mockResolvedValue(manyBurgers);
+
+		render(<Burgers />);
+		await flush();
+
+		expect(screen.getByText('Burger Number 0')).toBeVisible();
+		expect(screen.getByText('Burger Number 19')).toBeVisible();
+		expect(screen.queryByText('Burger Number 20')).toBeNull();
+		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(20);
+
+		// See app/index.test.tsx's equivalent test for why this asserts on
+		// `data` growing rather than newly revealed text actually
+		// rendering — that part is FlatList's own virtualization, not this
+		// app's logic, and RNTL can't simulate a real scroll.
+		act(() => {
+			screen.UNSAFE_getByType(FlatList).props.onEndReached();
+		});
+
+		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(25);
 	});
 });

@@ -264,6 +264,48 @@ describe('Favorites screen', () => {
 		expect(screen.getByText('Favorited Burger')).toBeVisible();
 	});
 
+	it('clears gender/hair filters when switching the category away from Characters, instead of silently still applying them', () => {
+		(useSearchableItems as jest.Mock).mockReturnValue({
+			items: [
+				{
+					id: 'character-1',
+					category: 'Characters',
+					label: 'Bob Belcher',
+					itemId: 1,
+					favoriteCategory: 'character',
+					gender: 'Male',
+				},
+				{
+					id: 'burger-1',
+					category: 'Burgers of the Day',
+					label: 'Favorited Burger',
+					itemId: 2,
+					favoriteCategory: 'burger',
+				},
+			],
+			loading: false,
+		});
+		(useFavorites as jest.Mock).mockReturnValue({
+			isFavorited: () => true,
+			removeFavorite: mockRemoveFavorite,
+			loading: false,
+		});
+		render(<Favorites />);
+
+		fireEvent.press(screen.getByLabelText('Show filter options'));
+		fireEvent.press(screen.getByLabelText('Filter by Characters'));
+		fireEvent.press(screen.getByLabelText('Filter by gender: Male'));
+
+		expect(screen.getByText('Bob Belcher')).toBeVisible();
+		expect(screen.queryByText('Favorited Burger')).toBeNull();
+
+		// Burgers has no gender field at all — if the Male selection were
+		// still silently active here, this would show nothing.
+		fireEvent.press(screen.getByLabelText('Filter by Burgers of the Day'));
+
+		expect(screen.getByText('Favorited Burger')).toBeVisible();
+	});
+
 	it('shows only the first page of favorites, revealing more as the list is scrolled', () => {
 		const manyFavorites = Array.from({ length: 25 }, (_, i) => ({
 			id: `character-${i}`,

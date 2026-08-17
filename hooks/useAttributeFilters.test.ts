@@ -197,6 +197,20 @@ describe('useAttributeFilters', () => {
 		expect(result.current.activeCount).toBe(0);
 	});
 
+	it('clearGenderHair clears genders and hair colors but leaves sort direction alone', () => {
+		const { result } = renderHook(() => useAttributeFilters());
+		act(() => result.current.toggleGender('Male'));
+		act(() => result.current.toggleHair('Brown'));
+		act(() => result.current.toggleSort());
+
+		act(() => result.current.clearGenderHair());
+
+		expect(result.current.genders.size).toBe(0);
+		expect(result.current.hairColors.size).toBe(0);
+		expect(result.current.sortDirection).toBe('asc');
+		expect(result.current.activeCount).toBe(1);
+	});
+
 	it('activeCount reflects genders, hair colors, and an active sort together', () => {
 		const { result } = renderHook(() => useAttributeFilters());
 

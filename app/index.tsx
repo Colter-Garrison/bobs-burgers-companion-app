@@ -68,6 +68,23 @@ export default function Index() {
 
 	const { visibleItems, loadMore } = usePagination(filteredItems);
 
+	// Gender/Hair Color only make sense (and only show, via
+	// showGenderHairFilters below) while filtering by Characters — moving
+	// to any other category must also clear any selections made there, or
+	// they'd keep silently filtering every other category's items down to
+	// nothing. See clearGenderHair's own comment in useAttributeFilters.ts.
+	const handleSelectCategory = useCallback(
+		(category: CategoryFilter) => {
+			setCategoryFilter(category);
+			if (category !== 'Characters') {
+				attributeFilters.clearGenderHair();
+			}
+		},
+		// attributeFilters.clearGenderHair is stable (useCallback, no deps)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[],
+	);
+
 	const handleResultPress = useCallback(
 		(item: SearchItem) => {
 			router.push(detailHref(item.category, item.itemId));
@@ -168,7 +185,7 @@ export default function Index() {
 					/>
 					<FilterPanel
 						categoryFilter={categoryFilter}
-						onSelectCategory={setCategoryFilter}
+						onSelectCategory={handleSelectCategory}
 						showGenderHairFilters={categoryFilter === 'Characters'}
 						genders={attributeFilters.genders}
 						hairColors={attributeFilters.hairColors}

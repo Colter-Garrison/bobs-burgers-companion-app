@@ -1,4 +1,4 @@
-import { Image } from 'react-native';
+import { FlatList, Image } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 import Stores from './stores';
@@ -264,5 +264,31 @@ describe('Stores screen', () => {
 			screen.getByPlaceholderText('Search Stores Next Door...').props.value,
 		).toBe('');
 		expect(screen.getByText('Other Store')).toBeVisible();
+	});
+
+	it('shows only the first page of stores, revealing more as the list is scrolled', async () => {
+		const manyStores = Array.from({ length: 25 }, (_, i) => ({
+			id: i,
+			name: `Store Number ${i}`,
+			image: '',
+			season: 1,
+			episode: 1,
+			episodeUrl: '',
+		}));
+		(getStoresNextDoor as jest.Mock).mockResolvedValue(manyStores);
+
+		render(<Stores />);
+		await flush();
+
+		expect(screen.getByText('Store Number 0')).toBeVisible();
+		expect(screen.getByText('Store Number 19')).toBeVisible();
+		expect(screen.queryByText('Store Number 20')).toBeNull();
+		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(20);
+
+		act(() => {
+			screen.UNSAFE_getByType(FlatList).props.onEndReached();
+		});
+
+		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(25);
 	});
 });

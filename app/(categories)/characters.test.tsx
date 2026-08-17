@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
+import { FlatList } from 'react-native';
 import Characters from './characters';
 import { getCharacters } from '../../hooks/fetchCharacters';
 import { useFavorites } from '../../hooks/useFavorites';
@@ -219,5 +220,28 @@ describe('Characters screen', () => {
 			screen.getByPlaceholderText('Search Characters...').props.value,
 		).toBe('');
 		expect(screen.getByText('Bob Belcher')).toBeVisible();
+	});
+
+	it('shows only the first page of characters, revealing more as the list is scrolled', async () => {
+		const manyCharacters = Array.from({ length: 25 }, (_, i) => ({
+			...baseCharacter,
+			id: i,
+			name: `Character Number ${i}`,
+		}));
+		(getCharacters as jest.Mock).mockResolvedValue(manyCharacters);
+
+		render(<Characters />);
+		await flush();
+
+		expect(screen.getByText('Character Number 0')).toBeVisible();
+		expect(screen.getByText('Character Number 19')).toBeVisible();
+		expect(screen.queryByText('Character Number 20')).toBeNull();
+		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(20);
+
+		act(() => {
+			screen.UNSAFE_getByType(FlatList).props.onEndReached();
+		});
+
+		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(25);
 	});
 });
