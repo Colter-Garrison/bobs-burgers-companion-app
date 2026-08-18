@@ -7,7 +7,7 @@ import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
 const TOKEN_KEY = 'bbca_auth_token';
-const EMAIL_KEY = 'bbca_auth_email';
+const USERNAME_KEY = 'bbca_auth_username';
 
 async function getItem(key: string): Promise<string | null> {
 	if (Platform.OS === 'web') {
@@ -36,18 +36,18 @@ export const tokenStorage = {
 	getToken(): Promise<string | null> {
 		return getItem(TOKEN_KEY);
 	},
-	getEmail(): Promise<string | null> {
-		return getItem(EMAIL_KEY);
+	getUsername(): Promise<string | null> {
+		return getItem(USERNAME_KEY);
 	},
 	// The backend has no "who am I" endpoint — the JWT payload only
-	// carries a userId — so email has to be persisted alongside the
+	// carries a userId — so username has to be persisted alongside the
 	// token at login/signup time to survive an app relaunch.
-	async save(token: string, email: string): Promise<void> {
+	async save(token: string, username: string): Promise<void> {
 		await setItem(TOKEN_KEY, token);
-		await setItem(EMAIL_KEY, email);
+		await setItem(USERNAME_KEY, username);
 	},
 	async clear(): Promise<void> {
 		await deleteItem(TOKEN_KEY);
-		await deleteItem(EMAIL_KEY);
+		await deleteItem(USERNAME_KEY);
 	},
 };

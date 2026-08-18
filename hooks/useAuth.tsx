@@ -14,13 +14,13 @@ import { tokenStorage } from '../lib/tokenStorage';
 
 interface AuthContextValue {
 	token: string | null;
-	email: string | null;
+	username: string | null;
 	// True only while restoring a persisted session on app launch —
 	// screens that gate on auth state should wait for this before
 	// deciding whether to treat the user as logged out.
 	loading: boolean;
-	login: (email: string, password: string) => Promise<void>;
-	signup: (email: string, password: string) => Promise<void>;
+	login: (username: string, password: string) => Promise<void>;
+	signup: (username: string, password: string) => Promise<void>;
 	logout: () => Promise<void>;
 	deleteAccount: () => Promise<void>;
 }
@@ -29,40 +29,40 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const [token, setToken] = useState<string | null>(null);
-	const [email, setEmail] = useState<string | null>(null);
+	const [username, setUsername] = useState<string | null>(null);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		async function restoreSession() {
-			const [storedToken, storedEmail] = await Promise.all([
+			const [storedToken, storedUsername] = await Promise.all([
 				tokenStorage.getToken(),
-				tokenStorage.getEmail(),
+				tokenStorage.getUsername(),
 			]);
 			setToken(storedToken);
-			setEmail(storedEmail);
+			setUsername(storedUsername);
 			setLoading(false);
 		}
 		restoreSession();
 	}, []);
 
-	const login = useCallback(async (email: string, password: string) => {
-		const { token } = await loginUser(email, password);
-		await tokenStorage.save(token, email);
+	const login = useCallback(async (username: string, password: string) => {
+		const { token } = await loginUser(username, password);
+		await tokenStorage.save(token, username);
 		setToken(token);
-		setEmail(email);
+		setUsername(username);
 	}, []);
 
-	const signup = useCallback(async (email: string, password: string) => {
-		const { token } = await registerUser(email, password);
-		await tokenStorage.save(token, email);
+	const signup = useCallback(async (username: string, password: string) => {
+		const { token } = await registerUser(username, password);
+		await tokenStorage.save(token, username);
 		setToken(token);
-		setEmail(email);
+		setUsername(username);
 	}, []);
 
 	const logout = useCallback(async () => {
 		await tokenStorage.clear();
 		setToken(null);
-		setEmail(null);
+		setUsername(null);
 	}, []);
 
 	const deleteAccount = useCallback(async () => {
@@ -73,7 +73,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 	return (
 		<AuthContext.Provider
-			value={{ token, email, loading, login, signup, logout, deleteAccount }}
+			value={{
+				token,
+				username,
+				loading,
+				login,
+				signup,
+				logout,
+				deleteAccount,
+			}}
 		>
 			{children}
 		</AuthContext.Provider>

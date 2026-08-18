@@ -1,15 +1,15 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { api, registerTestUser, deleteUserByEmail } from './helpers.js';
+import { api, registerTestUser, deleteUserByUsername } from './helpers.js';
 
 // GET /favorites is behind requireAuth like every other protected route —
 // it's just a convenient one to exercise the middleware through, since
 // it needs no request body.
 describe('requireAuth middleware (via GET /favorites)', () => {
-	const createdEmails: string[] = [];
+	const createdUsernames: string[] = [];
 
 	afterEach(async () => {
-		for (const email of createdEmails.splice(0)) {
-			await deleteUserByEmail(email);
+		for (const username of createdUsernames.splice(0)) {
+			await deleteUserByUsername(username);
 		}
 	});
 
@@ -33,11 +33,11 @@ describe('requireAuth middleware (via GET /favorites)', () => {
 	});
 
 	it('rejects a valid token whose user was deleted after it was issued', async () => {
-		const { email, token } = await registerTestUser();
+		const { username, token } = await registerTestUser();
 		// Deleted directly, bypassing /profile — the token itself is
 		// still cryptographically valid (unexpired, correctly signed);
 		// only the user it names is gone.
-		await deleteUserByEmail(email);
+		await deleteUserByUsername(username);
 
 		const res = await api.get('/favorites').set('Authorization', `Bearer ${token}`);
 
@@ -45,8 +45,8 @@ describe('requireAuth middleware (via GET /favorites)', () => {
 	});
 
 	it('allows a valid token for a user that still exists', async () => {
-		const { email, token } = await registerTestUser();
-		createdEmails.push(email);
+		const { username, token } = await registerTestUser();
+		createdUsernames.push(username);
 
 		const res = await api.get('/favorites').set('Authorization', `Bearer ${token}`);
 

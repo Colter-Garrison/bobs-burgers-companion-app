@@ -5,10 +5,12 @@ import Episodes from './episodes';
 import { getEpisodes } from '../../hooks/fetchEpisodes';
 import { useFavorites } from '../../hooks/useFavorites';
 import { useAuth } from '../../hooks/useAuth';
+import { useTheme } from '../../hooks/useTheme';
 
 jest.mock('../../hooks/fetchEpisodes');
 jest.mock('../../hooks/useFavorites');
 jest.mock('../../hooks/useAuth');
+jest.mock('../../hooks/useTheme');
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
@@ -48,6 +50,10 @@ describe('Episodes screen', () => {
 	const mockPush = jest.fn();
 
 	beforeEach(() => {
+		(useTheme as jest.Mock).mockReturnValue({
+			isDark: false,
+			toggleTheme: jest.fn(),
+		});
 		(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => false,
 			addFavorite: mockAddFavorite,

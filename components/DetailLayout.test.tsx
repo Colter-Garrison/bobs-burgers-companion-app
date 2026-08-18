@@ -1,6 +1,7 @@
 import { Image, Linking } from 'react-native';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { DetailLayout } from './DetailLayout';
+import { useTheme } from '../hooks/useTheme';
 
 jest.mock('expo-router/drawer', () => ({
 	// <Drawer.Screen> is a config-only element consumed by the navigator —
@@ -8,8 +9,17 @@ jest.mock('expo-router/drawer', () => ({
 	// DetailLayout's own visible output.
 	Drawer: { Screen: () => null },
 }));
+// Pulled in indirectly via CategorySkeleton (the loading state below).
+jest.mock('../hooks/useTheme');
 
 describe('DetailLayout', () => {
+	beforeEach(() => {
+		(useTheme as jest.Mock).mockReturnValue({
+			isDark: false,
+			toggleTheme: jest.fn(),
+		});
+	});
+
 	const baseProps = {
 		loading: false,
 		error: null,

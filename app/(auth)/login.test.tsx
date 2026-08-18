@@ -2,11 +2,13 @@ import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 import Login from './login';
 import { useAuth } from '../../hooks/useAuth';
+import { useTheme } from '../../hooks/useTheme';
 
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
 jest.mock('../../hooks/useAuth');
+jest.mock('../../hooks/useTheme');
 
 // useFocusEffect is normally driven by real navigation focus events,
 // which don't exist in a bare RNTL render. Calling the callback directly
@@ -25,6 +27,10 @@ describe('Login screen', () => {
 	const mockLogin = jest.fn();
 
 	beforeEach(() => {
+		(useTheme as jest.Mock).mockReturnValue({
+			isDark: false,
+			toggleTheme: jest.fn(),
+		});
 		(useRouter as jest.Mock).mockReturnValue({ push: mockPush });
 		(useAuth as jest.Mock).mockReturnValue({ login: mockLogin });
 	});
@@ -33,14 +39,11 @@ describe('Login screen', () => {
 		jest.clearAllMocks();
 	});
 
-	it('submits the entered email/password and navigates home on success', async () => {
+	it('submits the entered username/password and navigates home on success', async () => {
 		mockLogin.mockResolvedValueOnce(undefined);
 		render(<Login />);
 
-		fireEvent.changeText(
-			screen.getByPlaceholderText('Email'),
-			'bob@bobsburgers.com',
-		);
+		fireEvent.changeText(screen.getByPlaceholderText('Username'), 'bobbelcher');
 		fireEvent.changeText(
 			screen.getByPlaceholderText('Password'),
 			'correcthorse',
@@ -49,27 +52,21 @@ describe('Login screen', () => {
 			fireEvent.press(screen.getByRole('button', { name: 'Log In' }));
 		});
 
-		expect(mockLogin).toHaveBeenCalledWith(
-			'bob@bobsburgers.com',
-			'correcthorse',
-		);
+		expect(mockLogin).toHaveBeenCalledWith('bobbelcher', 'correcthorse');
 		expect(mockPush).toHaveBeenCalledWith('/');
 	});
 
 	it('shows an error message and does not navigate on failure', async () => {
-		mockLogin.mockRejectedValueOnce(new Error('Invalid email or password'));
+		mockLogin.mockRejectedValueOnce(new Error('Invalid username or password'));
 		render(<Login />);
 
-		fireEvent.changeText(
-			screen.getByPlaceholderText('Email'),
-			'bob@bobsburgers.com',
-		);
+		fireEvent.changeText(screen.getByPlaceholderText('Username'), 'bobbelcher');
 		fireEvent.changeText(screen.getByPlaceholderText('Password'), 'wrong');
 		await act(async () => {
 			fireEvent.press(screen.getByRole('button', { name: 'Log In' }));
 		});
 
-		expect(screen.getByText('Invalid email or password')).toBeVisible();
+		expect(screen.getByText('Invalid username or password')).toBeVisible();
 		expect(mockPush).not.toHaveBeenCalled();
 	});
 
@@ -81,13 +78,10 @@ describe('Login screen', () => {
 		expect(mockPush).toHaveBeenCalledWith('/signup');
 	});
 
-	it('clears the email/password fields when the screen loses focus', () => {
+	it('clears the username/password fields when the screen loses focus', () => {
 		render(<Login />);
 
-		fireEvent.changeText(
-			screen.getByPlaceholderText('Email'),
-			'bob@bobsburgers.com',
-		);
+		fireEvent.changeText(screen.getByPlaceholderText('Username'), 'bobbelcher');
 		fireEvent.changeText(
 			screen.getByPlaceholderText('Password'),
 			'correcthorse',
@@ -97,7 +91,7 @@ describe('Login screen', () => {
 			focusEffectCleanup?.();
 		});
 
-		expect(screen.getByPlaceholderText('Email').props.value).toBe('');
+		expect(screen.getByPlaceholderText('Username').props.value).toBe('');
 		expect(screen.getByPlaceholderText('Password').props.value).toBe('');
 	});
 });

@@ -18,20 +18,20 @@ describe('tokenStorage', () => {
 			Platform.OS = 'ios';
 		});
 
-		it('save writes the token and email via SecureStore', async () => {
-			await tokenStorage.save('token-abc', 'bob@bobsburgers.com');
+		it('save writes the token and username via SecureStore', async () => {
+			await tokenStorage.save('token-abc', 'bobbelcher');
 
 			expect(SecureStore.setItemAsync).toHaveBeenCalledWith(
 				'bbca_auth_token',
 				'token-abc',
 			);
 			expect(SecureStore.setItemAsync).toHaveBeenCalledWith(
-				'bbca_auth_email',
-				'bob@bobsburgers.com',
+				'bbca_auth_username',
+				'bobbelcher',
 			);
 		});
 
-		it('getToken/getEmail read via SecureStore', async () => {
+		it('getToken/getUsername read via SecureStore', async () => {
 			(SecureStore.getItemAsync as jest.Mock).mockResolvedValueOnce(
 				'token-abc',
 			);
@@ -46,7 +46,7 @@ describe('tokenStorage', () => {
 				'bbca_auth_token',
 			);
 			expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith(
-				'bbca_auth_email',
+				'bbca_auth_username',
 			);
 		});
 	});
@@ -71,16 +71,16 @@ describe('tokenStorage', () => {
 			delete (globalThis as { localStorage?: Storage }).localStorage;
 		});
 
-		it('save writes the token and email via localStorage, not SecureStore', async () => {
-			await tokenStorage.save('token-abc', 'bob@bobsburgers.com');
+		it('save writes the token and username via localStorage, not SecureStore', async () => {
+			await tokenStorage.save('token-abc', 'bobbelcher');
 
 			expect(localStorageMock.setItem).toHaveBeenCalledWith(
 				'bbca_auth_token',
 				'token-abc',
 			);
 			expect(localStorageMock.setItem).toHaveBeenCalledWith(
-				'bbca_auth_email',
-				'bob@bobsburgers.com',
+				'bbca_auth_username',
+				'bobbelcher',
 			);
 			expect(SecureStore.setItemAsync).not.toHaveBeenCalled();
 		});
@@ -99,7 +99,7 @@ describe('tokenStorage', () => {
 				'bbca_auth_token',
 			);
 			expect(localStorageMock.removeItem).toHaveBeenCalledWith(
-				'bbca_auth_email',
+				'bbca_auth_username',
 			);
 		});
 	});

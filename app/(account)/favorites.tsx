@@ -13,9 +13,11 @@ import { CategoryFilter } from '../../components/CategoryFilterPills';
 import { FilterPanel } from '../../components/FilterPanel';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { OfflineBanner } from '../../components/OfflineBanner';
+import { useTheme } from '../../hooks/useTheme';
 
 export default function Favorites() {
 	const router = useRouter();
+	const { isDark } = useTheme();
 	const { token, loading: authLoading } = useAuth();
 	const {
 		items,
@@ -143,7 +145,7 @@ export default function Favorites() {
 
 	return (
 		<FlatList
-			className='flex-1 bg-bbGreen'
+			className='flex-1 bg-bbGreen dark:bg-darkBg'
 			contentContainerClassName='flex-col gap-[10px] p-[10px]'
 			data={visibleItems}
 			renderItem={renderItem}
@@ -159,10 +161,10 @@ export default function Favorites() {
 				<View className='gap-[10px]'>
 					<TextInput
 						placeholder='Search your favorites...'
-						placeholderTextColor='#E8242F'
+						placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
 						value={query}
 						onChangeText={setQuery}
-						className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
+						className='font-chewy rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
 					/>
 					<FilterPanel
 						categoryFilter={categoryFilter}
@@ -182,7 +184,9 @@ export default function Favorites() {
 				</View>
 			}
 			ListEmptyComponent={
-				<Text className='font-chewy text-bbRed'>No favorites yet.</Text>
+				<Text className='font-chewy text-bbRed dark:text-darkRed'>
+					No favorites yet.
+				</Text>
 			}
 		/>
 	);

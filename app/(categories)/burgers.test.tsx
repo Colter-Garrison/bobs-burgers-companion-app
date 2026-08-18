@@ -5,11 +5,13 @@ import Burgers from './burgers';
 import { getBurgersOfTheDay } from '../../hooks/fetchBurgersOfTheDay';
 import { useFavorites } from '../../hooks/useFavorites';
 import { useAuth } from '../../hooks/useAuth';
+import { useTheme } from '../../hooks/useTheme';
 import { saveToCache } from '../../lib/dataCache';
 
 jest.mock('../../hooks/fetchBurgersOfTheDay');
 jest.mock('../../hooks/useFavorites');
 jest.mock('../../hooks/useAuth');
+jest.mock('../../hooks/useTheme');
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
@@ -36,6 +38,10 @@ describe('Burgers screen', () => {
 	const mockPush = jest.fn();
 
 	beforeEach(() => {
+		(useTheme as jest.Mock).mockReturnValue({
+			isDark: false,
+			toggleTheme: jest.fn(),
+		});
 		(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => false,
 			addFavorite: mockAddFavorite,

@@ -17,8 +17,8 @@ export function CharacterOfTheDayCard({
 }: CharacterOfTheDayCardProps) {
 	return (
 		<View className='flex-1 items-center justify-center p-[10px]'>
-			<View className='max-w-[320px] items-center gap-[10px] rounded-lg border-4 border-bbRed bg-bbYellow p-[16px]'>
-				<Text className='font-chewy text-[14px] text-bbRed'>
+			<View className='max-w-[320px] items-center gap-[10px] rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-[16px]'>
+				<Text className='font-chewy text-[14px] text-bbRed dark:text-darkRed'>
 					Character of the Day
 				</Text>
 				{character.image ? (
@@ -38,10 +38,10 @@ export function CharacterOfTheDayCard({
 						style={{ borderRadius: 8 }}
 					/>
 				) : null}
-				<Text className='font-chewy text-center text-[22px] text-bbRed'>
+				<Text className='font-chewy text-center text-[22px] text-bbRed dark:text-darkRed'>
 					{character.name}
 				</Text>
-				<Text className='font-chewy text-center text-[14px] text-bbRed'>
+				<Text className='font-chewy text-center text-[14px] text-bbRed dark:text-darkRed'>
 					{blurb}
 				</Text>
 			</View>

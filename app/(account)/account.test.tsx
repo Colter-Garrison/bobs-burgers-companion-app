@@ -17,7 +17,7 @@ describe('Account screen', () => {
 		(useRouter as jest.Mock).mockReturnValue({ push: mockPush });
 		(useAuth as jest.Mock).mockReturnValue({
 			token: 'token-abc',
-			email: 'bob@bobsburgers.com',
+			username: 'bobbelcher',
 			loading: false,
 			deleteAccount: mockDeleteAccount,
 		});
@@ -28,15 +28,15 @@ describe('Account screen', () => {
 		jest.restoreAllMocks();
 	});
 
-	it('shows the logged-in email', () => {
+	it('shows the logged-in username', () => {
 		render(<Account />);
-		expect(screen.getByText('bob@bobsburgers.com')).toBeVisible();
+		expect(screen.getByText('bobbelcher')).toBeVisible();
 	});
 
 	it('redirects to /login when there is no token and loading has settled', () => {
 		(useAuth as jest.Mock).mockReturnValue({
 			token: null,
-			email: null,
+			username: null,
 			loading: false,
 			deleteAccount: mockDeleteAccount,
 		});
@@ -49,7 +49,7 @@ describe('Account screen', () => {
 	it('does not redirect while the session is still being restored', () => {
 		(useAuth as jest.Mock).mockReturnValue({
 			token: null,
-			email: null,
+			username: null,
 			loading: true,
 			deleteAccount: mockDeleteAccount,
 		});

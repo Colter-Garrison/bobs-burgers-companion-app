@@ -10,11 +10,12 @@ import { test, expect } from '@playwright/test';
 test('favoriting/unfavoriting on one screen stays in sync with Favorites and other screens', async ({
 	page,
 }) => {
-	const email = `e2e-favorites-sync-${Date.now()}@example.com`;
+	// Letters/numbers only, matching routes/auth.ts's validation.
+	const username = `e2efavsync${Date.now().toString(36)}`;
 	const password = 'correcthorsebatterystaple';
 
 	await page.goto('/signup');
-	await page.getByPlaceholder('Email').fill(email);
+	await page.getByPlaceholder('Username (2-25 chars)').fill(username);
 	await page.getByPlaceholder('Password (min. 8 characters)').fill(password);
 	await page.getByRole('button', { name: 'Sign Up', exact: true }).click();
 	await expect(page).toHaveURL('/');

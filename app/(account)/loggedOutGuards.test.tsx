@@ -28,6 +28,12 @@ jest.mock('../../lib/apiClient', () => ({
 jest.mock('../../hooks/useSearchableItems', () => ({
 	useSearchableItems: () => ({ items: [], loading: false }),
 }));
+// Favorites now also calls useTheme — this file doesn't exercise theming
+// itself, so a no-op stand-in is enough, same reasoning as the
+// useFocusEffect mock below.
+jest.mock('../../hooks/useTheme', () => ({
+	useTheme: () => ({ isDark: false, toggleTheme: jest.fn() }),
+}));
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
@@ -46,9 +52,7 @@ describe('guarded screens sharing one AuthProvider', () => {
 	beforeEach(() => {
 		(useRouter as jest.Mock).mockReturnValue({ push: mockPush });
 		(tokenStorage.getToken as jest.Mock).mockResolvedValue('token-abc');
-		(tokenStorage.getEmail as jest.Mock).mockResolvedValue(
-			'bob@bobsburgers.com',
-		);
+		(tokenStorage.getUsername as jest.Mock).mockResolvedValue('bobbelcher');
 		(tokenStorage.clear as jest.Mock).mockResolvedValue(undefined);
 		(fetchFavorites as jest.Mock).mockResolvedValue([]);
 	});

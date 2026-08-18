@@ -5,10 +5,12 @@ import Characters from './characters';
 import { getCharacters } from '../../hooks/fetchCharacters';
 import { useFavorites } from '../../hooks/useFavorites';
 import { useAuth } from '../../hooks/useAuth';
+import { useTheme } from '../../hooks/useTheme';
 
 jest.mock('../../hooks/fetchCharacters');
 jest.mock('../../hooks/useFavorites');
 jest.mock('../../hooks/useAuth');
+jest.mock('../../hooks/useTheme');
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
@@ -52,6 +54,10 @@ describe('Characters screen', () => {
 	const mockPush = jest.fn();
 
 	beforeEach(() => {
+		(useTheme as jest.Mock).mockReturnValue({
+			isDark: false,
+			toggleTheme: jest.fn(),
+		});
 		(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => false,
 			addFavorite: mockAddFavorite,

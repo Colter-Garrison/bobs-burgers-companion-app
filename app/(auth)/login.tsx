@@ -3,11 +3,13 @@ import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { useAuth } from '../../hooks/useAuth';
+import { useTheme } from '../../hooks/useTheme';
 
 export default function Login() {
 	const router = useRouter();
+	const { isDark } = useTheme();
 	const { login } = useAuth();
-	const [email, setEmail] = useState('');
+	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState<string | null>(null);
 	const [submitting, setSubmitting] = useState(false);
@@ -21,7 +23,7 @@ export default function Login() {
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
-				setEmail('');
+				setUsername('');
 				setPassword('');
 				setError(null);
 			};
@@ -32,7 +34,7 @@ export default function Login() {
 		setError(null);
 		setSubmitting(true);
 		try {
-			await login(email, password);
+			await login(username, password);
 			// router.replace('/') is a no-op here — /login is a
 			// Drawer.Screen, and expo-router's replace() doesn't
 			// navigate away from a screen inside a drawer navigator in
@@ -48,42 +50,46 @@ export default function Login() {
 	};
 
 	return (
-		<View className='flex-1 items-center justify-center gap-[10px] bg-bbGreen p-[10px]'>
-			<Text className='font-chewy text-[32px] text-bbRed'>Log In</Text>
+		<View className='flex-1 items-center justify-center gap-[10px] bg-bbGreen dark:bg-darkBg p-[10px]'>
+			<Text className='font-chewy text-[32px] text-bbRed dark:text-darkRed'>
+				Log In
+			</Text>
 
 			<TextInput
-				placeholder='Email'
-				placeholderTextColor='#E8242F'
-				value={email}
-				onChangeText={setEmail}
+				placeholder='Username'
+				placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
+				value={username}
+				onChangeText={setUsername}
 				autoCapitalize='none'
-				keyboardType='email-address'
-				className='w-full rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
+				maxLength={25}
+				className='w-full rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
 			/>
 			<TextInput
 				placeholder='Password'
-				placeholderTextColor='#E8242F'
+				placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
 				value={password}
 				onChangeText={setPassword}
 				secureTextEntry
-				className='w-full rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
+				className='w-full rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
 			/>
 
-			{error ? <Text className='font-chewy text-bbRed'>{error}</Text> : null}
+			{error ? (
+				<Text className='font-chewy text-bbRed dark:text-darkRed'>{error}</Text>
+			) : null}
 
 			<Pressable
-				className='w-full items-center justify-center rounded-lg border-4 border-bbRed bg-bbYellow p-2'
+				className='w-full items-center justify-center rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2'
 				onPress={handleSubmit}
 				disabled={submitting}
 				accessibilityRole='button'
 			>
-				<Text className='font-chewy text-[20px] text-bbRed'>
+				<Text className='font-chewy text-[20px] text-bbRed dark:text-darkRed'>
 					{submitting ? 'Logging In...' : 'Log In'}
 				</Text>
 			</Pressable>
 
 			<Pressable onPress={() => router.push('/signup')}>
-				<Text className='font-chewy text-bbRed underline'>
+				<Text className='font-chewy text-bbRed dark:text-darkRed underline'>
 					Need an account? Sign Up
 				</Text>
 			</Pressable>

@@ -56,17 +56,17 @@ export interface AuthResponse {
 	token: string;
 }
 
-export function registerUser(email: string, password: string) {
+export function registerUser(username: string, password: string) {
 	return apiFetch<AuthResponse>('/auth/register', {
 		method: 'POST',
-		body: { email, password },
+		body: { username, password },
 	});
 }
 
-export function loginUser(email: string, password: string) {
+export function loginUser(username: string, password: string) {
 	return apiFetch<AuthResponse>('/auth/login', {
 		method: 'POST',
-		body: { email, password },
+		body: { username, password },
 	});
 }
 

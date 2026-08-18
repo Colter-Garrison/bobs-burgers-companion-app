@@ -2,14 +2,24 @@ import { render, screen } from '@testing-library/react-native';
 import { useLocalSearchParams } from 'expo-router';
 import DetailScreen from './[id]';
 import { useCategoryItem } from '../../../hooks/useCategoryItem';
+import { useTheme } from '../../../hooks/useTheme';
 
 jest.mock('../../../hooks/useCategoryItem');
+// Pulled in indirectly via CategorySkeleton (the loading state below).
+jest.mock('../../../hooks/useTheme');
 jest.mock('expo-router', () => ({
 	useLocalSearchParams: jest.fn(),
 }));
 jest.mock('expo-router/drawer', () => ({
 	Drawer: { Screen: () => null },
 }));
+
+beforeEach(() => {
+	(useTheme as jest.Mock).mockReturnValue({
+		isDark: false,
+		toggleTheme: jest.fn(),
+	});
+});
 
 const character = {
 	id: 5,

@@ -24,7 +24,7 @@ export const categoryEnum = pgEnum('category', [
 
 export const users = pgTable('users', {
 	id: serial('id').primaryKey(),
-	email: varchar('email', { length: 255 }).notNull().unique(),
+	username: varchar('username', { length: 25 }).notNull().unique(),
 	passwordHash: text('password_hash').notNull(),
 	createdAt: timestamp('created_at').notNull().defaultNow(),
 });

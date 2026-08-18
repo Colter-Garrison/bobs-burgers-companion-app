@@ -1,7 +1,17 @@
 import { render, screen } from '@testing-library/react-native';
 import { CategorySkeleton } from './CategorySkeleton';
+import { useTheme } from '../hooks/useTheme';
+
+jest.mock('../hooks/useTheme');
 
 describe('CategorySkeleton', () => {
+	beforeEach(() => {
+		(useTheme as jest.Mock).mockReturnValue({
+			isDark: false,
+			toggleTheme: jest.fn(),
+		});
+	});
+
 	it('renders the default number of placeholder cards', () => {
 		render(<CategorySkeleton />);
 

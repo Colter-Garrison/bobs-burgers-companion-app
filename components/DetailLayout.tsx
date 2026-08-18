@@ -54,12 +54,12 @@ export function DetailLayout({
 	return (
 		<>
 			<Drawer.Screen options={{ title: name }} />
-			<ScrollView className='flex-1 bg-bbGreen'>
+			<ScrollView className='flex-1 bg-bbGreen dark:bg-darkBg'>
 				<View className='flex-col items-center gap-[10px] p-[16px]'>
 					{cachedAt ? (
 						<OfflineBanner cachedAt={cachedAt} onRetry={onRetry} />
 					) : null}
-					<View className='w-full max-w-[420px] items-center gap-[10px] rounded-lg border-4 border-bbRed bg-bbYellow p-[16px]'>
+					<View className='w-full max-w-[420px] items-center gap-[10px] rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-[16px]'>
 						{image ? (
 							<Image
 								source={{ width: 260, height: 190, uri: image }}
@@ -87,10 +87,10 @@ export function DetailLayout({
 								}
 							/>
 						) : null}
-						<Text className='font-chewy text-center text-[24px] text-bbRed'>
+						<Text className='font-chewy text-center text-[24px] text-bbRed dark:text-darkRed'>
 							{name}
 						</Text>
-						<Text className='font-chewy text-center text-[16px] text-bbRed'>
+						<Text className='font-chewy text-center text-[16px] text-bbRed dark:text-darkRed'>
 							{bio}
 						</Text>
 						{fandomUrl ? (
@@ -98,7 +98,7 @@ export function DetailLayout({
 								onPress={() => Linking.openURL(fandomUrl)}
 								accessibilityRole='button'
 							>
-								<Text className='font-chewy text-bbRed underline'>
+								<Text className='font-chewy text-bbRed dark:text-darkRed underline'>
 									View on Fandom
 								</Text>
 							</Pressable>

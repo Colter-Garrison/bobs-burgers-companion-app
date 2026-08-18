@@ -1,18 +1,18 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { api, registerTestUser, deleteUserByEmail } from './helpers.js';
+import { api, registerTestUser, deleteUserByUsername } from './helpers.js';
 
 describe('favorites', () => {
-	let email: string;
+	let username: string;
 	let token: string;
 
 	beforeAll(async () => {
 		const user = await registerTestUser();
-		email = user.email;
+		username = user.username;
 		token = user.token;
 	});
 
 	afterAll(async () => {
-		await deleteUserByEmail(email);
+		await deleteUserByUsername(username);
 	});
 
 	it('adds a favorite', async () => {
