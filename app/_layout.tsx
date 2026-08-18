@@ -26,7 +26,12 @@ function ThemedDrawer() {
 			drawerContent={(props) => <DrawerContent {...props} />}
 			screenOptions={{
 				headerStyle: {
-					backgroundColor: isDark ? '#3C3C3C' : '#5D74A6',
+					// Light-mode header was an unrelated arbitrary blue
+					// (#5D74A6) — now matches lightAccent exactly, both for
+					// visual cohesion with the rest of the Chambray Blue
+					// palette and because it raises the header text's own
+					// contrast from ~3.66:1 to ~7.29:1 as a side effect.
+					backgroundColor: isDark ? '#3C3C3C' : '#2C4A63',
 					// React Navigation's default header carries its own
 					// border-bottom/shadow (a platform-default light
 					// gray/white, unrelated to our own color scheme) —
@@ -50,10 +55,10 @@ function ThemedDrawer() {
 					/>
 				),
 				drawerStyle: {
-					backgroundColor: isDark ? '#222222' : '#BDFB73',
+					backgroundColor: isDark ? '#222222' : '#8FCBEA',
 				},
-				drawerActiveTintColor: isDark ? '#66D9EF' : '#E8242F',
-				drawerInactiveTintColor: isDark ? '#66D9EF' : '#E8242F',
+				drawerActiveTintColor: isDark ? '#66D9EF' : '#2C4A63',
+				drawerInactiveTintColor: isDark ? '#66D9EF' : '#2C4A63',
 				drawerLabelStyle: {
 					fontFamily: 'Chewy',
 					fontSize: 16,
@@ -65,8 +70,8 @@ function ThemedDrawer() {
 				// DrawerItemList and so doesn't pick this up automatically.
 				drawerItemStyle: {
 					borderWidth: 4,
-					borderColor: isDark ? '#66D9EF' : '#E8242F',
-					backgroundColor: isDark ? '#323233' : '#F8DF24',
+					borderColor: isDark ? '#66D9EF' : '#2C4A63',
+					backgroundColor: isDark ? '#323233' : '#C9D9E4',
 					borderRadius: 8,
 				},
 			}}

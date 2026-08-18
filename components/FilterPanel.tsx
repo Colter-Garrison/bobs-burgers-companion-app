@@ -34,13 +34,13 @@ interface FilterPanelProps {
 
 const pillClassName = (isSelected: boolean) =>
 	isSelected
-		? 'items-center justify-center rounded-full border-4 border-bbRed dark:border-darkAccent bg-bbRed dark:bg-darkAccent px-4 py-2'
-		: 'items-center justify-center rounded-full border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface px-4 py-2';
+		? 'items-center justify-center rounded-full border-4 border-lightAccent dark:border-darkAccent bg-lightAccent dark:bg-darkAccent px-4 py-2'
+		: 'items-center justify-center rounded-full border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface px-4 py-2';
 
 const pillTextClassName = (isSelected: boolean) =>
 	isSelected
-		? 'font-chewy text-[14px] text-bbYellow dark:text-darkOnAccent'
-		: 'font-chewy text-[14px] text-bbRed dark:text-darkAccent';
+		? 'font-chewy text-[14px] text-lightSurface dark:text-darkOnAccent'
+		: 'font-chewy text-[14px] text-lightAccent dark:text-darkAccent';
 
 export function FilterPanel({
 	categoryFilter,
@@ -83,14 +83,14 @@ export function FilterPanel({
 				// of its column-direction parent instead of hugging its
 				// content.
 				style={{ alignSelf: 'flex-start' }}
-				className='flex-row items-center gap-1 rounded-full border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface px-4 py-2'
+				className='flex-row items-center gap-1 rounded-full border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface px-4 py-2'
 			>
 				<MaterialCommunityIcons
 					name='filter-outline'
 					size={16}
-					color={isDark ? '#66D9EF' : '#E8242F'}
+					color={isDark ? '#66D9EF' : '#2C4A63'}
 				/>
-				<Text className='font-chewy text-[14px] text-bbRed dark:text-darkAccent'>
+				<Text className='font-chewy text-[14px] text-lightAccent dark:text-darkAccent'>
 					Filter By{displayCount > 0 ? ` (${displayCount})` : ''}
 				</Text>
 			</Pressable>
@@ -99,7 +99,7 @@ export function FilterPanel({
 				<View className='gap-2' testID='filter-panel-options'>
 					{categoryFilter && onSelectCategory ? (
 						<View className='gap-1'>
-							<Text className='font-chewy text-[12px] text-bbRed dark:text-darkAccent'>
+							<Text className='font-chewy text-[12px] text-lightAccent dark:text-darkAccent'>
 								Category
 							</Text>
 							<CategoryFilterPills
@@ -112,7 +112,7 @@ export function FilterPanel({
 					{showGenderHairFilters ? (
 						<>
 							<View className='gap-1'>
-								<Text className='font-chewy text-[12px] text-bbRed dark:text-darkAccent'>
+								<Text className='font-chewy text-[12px] text-lightAccent dark:text-darkAccent'>
 									Gender
 								</Text>
 								<View
@@ -140,7 +140,7 @@ export function FilterPanel({
 							</View>
 
 							<View className='gap-1'>
-								<Text className='font-chewy text-[12px] text-bbRed dark:text-darkAccent'>
+								<Text className='font-chewy text-[12px] text-lightAccent dark:text-darkAccent'>
 									Hair Color
 								</Text>
 								<View
@@ -170,7 +170,7 @@ export function FilterPanel({
 					) : null}
 
 					<View className='gap-1'>
-						<Text className='font-chewy text-[12px] text-bbRed dark:text-darkAccent'>
+						<Text className='font-chewy text-[12px] text-lightAccent dark:text-darkAccent'>
 							Sort
 						</Text>
 						<Pressable
@@ -199,10 +199,10 @@ export function FilterPanel({
 									sortDirection !== null
 										? isDark
 											? '#222222'
-											: '#F8DF24'
+											: '#C9D9E4'
 										: isDark
 											? '#66D9EF'
-											: '#E8242F'
+											: '#2C4A63'
 								}
 							/>
 							<Text className={pillTextClassName(sortDirection !== null)}>

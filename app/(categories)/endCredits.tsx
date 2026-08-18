@@ -78,7 +78,7 @@ export default function EndCredits() {
 
 	const renderItem = useCallback(
 		({ item: credits }: { item: EndCredit }) => (
-			<View className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-2'>
+			<View className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2'>
 				<Pressable
 					className='flex-1 flex-row items-center gap-2'
 					onPress={() => handlePress(credits)}
@@ -92,7 +92,7 @@ export default function EndCredits() {
 						/>
 					) : null}
 					<View className='max-w-[70%] flex-col'>
-						<Text className='font-chewy text-base text-bbRed dark:text-darkAccent'>
+						<Text className='font-chewy text-base text-lightAccent dark:text-darkAccent'>
 							{composeEndCreditShortBio(credits)}
 						</Text>
 					</View>
@@ -120,7 +120,7 @@ export default function EndCredits() {
 
 	return (
 		<FlatList
-			className='flex-1 bg-bbGreen dark:bg-darkBg'
+			className='flex-1 bg-lightBg dark:bg-darkBg'
 			contentContainerClassName='flex-col gap-2 p-2'
 			data={visibleItems}
 			renderItem={renderItem}
@@ -132,10 +132,10 @@ export default function EndCredits() {
 				<View className='flex-col gap-2'>
 					<TextInput
 						placeholder='Search End Credits...'
-						placeholderTextColor={isDark ? '#F0F0F0' : '#E8242F'}
+						placeholderTextColor={isDark ? '#F0F0F0' : '#2C4A63'}
 						value={query}
 						onChangeText={setQuery}
-						className='font-chewy rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkAccent'
+						className='font-chewy rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'
 					/>
 					<FilterPanel
 						sortDirection={attributeFilters.sortDirection}
@@ -153,7 +153,7 @@ export default function EndCredits() {
 			}
 			ListEmptyComponent={
 				<View className='flex-1 flex-col items-center justify-center'>
-					<Text className='font-chewy text-[44px] text-bbRed dark:text-darkAccent'>
+					<Text className='font-chewy text-[44px] text-lightAccent dark:text-darkAccent'>
 						End Credits UH OH...
 					</Text>
 				</View>

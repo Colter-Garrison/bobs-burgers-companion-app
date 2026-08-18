@@ -145,7 +145,7 @@ export default function Favorites() {
 
 	return (
 		<FlatList
-			className='flex-1 bg-bbGreen dark:bg-darkBg'
+			className='flex-1 bg-lightBg dark:bg-darkBg'
 			contentContainerClassName='flex-col gap-[10px] p-[10px]'
 			data={visibleItems}
 			renderItem={renderItem}
@@ -161,10 +161,10 @@ export default function Favorites() {
 				<View className='gap-[10px]'>
 					<TextInput
 						placeholder='Search your favorites...'
-						placeholderTextColor={isDark ? '#F0F0F0' : '#E8242F'}
+						placeholderTextColor={isDark ? '#F0F0F0' : '#2C4A63'}
 						value={query}
 						onChangeText={setQuery}
-						className='font-chewy rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkAccent'
+						className='font-chewy rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'
 					/>
 					<FilterPanel
 						categoryFilter={categoryFilter}
@@ -184,7 +184,7 @@ export default function Favorites() {
 				</View>
 			}
 			ListEmptyComponent={
-				<Text className='font-chewy text-bbRed dark:text-darkAccent'>
+				<Text className='font-chewy text-lightAccent dark:text-darkAccent'>
 					No favorites yet.
 				</Text>
 			}

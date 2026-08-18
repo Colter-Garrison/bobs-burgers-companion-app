@@ -19,7 +19,7 @@ export function ThemeToggleButton() {
 			<MaterialCommunityIcons
 				name={isDark ? 'moon-waning-crescent' : 'white-balance-sunny'}
 				size={22}
-				color={isDark ? '#F0F0F0' : '#E8242F'}
+				color={isDark ? '#F0F0F0' : '#2C4A63'}
 			/>
 		</Pressable>
 	);

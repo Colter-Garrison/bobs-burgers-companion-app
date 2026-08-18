@@ -70,27 +70,27 @@ export default function Account() {
 	};
 
 	return (
-		<View className='flex-1 items-center justify-center gap-[10px] bg-bbGreen dark:bg-darkBg p-[10px]'>
-			<Text className='font-chewy text-[32px] text-bbRed dark:text-darkAccent'>
+		<View className='flex-1 items-center justify-center gap-[10px] bg-lightBg dark:bg-darkBg p-[10px]'>
+			<Text className='font-chewy text-[32px] text-lightAccent dark:text-darkAccent'>
 				Account
 			</Text>
-			<Text className='font-chewy text-bbRed dark:text-darkAccent'>
+			<Text className='font-chewy text-lightAccent dark:text-darkAccent'>
 				{username}
 			</Text>
 
 			{error ? (
-				<Text className='font-chewy text-bbRed dark:text-darkAccent'>
+				<Text className='font-chewy text-lightAccent dark:text-darkAccent'>
 					{error}
 				</Text>
 			) : null}
 
 			<Pressable
-				className='w-full items-center justify-center rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-2'
+				className='w-full items-center justify-center rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2'
 				onPress={handleDeleteAccount}
 				disabled={deleting}
 				accessibilityRole='button'
 			>
-				<Text className='font-chewy text-[20px] text-bbRed dark:text-darkAccent'>
+				<Text className='font-chewy text-[20px] text-lightAccent dark:text-darkAccent'>
 					{deleting ? 'Deleting...' : 'Delete Account'}
 				</Text>
 			</Pressable>

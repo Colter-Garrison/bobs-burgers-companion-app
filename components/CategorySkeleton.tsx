@@ -22,8 +22,8 @@ function getCardStyle(isDark: boolean) {
 		height: 88,
 		borderRadius: 8,
 		borderWidth: 4,
-		borderColor: isDark ? '#66D9EF' : '#E8242F',
-		backgroundColor: isDark ? '#323233' : '#F8DF24',
+		borderColor: isDark ? '#66D9EF' : '#2C4A63',
+		backgroundColor: isDark ? '#323233' : '#C9D9E4',
 	};
 }
 
@@ -61,7 +61,7 @@ export function CategorySkeleton({
 		<View
 			className={
 				fullScreen
-					? 'flex-1 flex-col gap-2 bg-bbGreen dark:bg-darkBg p-2'
+					? 'flex-1 flex-col gap-2 bg-lightBg dark:bg-darkBg p-2'
 					: 'flex-col gap-2'
 			}
 			testID='category-skeleton'

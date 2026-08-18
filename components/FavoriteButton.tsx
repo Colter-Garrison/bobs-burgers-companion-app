@@ -40,7 +40,7 @@ export function FavoriteButton({ favorited, onToggle }: FavoriteButtonProps) {
 			<MaterialCommunityIcons
 				name='hamburger'
 				size={24}
-				color={isDark ? '#FF66CC' : '#E8242F'}
+				color={isDark ? '#FF66CC' : '#2C4A63'}
 				style={{ opacity: favorited ? 1 : 0.5 }}
 			/>
 		</Pressable>

@@ -3,8 +3,8 @@ module.exports = {
 	// Previously only scanned `app/**`, so any Tailwind class used
 	// exclusively inside components/**/*.tsx (never as a literal string
 	// anywhere under app/**) silently never got generated — e.g.
-	// bg-bbRed/text-bbYellow on selected filter pills rendered as
-	// transparent/black instead of red/yellow, since no other file
+	// bg-lightAccent/text-lightSurface on selected filter pills rendered
+	// as transparent/black instead of navy/chambray, since no other file
 	// happened to contain those exact class name strings.
 	content: ['./app/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,jsx,ts,tsx}'],
 	presets: [require('nativewind/preset')],
@@ -18,9 +18,33 @@ module.exports = {
 	theme: {
 		extend: {
 			colors: {
-				bbYellow: '#F8DF24',
-				bbRed: '#E8242F',
-				bbGreen: '#BDFB73',
+				// Light mode palette — "Chambray Blue," picked after the
+				// user rejected the original bbYellow/bbRed/bbGreen
+				// screengrab colors (yellow specifically, and the red
+				// didn't clear body-text contrast either) and reviewed
+				// several alternatives pulled from the app's own splash
+				// screen and from Bob's own on-screen wardrobe. Renamed
+				// from bbYellow/bbRed/bbGreen to role-based names —
+				// matching the dark palette's own darkBg/darkSurface/
+				// darkAccent naming — since keeping the old names would
+				// leave "bbYellow" holding a blue value, which is exactly
+				// the kind of landmine the dark-palette rename upstream
+				// of this one was already trying to avoid. Unlike dark
+				// mode's darkAccent (cyan, too light for light text),
+				// lightAccent's navy is dark enough that lightSurface
+				// pulls double duty as both the card background AND the
+				// selected-pill text color — no separate "onAccent" token
+				// needed here. lightBg went through one more revision
+				// after the initial parchment cream shipped — the user
+				// found it "boring"/too close to plain white, and asked
+				// for a real color instead. #8FCBEA is the splash
+				// screen's own sky blue at (deliberately) a richer/more
+				// saturated value than lightSurface, so cards read as
+				// lighter "clouds" floating on the sky behind them,
+				// rather than nearly blending into a lighter background.
+				lightBg: '#8FCBEA',
+				lightSurface: '#C9D9E4',
+				lightAccent: '#2C4A63',
 				// Dark mode palette — pulled from the user's own VS Code
 				// theme (Neon Vommit: ghgofort.neon-vommit) rather than a
 				// dimmed rendition of the light theme's hues, per their
@@ -34,7 +58,7 @@ module.exports = {
 				// its only consumer is text/icons sitting on top of a
 				// darkAccent-filled surface (e.g. a selected filter
 				// pill). Cyan is a light color (luminance close to
-				// bbYellow's), so unlike the old darkRed, off-white text
+				// lightSurface's), so unlike lightAccent, off-white text
 				// on it is unreadable (~1.45:1 contrast) — this has to
 				// be dark instead (~9.6:1).
 				darkBg: '#222222',

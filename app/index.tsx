@@ -164,7 +164,7 @@ export default function Index() {
 	return (
 		<FlatList
 			testID='search-results-list'
-			className='flex-1 bg-bbGreen dark:bg-darkBg'
+			className='flex-1 bg-lightBg dark:bg-darkBg'
 			contentContainerClassName='flex-col gap-[10px] p-[10px]'
 			data={isSearching && !searchLoading ? visibleItems : []}
 			renderItem={renderItem}
@@ -180,10 +180,10 @@ export default function Index() {
 				<View className='gap-[10px]'>
 					<TextInput
 						placeholder='Search burgers, characters, episodes...'
-						placeholderTextColor={isDark ? '#F0F0F0' : '#E8242F'}
+						placeholderTextColor={isDark ? '#F0F0F0' : '#2C4A63'}
 						value={query}
 						onChangeText={handleQueryChange}
-						className='font-chewy rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkAccent'
+						className='font-chewy rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'
 					/>
 					<FilterPanel
 						categoryFilter={categoryFilter}
@@ -208,12 +208,12 @@ export default function Index() {
 						// succeeded are still shown below — this banner
 						// doesn't replace the results the way a category
 						// screen's full ErrorState does.
-						<View className='flex-row items-center justify-between gap-[10px] rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-[10px]'>
-							<Text className='flex-1 font-chewy text-bbRed dark:text-darkAccent'>
+						<View className='flex-row items-center justify-between gap-[10px] rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-[10px]'>
+							<Text className='flex-1 font-chewy text-lightAccent dark:text-darkAccent'>
 								{error}
 							</Text>
 							<Pressable onPress={retry} accessibilityRole='button'>
-								<Text className='font-chewy text-bbRed dark:text-darkAccent underline'>
+								<Text className='font-chewy text-lightAccent dark:text-darkAccent underline'>
 									Retry
 								</Text>
 							</Pressable>
@@ -223,7 +223,7 @@ export default function Index() {
 			}
 			ListEmptyComponent={
 				isSearching && !searchLoading ? (
-					<Text className='font-chewy text-bbRed dark:text-darkAccent'>
+					<Text className='font-chewy text-lightAccent dark:text-darkAccent'>
 						No results found.
 					</Text>
 				) : !isSearching && characterOfTheDay && characterOfTheDayBlurb ? (
