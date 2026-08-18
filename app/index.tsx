@@ -14,9 +14,11 @@ import { CategorySkeleton } from '../components/CategorySkeleton';
 import { OfflineBanner } from '../components/OfflineBanner';
 import { CharacterOfTheDayCard } from '../components/CharacterOfTheDayCard';
 import { useCharacterOfTheDay } from '../hooks/useCharacterOfTheDay';
+import { useTheme } from '../hooks/useTheme';
 
 export default function Index() {
 	const router = useRouter();
+	const { isDark } = useTheme();
 	const { items, error, retry, cachedAt } = useSearchableItems();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const { character: characterOfTheDay, blurb: characterOfTheDayBlurb } =
@@ -162,7 +164,7 @@ export default function Index() {
 	return (
 		<FlatList
 			testID='search-results-list'
-			className='flex-1 bg-bbGreen'
+			className='flex-1 bg-bbGreen dark:bg-darkBg'
 			contentContainerClassName='flex-col gap-[10px] p-[10px]'
 			data={isSearching && !searchLoading ? visibleItems : []}
 			renderItem={renderItem}
@@ -178,10 +180,10 @@ export default function Index() {
 				<View className='gap-[10px]'>
 					<TextInput
 						placeholder='Search burgers, characters, episodes...'
-						placeholderTextColor='#E8242F'
+						placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
 						value={query}
 						onChangeText={handleQueryChange}
-						className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
+						className='font-chewy rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
 					/>
 					<FilterPanel
 						categoryFilter={categoryFilter}
@@ -206,10 +208,14 @@ export default function Index() {
 						// succeeded are still shown below — this banner
 						// doesn't replace the results the way a category
 						// screen's full ErrorState does.
-						<View className='flex-row items-center justify-between gap-[10px] rounded-lg border-4 border-bbRed bg-bbYellow p-[10px]'>
-							<Text className='flex-1 font-chewy text-bbRed'>{error}</Text>
+						<View className='flex-row items-center justify-between gap-[10px] rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-[10px]'>
+							<Text className='flex-1 font-chewy text-bbRed dark:text-darkRed'>
+								{error}
+							</Text>
 							<Pressable onPress={retry} accessibilityRole='button'>
-								<Text className='font-chewy text-bbRed underline'>Retry</Text>
+								<Text className='font-chewy text-bbRed dark:text-darkRed underline'>
+									Retry
+								</Text>
 							</Pressable>
 						</View>
 					) : null}
@@ -217,7 +223,9 @@ export default function Index() {
 			}
 			ListEmptyComponent={
 				isSearching && !searchLoading ? (
-					<Text className='font-chewy text-bbRed'>No results found.</Text>
+					<Text className='font-chewy text-bbRed dark:text-darkRed'>
+						No results found.
+					</Text>
 				) : !isSearching && characterOfTheDay && characterOfTheDayBlurb ? (
 					<CharacterOfTheDayCard
 						character={characterOfTheDay}

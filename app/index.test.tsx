@@ -6,11 +6,13 @@ import { useSearchableItems } from '../hooks/useSearchableItems';
 import { useFavorites } from '../hooks/useFavorites';
 import { useAuth } from '../hooks/useAuth';
 import { useCharacterOfTheDay } from '../hooks/useCharacterOfTheDay';
+import { useTheme } from '../hooks/useTheme';
 
 jest.mock('../hooks/useSearchableItems');
 jest.mock('../hooks/useFavorites');
 jest.mock('../hooks/useAuth');
 jest.mock('../hooks/useCharacterOfTheDay');
+jest.mock('../hooks/useTheme');
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
@@ -43,6 +45,10 @@ describe('Home / search screen', () => {
 	const mockPush = jest.fn();
 
 	beforeEach(() => {
+		(useTheme as jest.Mock).mockReturnValue({
+			isDark: false,
+			toggleTheme: jest.fn(),
+		});
 		mockRetry.mockResolvedValue(undefined);
 		(useSearchableItems as jest.Mock).mockReturnValue({
 			loading: false,

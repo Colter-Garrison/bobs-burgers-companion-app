@@ -8,6 +8,13 @@
       "when": 1786756510373,
       "tag": "0000_bitter_quicksilver",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1787010890147,
+      "tag": "0001_email_to_username",
+      "breakpoints": true
     }
   ]
 }

@@ -14,12 +14,14 @@ import { FilterPanel } from '../../components/FilterPanel';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
 import { OfflineBanner } from '../../components/OfflineBanner';
+import { useTheme } from '../../hooks/useTheme';
 
 const getSearchableText = (episode: Episode) =>
 	`${episode.name} ${composeEpisodeShortBio(episode)}`;
 
 export default function Episodes() {
 	const router = useRouter();
+	const { isDark } = useTheme();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const {
 		data: episodes,
@@ -66,15 +68,18 @@ export default function Episodes() {
 
 	const renderItem = useCallback(
 		({ item: episode }: { item: Episode }) => (
-			<View className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'>
+			<View className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2'>
 				<Pressable
 					className='flex-1 flex-col'
 					onPress={() => handlePress(episode)}
 				>
-					<Text testID='card-title' className='font-chewy text-base text-bbRed'>
+					<Text
+						testID='card-title'
+						className='font-chewy text-base text-bbRed dark:text-darkRed'
+					>
 						{episode.name}
 					</Text>
-					<Text className='font-chewy text-base text-bbRed'>
+					<Text className='font-chewy text-base text-bbRed dark:text-darkRed'>
 						{composeEpisodeShortBio(episode)}
 					</Text>
 				</Pressable>
@@ -101,7 +106,7 @@ export default function Episodes() {
 
 	return (
 		<FlatList
-			className='flex-1 bg-bbGreen'
+			className='flex-1 bg-bbGreen dark:bg-darkBg'
 			contentContainerClassName='flex-col gap-2 p-2'
 			data={visibleItems}
 			renderItem={renderItem}
@@ -113,10 +118,10 @@ export default function Episodes() {
 				<View className='flex-col gap-2'>
 					<TextInput
 						placeholder='Search Episodes...'
-						placeholderTextColor='#E8242F'
+						placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
 						value={query}
 						onChangeText={setQuery}
-						className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
+						className='font-chewy rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
 					/>
 					<FilterPanel
 						sortDirection={attributeFilters.sortDirection}

@@ -34,12 +34,12 @@ describe('apiClient', () => {
 		jest.restoreAllMocks();
 	});
 
-	it('registerUser posts email/password and returns the token', async () => {
+	it('registerUser posts username/password and returns the token', async () => {
 		(global.fetch as jest.Mock).mockResolvedValueOnce(
 			mockJsonResponse(201, { token: 'abc123' }),
 		);
 
-		const result = await registerUser('bob@bobsburgers.com', 'burgerpass1');
+		const result = await registerUser('bobbelcher', 'burgerpass1');
 
 		expect(global.fetch).toHaveBeenCalledWith(
 			expect.stringContaining('/auth/register'),
@@ -49,7 +49,7 @@ describe('apiClient', () => {
 					'Content-Type': 'application/json',
 				}),
 				body: JSON.stringify({
-					email: 'bob@bobsburgers.com',
+					username: 'bobbelcher',
 					password: 'burgerpass1',
 				}),
 			}),
@@ -59,15 +59,15 @@ describe('apiClient', () => {
 
 	it('loginUser throws an ApiError carrying the status and message on failure', async () => {
 		(global.fetch as jest.Mock).mockResolvedValueOnce(
-			mockJsonResponse(401, { error: 'Invalid email or password' }),
+			mockJsonResponse(401, { error: 'Invalid username or password' }),
 		);
 
-		const result = loginUser('bob@bobsburgers.com', 'wrong');
+		const result = loginUser('bobbelcher', 'wrong');
 
 		await expect(result).rejects.toBeInstanceOf(ApiError);
 		await expect(result).rejects.toMatchObject({
 			status: 401,
-			message: 'Invalid email or password',
+			message: 'Invalid username or password',
 		});
 	});
 

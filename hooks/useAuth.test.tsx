@@ -18,7 +18,7 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 describe('useAuth', () => {
 	beforeEach(() => {
 		(tokenStorage.getToken as jest.Mock).mockResolvedValue(null);
-		(tokenStorage.getEmail as jest.Mock).mockResolvedValue(null);
+		(tokenStorage.getUsername as jest.Mock).mockResolvedValue(null);
 		(tokenStorage.save as jest.Mock).mockResolvedValue(undefined);
 		(tokenStorage.clear as jest.Mock).mockResolvedValue(undefined);
 	});
@@ -35,42 +35,34 @@ describe('useAuth', () => {
 		await waitFor(() => expect(result.current.loading).toBe(false));
 
 		expect(result.current.token).toBeNull();
-		expect(result.current.email).toBeNull();
+		expect(result.current.username).toBeNull();
 	});
 
 	it('restores a persisted session on mount', async () => {
 		(tokenStorage.getToken as jest.Mock).mockResolvedValue('stored-token');
-		(tokenStorage.getEmail as jest.Mock).mockResolvedValue(
-			'bob@bobsburgers.com',
-		);
+		(tokenStorage.getUsername as jest.Mock).mockResolvedValue('bobbelcher');
 
 		const { result } = renderHook(() => useAuth(), { wrapper });
 
 		await waitFor(() => expect(result.current.loading).toBe(false));
 
 		expect(result.current.token).toBe('stored-token');
-		expect(result.current.email).toBe('bob@bobsburgers.com');
+		expect(result.current.username).toBe('bobbelcher');
 	});
 
-	it('login persists the token/email and updates state on success', async () => {
+	it('login persists the token/username and updates state on success', async () => {
 		(loginUser as jest.Mock).mockResolvedValue({ token: 'new-token' });
 		const { result } = renderHook(() => useAuth(), { wrapper });
 		await waitFor(() => expect(result.current.loading).toBe(false));
 
 		await act(async () => {
-			await result.current.login('bob@bobsburgers.com', 'correcthorse');
+			await result.current.login('bobbelcher', 'correcthorse');
 		});
 
-		expect(loginUser).toHaveBeenCalledWith(
-			'bob@bobsburgers.com',
-			'correcthorse',
-		);
-		expect(tokenStorage.save).toHaveBeenCalledWith(
-			'new-token',
-			'bob@bobsburgers.com',
-		);
+		expect(loginUser).toHaveBeenCalledWith('bobbelcher', 'correcthorse');
+		expect(tokenStorage.save).toHaveBeenCalledWith('new-token', 'bobbelcher');
 		expect(result.current.token).toBe('new-token');
-		expect(result.current.email).toBe('bob@bobsburgers.com');
+		expect(result.current.username).toBe('bobbelcher');
 	});
 
 	it('login leaves state unchanged and rethrows on failure', async () => {
@@ -82,7 +74,7 @@ describe('useAuth', () => {
 
 		await expect(
 			act(async () => {
-				await result.current.login('bob@bobsburgers.com', 'wrong');
+				await result.current.login('bobbelcher', 'wrong');
 			}),
 		).rejects.toThrow('Invalid credentials');
 
@@ -90,28 +82,23 @@ describe('useAuth', () => {
 		expect(result.current.token).toBeNull();
 	});
 
-	it('signup persists the token/email and updates state on success', async () => {
+	it('signup persists the token/username and updates state on success', async () => {
 		(registerUser as jest.Mock).mockResolvedValue({ token: 'signup-token' });
 		const { result } = renderHook(() => useAuth(), { wrapper });
 		await waitFor(() => expect(result.current.loading).toBe(false));
 
 		await act(async () => {
-			await result.current.signup('new@bobsburgers.com', 'correcthorse');
+			await result.current.signup('newbelcher', 'correcthorse');
 		});
 
-		expect(registerUser).toHaveBeenCalledWith(
-			'new@bobsburgers.com',
-			'correcthorse',
-		);
+		expect(registerUser).toHaveBeenCalledWith('newbelcher', 'correcthorse');
 		expect(result.current.token).toBe('signup-token');
-		expect(result.current.email).toBe('new@bobsburgers.com');
+		expect(result.current.username).toBe('newbelcher');
 	});
 
 	it('logout clears storage and resets state', async () => {
 		(tokenStorage.getToken as jest.Mock).mockResolvedValue('stored-token');
-		(tokenStorage.getEmail as jest.Mock).mockResolvedValue(
-			'bob@bobsburgers.com',
-		);
+		(tokenStorage.getUsername as jest.Mock).mockResolvedValue('bobbelcher');
 		const { result } = renderHook(() => useAuth(), { wrapper });
 		await waitFor(() => expect(result.current.loading).toBe(false));
 		expect(result.current.token).toBe('stored-token');
@@ -122,14 +109,12 @@ describe('useAuth', () => {
 
 		expect(tokenStorage.clear).toHaveBeenCalled();
 		expect(result.current.token).toBeNull();
-		expect(result.current.email).toBeNull();
+		expect(result.current.username).toBeNull();
 	});
 
 	it('deleteAccount calls the API then clears storage and resets state, like logout', async () => {
 		(tokenStorage.getToken as jest.Mock).mockResolvedValue('stored-token');
-		(tokenStorage.getEmail as jest.Mock).mockResolvedValue(
-			'bob@bobsburgers.com',
-		);
+		(tokenStorage.getUsername as jest.Mock).mockResolvedValue('bobbelcher');
 		(deleteAccountRequest as jest.Mock).mockResolvedValue(undefined);
 		const { result } = renderHook(() => useAuth(), { wrapper });
 		await waitFor(() => expect(result.current.loading).toBe(false));
@@ -141,7 +126,7 @@ describe('useAuth', () => {
 		expect(deleteAccountRequest).toHaveBeenCalledWith('stored-token');
 		expect(tokenStorage.clear).toHaveBeenCalled();
 		expect(result.current.token).toBeNull();
-		expect(result.current.email).toBeNull();
+		expect(result.current.username).toBeNull();
 	});
 
 	it('deleteAccount is a no-op when there is no token', async () => {
@@ -157,9 +142,7 @@ describe('useAuth', () => {
 
 	it('deleteAccount rethrows on failure and leaves the session intact', async () => {
 		(tokenStorage.getToken as jest.Mock).mockResolvedValue('stored-token');
-		(tokenStorage.getEmail as jest.Mock).mockResolvedValue(
-			'bob@bobsburgers.com',
-		);
+		(tokenStorage.getUsername as jest.Mock).mockResolvedValue('bobbelcher');
 		(deleteAccountRequest as jest.Mock).mockRejectedValue(
 			new Error('Server error'),
 		);

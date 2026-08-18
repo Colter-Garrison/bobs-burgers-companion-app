@@ -1,11 +1,21 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { FilterPanel } from './FilterPanel';
+import { useTheme } from '../hooks/useTheme';
+
+jest.mock('../hooks/useTheme');
 
 describe('FilterPanel', () => {
 	const mockOnSelectCategory = jest.fn();
 	const mockOnToggleGender = jest.fn();
 	const mockOnToggleHair = jest.fn();
 	const mockOnToggleSort = jest.fn();
+
+	beforeEach(() => {
+		(useTheme as jest.Mock).mockReturnValue({
+			isDark: false,
+			toggleTheme: jest.fn(),
+		});
+	});
 
 	const baseProps = {
 		categoryFilter: 'All' as const,

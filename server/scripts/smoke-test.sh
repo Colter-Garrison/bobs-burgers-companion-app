@@ -13,15 +13,16 @@
 set -euo pipefail
 
 BASE_URL="http://localhost:3000"
-# A fresh email every run (via timestamp) so re-running this script never
-# collides with a previous run's leftover user.
-EMAIL="smoketest+$(date +%s)@example.com"
+# A fresh username every run (via timestamp) so re-running this script
+# never collides with a previous run's leftover user. Letters/numbers
+# only, matching the real validation in routes/auth.ts.
+USERNAME="smoketest$(date +%s)"
 PASSWORD="correct-horse-battery-staple"
 
 echo "== Register =="
 REGISTER_RESPONSE=$(curl -s -X POST "$BASE_URL/auth/register" \
 	-H "Content-Type: application/json" \
-	-d "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\"}")
+	-d "{\"username\":\"$USERNAME\",\"password\":\"$PASSWORD\"}")
 echo "$REGISTER_RESPONSE"
 TOKEN=$(echo "$REGISTER_RESPONSE" | node -pe 'JSON.parse(require("fs").readFileSync(0)).token')
 
@@ -29,7 +30,7 @@ echo
 echo "== Login =="
 curl -s -X POST "$BASE_URL/auth/login" \
 	-H "Content-Type: application/json" \
-	-d "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\"}"
+	-d "{\"username\":\"$USERNAME\",\"password\":\"$PASSWORD\"}"
 echo
 
 echo

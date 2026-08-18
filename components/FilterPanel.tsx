@@ -8,6 +8,7 @@ import {
 	HairOption,
 	SortDirection,
 } from '../hooks/useAttributeFilters';
+import { useTheme } from '../hooks/useTheme';
 import { CategoryFilterPills, CategoryFilter } from './CategoryFilterPills';
 
 interface FilterPanelProps {
@@ -33,13 +34,13 @@ interface FilterPanelProps {
 
 const pillClassName = (isSelected: boolean) =>
 	isSelected
-		? 'items-center justify-center rounded-full border-4 border-bbRed bg-bbRed px-4 py-2'
-		: 'items-center justify-center rounded-full border-4 border-bbRed bg-bbYellow px-4 py-2';
+		? 'items-center justify-center rounded-full border-4 border-bbRed dark:border-darkRed bg-bbRed dark:bg-darkRed px-4 py-2'
+		: 'items-center justify-center rounded-full border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface px-4 py-2';
 
 const pillTextClassName = (isSelected: boolean) =>
 	isSelected
-		? 'font-chewy text-[14px] text-bbYellow'
-		: 'font-chewy text-[14px] text-bbRed';
+		? 'font-chewy text-[14px] text-bbYellow dark:text-darkText'
+		: 'font-chewy text-[14px] text-bbRed dark:text-darkRed';
 
 export function FilterPanel({
 	categoryFilter,
@@ -54,6 +55,11 @@ export function FilterPanel({
 	activeCount,
 }: FilterPanelProps) {
 	const [isExpanded, setIsExpanded] = useState(false);
+	// MaterialCommunityIcons' `color` prop is a plain prop, not a
+	// className — NativeWind's dark: variant can't reach it, so (like
+	// app/_layout.tsx's screenOptions) the color has to be picked
+	// explicitly based on the current theme.
+	const { isDark } = useTheme();
 	// Category counts toward the badge too, now that it's tucked inside
 	// this panel instead of always sitting visible on its own — otherwise
 	// a collapsed panel with a category chosen would look like nothing
@@ -77,14 +83,14 @@ export function FilterPanel({
 				// of its column-direction parent instead of hugging its
 				// content.
 				style={{ alignSelf: 'flex-start' }}
-				className='flex-row items-center gap-1 rounded-full border-4 border-bbRed bg-bbYellow px-4 py-2'
+				className='flex-row items-center gap-1 rounded-full border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface px-4 py-2'
 			>
 				<MaterialCommunityIcons
 					name='filter-outline'
 					size={16}
-					color='#E8242F'
+					color={isDark ? '#F2545B' : '#E8242F'}
 				/>
-				<Text className='font-chewy text-[14px] text-bbRed'>
+				<Text className='font-chewy text-[14px] text-bbRed dark:text-darkRed'>
 					Filter By{displayCount > 0 ? ` (${displayCount})` : ''}
 				</Text>
 			</Pressable>
@@ -93,7 +99,7 @@ export function FilterPanel({
 				<View className='gap-2' testID='filter-panel-options'>
 					{categoryFilter && onSelectCategory ? (
 						<View className='gap-1'>
-							<Text className='font-chewy text-[12px] text-bbRed'>
+							<Text className='font-chewy text-[12px] text-bbRed dark:text-darkRed'>
 								Category
 							</Text>
 							<CategoryFilterPills
@@ -106,7 +112,7 @@ export function FilterPanel({
 					{showGenderHairFilters ? (
 						<>
 							<View className='gap-1'>
-								<Text className='font-chewy text-[12px] text-bbRed'>
+								<Text className='font-chewy text-[12px] text-bbRed dark:text-darkRed'>
 									Gender
 								</Text>
 								<View
@@ -134,7 +140,7 @@ export function FilterPanel({
 							</View>
 
 							<View className='gap-1'>
-								<Text className='font-chewy text-[12px] text-bbRed'>
+								<Text className='font-chewy text-[12px] text-bbRed dark:text-darkRed'>
 									Hair Color
 								</Text>
 								<View
@@ -164,7 +170,9 @@ export function FilterPanel({
 					) : null}
 
 					<View className='gap-1'>
-						<Text className='font-chewy text-[12px] text-bbRed'>Sort</Text>
+						<Text className='font-chewy text-[12px] text-bbRed dark:text-darkRed'>
+							Sort
+						</Text>
 						<Pressable
 							onPress={onToggleSort}
 							accessibilityRole='button'
@@ -187,7 +195,15 @@ export function FilterPanel({
 										: 'sort-alphabetical-ascending'
 								}
 								size={16}
-								color={sortDirection !== null ? '#F8DF24' : '#E8242F'}
+								color={
+									sortDirection !== null
+										? isDark
+											? '#ECEDEE'
+											: '#F8DF24'
+										: isDark
+											? '#F2545B'
+											: '#E8242F'
+								}
 							/>
 							<Text className={pillTextClassName(sortDirection !== null)}>
 								{sortDirection === 'desc' ? 'Z-A' : 'A-Z'}

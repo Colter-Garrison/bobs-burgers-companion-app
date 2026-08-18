@@ -135,8 +135,11 @@ export function composeEpisodeFullBio(episode: Episode): string {
 }
 
 // ---- Burgers of the Day ----
+// Deliberately doesn't repeat the burger's name (unlike the full bio
+// below) — the card that renders this already shows the name as its own
+// title directly above, so leading with it here read as redundant.
 export function composeBurgerShortBio(burger: Burger): string {
-	return `${burger.name}, priced at ${burger.price}, was the Burger of the Day in Season ${burger.season}, Episode ${burger.episode}.`;
+	return `Priced at ${burger.price}, it was the Burger of the Day in Season ${burger.season}, Episode ${burger.episode}.`;
 }
 
 export function composeBurgerFullBio(

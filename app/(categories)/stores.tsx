@@ -21,12 +21,14 @@ import { FilterPanel } from '../../components/FilterPanel';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
 import { OfflineBanner } from '../../components/OfflineBanner';
+import { useTheme } from '../../hooks/useTheme';
 
 const getSearchableText = (store: Store) =>
 	`${store.name} ${composeStoreShortBio(store)}`;
 
 export default function Stores() {
 	const router = useRouter();
+	const { isDark } = useTheme();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const {
 		data: stores,
@@ -73,7 +75,7 @@ export default function Stores() {
 
 	const renderItem = useCallback(
 		({ item: store }: { item: Store }) => (
-			<View className='flex-row items-center justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'>
+			<View className='flex-row items-center justify-between gap-2 rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2'>
 				<Pressable
 					className='flex-1 flex-row items-center gap-2'
 					onPress={() => handlePress(store)}
@@ -89,11 +91,11 @@ export default function Stores() {
 					<View className='max-w-[70%] flex-col'>
 						<Text
 							testID='card-title'
-							className='font-chewy text-base text-bbRed'
+							className='font-chewy text-base text-bbRed dark:text-darkRed'
 						>
 							{store.name}
 						</Text>
-						<Text className='font-chewy text-base text-bbRed'>
+						<Text className='font-chewy text-base text-bbRed dark:text-darkRed'>
 							{composeStoreShortBio(store)}
 						</Text>
 					</View>
@@ -121,7 +123,7 @@ export default function Stores() {
 
 	return (
 		<FlatList
-			className='flex-1 bg-bbGreen'
+			className='flex-1 bg-bbGreen dark:bg-darkBg'
 			contentContainerClassName='flex-col gap-2 p-2'
 			data={visibleItems}
 			renderItem={renderItem}
@@ -133,10 +135,10 @@ export default function Stores() {
 				<View className='flex-col gap-2'>
 					<TextInput
 						placeholder='Search Stores Next Door...'
-						placeholderTextColor='#E8242F'
+						placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
 						value={query}
 						onChangeText={setQuery}
-						className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
+						className='font-chewy rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
 					/>
 					<FilterPanel
 						sortDirection={attributeFilters.sortDirection}

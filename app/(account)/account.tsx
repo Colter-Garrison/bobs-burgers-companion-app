@@ -5,7 +5,7 @@ import { useAuth } from '../../hooks/useAuth';
 
 export default function Account() {
 	const router = useRouter();
-	const { token, email, loading, deleteAccount } = useAuth();
+	const { token, username, loading, deleteAccount } = useAuth();
 	const [error, setError] = useState<string | null>(null);
 	const [deleting, setDeleting] = useState(false);
 
@@ -70,19 +70,25 @@ export default function Account() {
 	};
 
 	return (
-		<View className='flex-1 items-center justify-center gap-[10px] bg-bbGreen p-[10px]'>
-			<Text className='font-chewy text-[32px] text-bbRed'>Account</Text>
-			<Text className='font-chewy text-bbRed'>{email}</Text>
+		<View className='flex-1 items-center justify-center gap-[10px] bg-bbGreen dark:bg-darkBg p-[10px]'>
+			<Text className='font-chewy text-[32px] text-bbRed dark:text-darkRed'>
+				Account
+			</Text>
+			<Text className='font-chewy text-bbRed dark:text-darkRed'>
+				{username}
+			</Text>
 
-			{error ? <Text className='font-chewy text-bbRed'>{error}</Text> : null}
+			{error ? (
+				<Text className='font-chewy text-bbRed dark:text-darkRed'>{error}</Text>
+			) : null}
 
 			<Pressable
-				className='w-full items-center justify-center rounded-lg border-4 border-bbRed bg-bbYellow p-2'
+				className='w-full items-center justify-center rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2'
 				onPress={handleDeleteAccount}
 				disabled={deleting}
 				accessibilityRole='button'
 			>
-				<Text className='font-chewy text-[20px] text-bbRed'>
+				<Text className='font-chewy text-[20px] text-bbRed dark:text-darkRed'>
 					{deleting ? 'Deleting...' : 'Delete Account'}
 				</Text>
 			</Pressable>

@@ -24,12 +24,14 @@ import { FilterPanel } from '../../components/FilterPanel';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
 import { OfflineBanner } from '../../components/OfflineBanner';
+import { useTheme } from '../../hooks/useTheme';
 
 const getSearchableText = (credits: EndCredit) =>
 	composeEndCreditShortBio(credits);
 
 export default function EndCredits() {
 	const router = useRouter();
+	const { isDark } = useTheme();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const {
 		data: endCredits,
@@ -76,7 +78,7 @@ export default function EndCredits() {
 
 	const renderItem = useCallback(
 		({ item: credits }: { item: EndCredit }) => (
-			<View className='flex-row items-center justify-between gap-2 rounded-lg border-4 border-bbRed bg-bbYellow p-2'>
+			<View className='flex-row items-center justify-between gap-2 rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2'>
 				<Pressable
 					className='flex-1 flex-row items-center gap-2'
 					onPress={() => handlePress(credits)}
@@ -90,7 +92,7 @@ export default function EndCredits() {
 						/>
 					) : null}
 					<View className='max-w-[70%] flex-col'>
-						<Text className='font-chewy text-base text-bbRed'>
+						<Text className='font-chewy text-base text-bbRed dark:text-darkRed'>
 							{composeEndCreditShortBio(credits)}
 						</Text>
 					</View>
@@ -118,7 +120,7 @@ export default function EndCredits() {
 
 	return (
 		<FlatList
-			className='flex-1 bg-bbGreen'
+			className='flex-1 bg-bbGreen dark:bg-darkBg'
 			contentContainerClassName='flex-col gap-2 p-2'
 			data={visibleItems}
 			renderItem={renderItem}
@@ -130,10 +132,10 @@ export default function EndCredits() {
 				<View className='flex-col gap-2'>
 					<TextInput
 						placeholder='Search End Credits...'
-						placeholderTextColor='#E8242F'
+						placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
 						value={query}
 						onChangeText={setQuery}
-						className='font-chewy rounded-lg border-4 border-bbRed bg-bbYellow p-2 text-[18px] text-bbRed'
+						className='font-chewy rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
 					/>
 					<FilterPanel
 						sortDirection={attributeFilters.sortDirection}
