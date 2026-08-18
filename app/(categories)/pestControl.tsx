@@ -78,7 +78,7 @@ export default function PestControl() {
 
 	const renderItem = useCallback(
 		({ item: truck }: { item: Truck }) => (
-			<View className='flex-row items-center justify-between gap-2 rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2'>
+			<View className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2'>
 				<Pressable
 					className='flex-1 flex-row items-center gap-2'
 					onPress={() => handlePress(truck)}
