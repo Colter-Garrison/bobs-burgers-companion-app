@@ -21,6 +21,7 @@ export function ErrorState({ message, onRetry }: ErrorStateProps) {
 			</Text>
 			<Pressable
 				onPress={onRetry}
+				hitSlop={5}
 				accessibilityRole='button'
 				accessibilityLabel='Retry loading'
 				className='items-center justify-center rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2'

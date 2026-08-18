@@ -11,6 +11,7 @@ import { useFavorites } from '../../hooks/useFavorites';
 import { composeBurgerShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
 import { FilterPanel } from '../../components/FilterPanel';
+import { LoadMoreButton } from '../../components/LoadMoreButton';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
 import { OfflineBanner } from '../../components/OfflineBanner';
@@ -54,7 +55,7 @@ export default function Burgers() {
 		searchedBurgers,
 		(burger) => burger.name,
 	);
-	const { visibleItems, loadMore } = usePagination(visibleBurgers);
+	const { visibleItems, loadMore, hasMore } = usePagination(visibleBurgers);
 
 	const handlePress = useCallback(
 		(burger: Burger) => {
@@ -155,6 +156,9 @@ export default function Burgers() {
 						Burger of the Day UH OH...
 					</Text>
 				</View>
+			}
+			ListFooterComponent={
+				hasMore ? <LoadMoreButton onPress={loadMore} /> : null
 			}
 		/>
 	);

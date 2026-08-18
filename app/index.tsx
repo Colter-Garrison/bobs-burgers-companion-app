@@ -8,6 +8,7 @@ import { useFavorites } from '../hooks/useFavorites';
 import { PAGE_SIZE, usePagination } from '../hooks/usePagination';
 import { useAttributeFilters } from '../hooks/useAttributeFilters';
 import { SearchResultCard } from '../components/SearchResultCard';
+import { LoadMoreButton } from '../components/LoadMoreButton';
 import { CategoryFilter } from '../components/CategoryFilterPills';
 import { FilterPanel } from '../components/FilterPanel';
 import { CategorySkeleton } from '../components/CategorySkeleton';
@@ -68,7 +69,7 @@ export default function Index() {
 		attributeFilters.sortItems,
 	]);
 
-	const { visibleItems, loadMore } = usePagination(filteredItems);
+	const { visibleItems, loadMore, hasMore } = usePagination(filteredItems);
 
 	// Gender/Hair Color only make sense (and only show, via
 	// showGenderHairFilters below) while filtering by Characters — moving
@@ -238,6 +239,11 @@ export default function Index() {
 						character={characterOfTheDay}
 						blurb={characterOfTheDayBlurb}
 					/>
+				) : null
+			}
+			ListFooterComponent={
+				isSearching && !searchLoading && hasMore ? (
+					<LoadMoreButton onPress={loadMore} />
 				) : null
 			}
 		/>

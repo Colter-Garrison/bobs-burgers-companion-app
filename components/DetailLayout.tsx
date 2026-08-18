@@ -105,6 +105,10 @@ export function DetailLayout({
 						{fandomUrl ? (
 							<Pressable
 								onPress={() => Linking.openURL(fandomUrl)}
+								// Plain underlined text with no padding at all
+								// measures well under the 44x44 minimum touch
+								// target guideline.
+								hitSlop={12}
 								accessibilityRole='button'
 								accessibilityLabel={`View ${name} on the Bob's Burgers Fandom wiki`}
 							>

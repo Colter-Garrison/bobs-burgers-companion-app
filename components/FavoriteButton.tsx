@@ -31,7 +31,10 @@ export function FavoriteButton({
 	return (
 		<Pressable
 			onPress={() => (token ? onToggle() : router.push('/login'))}
-			hitSlop={8}
+			// 24px icon: 8pt hitSlop per edge landed at 40x40, just under
+			// the 44x44 minimum touch target guideline — 10pt closes the
+			// gap exactly.
+			hitSlop={10}
 			// Every card puts this next to a flexible-width text column —
 			// a long wrapped bio's last line otherwise runs right up
 			// against the icon with no breathing room. Left margin only:

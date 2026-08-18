@@ -41,6 +41,7 @@ export function CategoryFilterPills({
 					<Pressable
 						key={option}
 						onPress={() => onSelect(option)}
+						hitSlop={5}
 						accessibilityRole='button'
 						accessibilityLabel={`Filter by ${option}`}
 						accessibilityState={{ selected: isSelected }}

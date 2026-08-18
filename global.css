@@ -1,3 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* The browser's own default focus ring (a generic blue, ~rgb(0,95,204))
+   is technically present on every Pressable/TextInput on web, but it's
+   close enough in lightness to this app's own navy/sky-blue palette that
+   it's hard to actually see against it — confirmed by inspecting a
+   tabbed-to element directly, not assumed. These colors are deliberately
+   ones this app doesn't use anywhere else (not the navy accent already
+   used for every border, not the dark-mode cyan accent or pink favorite
+   icon), so a focus ring can't be mistaken for "this has a border" or
+   "this is favorited." :focus-visible (not :focus) so it only shows for
+   keyboard navigation, not every mouse click. NativeWind's dark mode
+   toggles a `dark` class on the root element (see tailwind.config.js's
+   darkMode: 'class'), which is what .dark below hooks into. */
+:focus-visible {
+	outline: 3px solid #7a2e45;
+	outline-offset: 2px;
+}
+
+.dark :focus-visible {
+	outline: 3px solid #ffd166;
+	outline-offset: 2px;
+}

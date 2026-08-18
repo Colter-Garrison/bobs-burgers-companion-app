@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Platform, Pressable, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {
 	GENDER_OPTIONS,
@@ -67,10 +67,47 @@ export function FilterPanel({
 	const displayCount =
 		activeCount + (categoryFilter && categoryFilter !== 'All' ? 1 : 0);
 
+	// Web-only keyboard support — native has no keyboard/Escape concept.
+	// View has no `ref`-accessible DOM node type in RN's own types, so
+	// this is deliberately typed loosely and only ever touched on web.
+	const optionsRef = useRef<View>(null);
+
+	useEffect(() => {
+		if (Platform.OS !== 'web' || !isExpanded) {
+			return;
+		}
+		// Moves focus into the newly revealed content instead of leaving a
+		// keyboard user's focus sitting on the toggle button with no
+		// indication anything changed. The panel itself, not any specific
+		// control inside it — which control is actually first varies
+		// (category pills, then gender/hair, then sort, depending on which
+		// sections this screen passes in), so focusing the container is
+		// the one thing that's always correct regardless of that shape.
+		// tabIndex is set imperatively (not as a prop) since it only
+		// matters on web and isn't part of View's own RN type.
+		const node = optionsRef.current as unknown as HTMLElement | null;
+		if (node) {
+			node.setAttribute('tabindex', '-1');
+			node.focus();
+		}
+
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') {
+				setIsExpanded(false);
+			}
+		};
+		document.addEventListener('keydown', handleKeyDown);
+		return () => document.removeEventListener('keydown', handleKeyDown);
+	}, [isExpanded]);
+
 	return (
 		<View className='gap-2 p-2'>
 			<Pressable
 				onPress={() => setIsExpanded((prev) => !prev)}
+				// px-4 py-2 around 14px text measures under the 44x44
+				// minimum touch target guideline — 5pt hitSlop closes most
+				// of that gap without changing the pill's visual size.
+				hitSlop={5}
 				accessibilityRole='button'
 				accessibilityLabel={
 					isExpanded ? 'Hide filter options' : 'Show filter options'
@@ -96,7 +133,7 @@ export function FilterPanel({
 			</Pressable>
 
 			{isExpanded ? (
-				<View className='gap-2' testID='filter-panel-options'>
+				<View ref={optionsRef} className='gap-2' testID='filter-panel-options'>
 					{categoryFilter && onSelectCategory ? (
 						<View className='gap-1'>
 							<Text className='font-chewy text-[12px] text-lightAccent dark:text-darkAccent'>
@@ -125,6 +162,7 @@ export function FilterPanel({
 											<Pressable
 												key={option}
 												onPress={() => onToggleGender(option)}
+												hitSlop={5}
 												accessibilityRole='button'
 												accessibilityLabel={`Filter by gender: ${option}`}
 												accessibilityState={{ selected: isSelected }}
@@ -153,6 +191,7 @@ export function FilterPanel({
 											<Pressable
 												key={option}
 												onPress={() => onToggleHair(option)}
+												hitSlop={5}
 												accessibilityRole='button'
 												accessibilityLabel={`Filter by hair color: ${option}`}
 												accessibilityState={{ selected: isSelected }}
@@ -175,6 +214,7 @@ export function FilterPanel({
 						</Text>
 						<Pressable
 							onPress={onToggleSort}
+							hitSlop={5}
 							accessibilityRole='button'
 							accessibilityLabel={
 								sortDirection === 'desc'

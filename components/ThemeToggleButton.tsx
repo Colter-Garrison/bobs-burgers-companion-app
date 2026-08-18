@@ -11,6 +11,10 @@ export function ThemeToggleButton() {
 	return (
 		<Pressable
 			onPress={toggleTheme}
+			// 22px icon with no hitSlop measured out to ~22x22pt — well
+			// under the 44x44 minimum touch target guideline. 11pt per
+			// edge brings the effective target up to 44x44 exactly.
+			hitSlop={11}
 			accessibilityRole='button'
 			accessibilityLabel={
 				isDark ? 'Switch to light mode' : 'Switch to dark mode'

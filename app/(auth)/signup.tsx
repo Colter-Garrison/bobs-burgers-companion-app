@@ -141,6 +141,9 @@ export default function Signup() {
 
 			<Pressable
 				onPress={() => router.push('/login')}
+				// Plain underlined text with no padding at all measures
+				// well under the 44x44 minimum touch target guideline.
+				hitSlop={12}
 				accessibilityRole='button'
 			>
 				<Text className='font-chewy text-lightAccent dark:text-darkAccent underline'>

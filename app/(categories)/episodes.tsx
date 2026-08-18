@@ -10,6 +10,7 @@ import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
 import { useFavorites } from '../../hooks/useFavorites';
 import { composeEpisodeShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
+import { LoadMoreButton } from '../../components/LoadMoreButton';
 import { FilterPanel } from '../../components/FilterPanel';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
@@ -54,7 +55,7 @@ export default function Episodes() {
 		searchedEpisodes,
 		(episode) => episode.name,
 	);
-	const { visibleItems, loadMore } = usePagination(visibleEpisodes);
+	const { visibleItems, loadMore, hasMore } = usePagination(visibleEpisodes);
 
 	const handlePress = useCallback(
 		(episode: Episode) => {
@@ -148,6 +149,9 @@ export default function Episodes() {
 						Episode UH OH...
 					</Text>
 				</View>
+			}
+			ListFooterComponent={
+				hasMore ? <LoadMoreButton onPress={loadMore} /> : null
 			}
 		/>
 	);

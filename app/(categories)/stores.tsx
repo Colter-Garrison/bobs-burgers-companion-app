@@ -17,6 +17,7 @@ import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
 import { useFavorites } from '../../hooks/useFavorites';
 import { composeStoreShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
+import { LoadMoreButton } from '../../components/LoadMoreButton';
 import { FilterPanel } from '../../components/FilterPanel';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
@@ -61,7 +62,7 @@ export default function Stores() {
 		searchedStores,
 		(store) => store.name,
 	);
-	const { visibleItems, loadMore } = usePagination(visibleStores);
+	const { visibleItems, loadMore, hasMore } = usePagination(visibleStores);
 
 	const handlePress = useCallback(
 		(store: Store) => {
@@ -171,6 +172,9 @@ export default function Stores() {
 						Store Next Door UH OH...
 					</Text>
 				</View>
+			}
+			ListFooterComponent={
+				hasMore ? <LoadMoreButton onPress={loadMore} /> : null
 			}
 		/>
 	);

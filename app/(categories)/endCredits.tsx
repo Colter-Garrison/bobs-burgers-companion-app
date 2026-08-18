@@ -20,6 +20,7 @@ import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
 import { useFavorites } from '../../hooks/useFavorites';
 import { composeEndCreditShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
+import { LoadMoreButton } from '../../components/LoadMoreButton';
 import { FilterPanel } from '../../components/FilterPanel';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
@@ -64,7 +65,7 @@ export default function EndCredits() {
 		searchedEndCredits,
 		getSearchableText,
 	);
-	const { visibleItems, loadMore } = usePagination(visibleEndCredits);
+	const { visibleItems, loadMore, hasMore } = usePagination(visibleEndCredits);
 
 	const handlePress = useCallback(
 		(endCredit: EndCredit) => {
@@ -169,6 +170,9 @@ export default function EndCredits() {
 						End Credits UH OH...
 					</Text>
 				</View>
+			}
+			ListFooterComponent={
+				hasMore ? <LoadMoreButton onPress={loadMore} /> : null
 			}
 		/>
 	);

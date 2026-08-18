@@ -29,6 +29,9 @@ export function OfflineBanner({ cachedAt, onRetry }: OfflineBannerProps) {
 			</Text>
 			<Pressable
 				onPress={onRetry}
+				// Plain underlined text with no padding at all measures well
+				// under the 44x44 minimum touch target guideline.
+				hitSlop={12}
 				accessibilityRole='button'
 				accessibilityLabel='Retry loading'
 			>

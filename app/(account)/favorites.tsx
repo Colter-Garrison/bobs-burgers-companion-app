@@ -9,6 +9,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
 import { useAttributeFilters } from '../../hooks/useAttributeFilters';
 import { SearchResultCard } from '../../components/SearchResultCard';
+import { LoadMoreButton } from '../../components/LoadMoreButton';
 import { CategoryFilter } from '../../components/CategoryFilterPills';
 import { FilterPanel } from '../../components/FilterPanel';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
@@ -116,7 +117,7 @@ export default function Favorites() {
 		attributeFilters.matches,
 		attributeFilters.sortItems,
 	]);
-	const { visibleItems, loadMore } = usePagination(favoritedItems);
+	const { visibleItems, loadMore, hasMore } = usePagination(favoritedItems);
 	const loading = itemsLoading || favoritesLoading;
 
 	// Defined once, up front, and handed to FlatList as `renderItem` —
@@ -187,6 +188,9 @@ export default function Favorites() {
 				<Text className='font-chewy text-lightAccent dark:text-darkAccent'>
 					No favorites yet.
 				</Text>
+			}
+			ListFooterComponent={
+				hasMore ? <LoadMoreButton onPress={loadMore} /> : null
 			}
 		/>
 	);

@@ -17,6 +17,7 @@ import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
 import { useFavorites } from '../../hooks/useFavorites';
 import { composeCharacterShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
+import { LoadMoreButton } from '../../components/LoadMoreButton';
 import { FilterPanel } from '../../components/FilterPanel';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
@@ -81,7 +82,7 @@ export default function Characters() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[searchedCharacters, attributeFilters.matches, attributeFilters.sortItems],
 	);
-	const { visibleItems, loadMore } = usePagination(visibleCharacters);
+	const { visibleItems, loadMore, hasMore } = usePagination(visibleCharacters);
 
 	const handlePress = useCallback(
 		(character: Character) => {
@@ -192,6 +193,9 @@ export default function Characters() {
 						Character UH OH...
 					</Text>
 				</View>
+			}
+			ListFooterComponent={
+				hasMore ? <LoadMoreButton onPress={loadMore} /> : null
 			}
 		/>
 	);

@@ -20,6 +20,7 @@ import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
 import { useFavorites } from '../../hooks/useFavorites';
 import { composeTruckShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
+import { LoadMoreButton } from '../../components/LoadMoreButton';
 import { FilterPanel } from '../../components/FilterPanel';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
@@ -64,7 +65,7 @@ export default function PestControl() {
 		searchedTrucks,
 		(truck) => truck.name,
 	);
-	const { visibleItems, loadMore } = usePagination(visibleTrucks);
+	const { visibleItems, loadMore, hasMore } = usePagination(visibleTrucks);
 
 	const handlePress = useCallback(
 		(truck: Truck) => {
@@ -174,6 +175,9 @@ export default function PestControl() {
 						Pest Control Truck UH OH...
 					</Text>
 				</View>
+			}
+			ListFooterComponent={
+				hasMore ? <LoadMoreButton onPress={loadMore} /> : null
 			}
 		/>
 	);
