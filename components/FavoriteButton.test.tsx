@@ -2,8 +2,10 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 import { FavoriteButton } from './FavoriteButton';
 import { useAuth } from '../hooks/useAuth';
+import { useTheme } from '../hooks/useTheme';
 
 jest.mock('../hooks/useAuth');
+jest.mock('../hooks/useTheme');
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
@@ -14,6 +16,7 @@ describe('FavoriteButton', () => {
 
 	beforeEach(() => {
 		(useRouter as jest.Mock).mockReturnValue({ push: mockPush });
+		(useTheme as jest.Mock).mockReturnValue({ isDark: false });
 	});
 
 	afterEach(() => {

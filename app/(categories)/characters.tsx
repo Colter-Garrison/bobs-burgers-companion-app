@@ -95,7 +95,7 @@ export default function Characters() {
 
 	const renderItem = useCallback(
 		({ item: character }: { item: Character }) => (
-			<View className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2'>
+			<View className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-2'>
 				<Pressable
 					className='flex-1 flex-row items-center gap-2'
 					onPress={() => handlePress(character)}
@@ -111,11 +111,11 @@ export default function Characters() {
 					<View className='max-w-[70%] flex-col md:max-w-[90%]'>
 						<Text
 							testID='card-title'
-							className='font-chewy text-base text-bbRed dark:text-darkRed'
+							className='font-chewy text-base text-bbRed dark:text-darkAccent'
 						>
 							{character.name}
 						</Text>
-						<Text className='font-chewy text-base text-bbRed dark:text-darkRed'>
+						<Text className='font-chewy text-base text-bbRed dark:text-darkAccent'>
 							{composeCharacterShortBio(character)}
 						</Text>
 					</View>
@@ -155,10 +155,10 @@ export default function Characters() {
 				<View className='flex-col gap-2'>
 					<TextInput
 						placeholder='Search Characters...'
-						placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
+						placeholderTextColor={isDark ? '#F0F0F0' : '#E8242F'}
 						value={query}
 						onChangeText={setQuery}
-						className='font-chewy rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
+						className='font-chewy rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkAccent'
 					/>
 					<FilterPanel
 						showGenderHairFilters
@@ -177,7 +177,9 @@ export default function Characters() {
 			}
 			ListEmptyComponent={
 				<View className='flex-1 flex-col items-center justify-center'>
-					<Text className='font-chewy text-[44px]'>Character UH OH...</Text>
+					<Text className='font-chewy text-[44px] text-bbRed dark:text-darkAccent'>
+						Character UH OH...
+					</Text>
 				</View>
 			}
 		/>

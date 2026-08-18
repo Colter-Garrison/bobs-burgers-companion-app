@@ -19,7 +19,7 @@ export function SearchResultCard({
 	onPress,
 }: SearchResultCardProps) {
 	return (
-		<View className='flex-row items-start justify-between gap-[10px] rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-[10px]'>
+		<View className='flex-row items-start justify-between gap-[10px] rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-[10px]'>
 			<Pressable
 				className='flex-1 flex-row items-center gap-[10px]'
 				onPress={onPress}
@@ -33,10 +33,10 @@ export function SearchResultCard({
 					/>
 				) : null}
 				<View className='flex-1 flex-col'>
-					<Text className='font-chewy text-[12px] text-bbRed dark:text-darkRed'>
+					<Text className='font-chewy text-[12px] text-bbRed dark:text-darkAccent'>
 						{item.category}
 					</Text>
-					<Text className='font-chewy text-[16px] text-bbRed dark:text-darkRed'>
+					<Text className='font-chewy text-[16px] text-bbRed dark:text-darkAccent'>
 						{item.label}
 					</Text>
 				</View>

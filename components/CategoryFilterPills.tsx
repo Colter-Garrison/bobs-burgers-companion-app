@@ -46,15 +46,15 @@ export function CategoryFilterPills({
 						accessibilityState={{ selected: isSelected }}
 						className={
 							isSelected
-								? 'items-center justify-center rounded-full border-4 border-bbRed dark:border-darkRed bg-bbRed dark:bg-darkRed px-4 py-2'
-								: 'items-center justify-center rounded-full border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface px-4 py-2'
+								? 'items-center justify-center rounded-full border-4 border-bbRed dark:border-darkAccent bg-bbRed dark:bg-darkAccent px-4 py-2'
+								: 'items-center justify-center rounded-full border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface px-4 py-2'
 						}
 					>
 						<Text
 							className={
 								isSelected
-									? 'font-chewy text-[14px] text-bbYellow dark:text-darkText'
-									: 'font-chewy text-[14px] text-bbRed dark:text-darkRed'
+									? 'font-chewy text-[14px] text-bbYellow dark:text-darkOnAccent'
+									: 'font-chewy text-[14px] text-bbRed dark:text-darkAccent'
 							}
 						>
 							{option}

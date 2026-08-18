@@ -2,9 +2,11 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { SearchResultCard } from './SearchResultCard';
 import { SearchItem } from '../hooks/useSearchableItems';
 import { useAuth } from '../hooks/useAuth';
+import { useTheme } from '../hooks/useTheme';
 import { useRouter } from 'expo-router';
 
 jest.mock('../hooks/useAuth');
+jest.mock('../hooks/useTheme');
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
@@ -24,6 +26,7 @@ describe('SearchResultCard', () => {
 
 	beforeEach(() => {
 		(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' });
+		(useTheme as jest.Mock).mockReturnValue({ isDark: false });
 		(useRouter as jest.Mock).mockReturnValue({ push: jest.fn() });
 	});
 

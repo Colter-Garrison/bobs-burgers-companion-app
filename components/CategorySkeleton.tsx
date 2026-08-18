@@ -22,8 +22,8 @@ function getCardStyle(isDark: boolean) {
 		height: 88,
 		borderRadius: 8,
 		borderWidth: 4,
-		borderColor: isDark ? '#F2545B' : '#E8242F',
-		backgroundColor: isDark ? '#373108' : '#F8DF24',
+		borderColor: isDark ? '#66D9EF' : '#E8242F',
+		backgroundColor: isDark ? '#323233' : '#F8DF24',
 	};
 }
 

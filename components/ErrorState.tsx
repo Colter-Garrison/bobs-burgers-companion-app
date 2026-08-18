@@ -12,15 +12,15 @@ interface ErrorStateProps {
 export function ErrorState({ message, onRetry }: ErrorStateProps) {
 	return (
 		<View className='flex-1 flex-col items-center justify-center gap-[10px] bg-bbGreen dark:bg-darkBg p-[10px]'>
-			<Text className='font-chewy text-[20px] text-center text-bbRed dark:text-darkRed'>
+			<Text className='font-chewy text-[20px] text-center text-bbRed dark:text-darkAccent'>
 				{message ?? 'Something went wrong.'}
 			</Text>
 			<Pressable
 				onPress={onRetry}
 				accessibilityRole='button'
-				className='items-center justify-center rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2'
+				className='items-center justify-center rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-2'
 			>
-				<Text className='font-chewy text-[20px] text-bbRed dark:text-darkRed'>
+				<Text className='font-chewy text-[20px] text-bbRed dark:text-darkAccent'>
 					Retry
 				</Text>
 			</Pressable>

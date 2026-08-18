@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { Pressable } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuth } from '../hooks/useAuth';
+import { useTheme } from '../hooks/useTheme';
 
 interface FavoriteButtonProps {
 	favorited: boolean;
@@ -12,6 +13,11 @@ interface FavoriteButtonProps {
 export function FavoriteButton({ favorited, onToggle }: FavoriteButtonProps) {
 	const { token } = useAuth();
 	const router = useRouter();
+	// Was hardcoded to the light-mode red in both themes — on the dark
+	// card background (#323233) that measured ~2.9:1 contrast, below even
+	// the 3:1 floor for graphical objects. #FF66CC (a brighter/lighter
+	// take on the dark palette's own magenta, #FF00AA) gets ~4.9:1 instead.
+	const { isDark } = useTheme();
 
 	return (
 		<Pressable
@@ -34,7 +40,7 @@ export function FavoriteButton({ favorited, onToggle }: FavoriteButtonProps) {
 			<MaterialCommunityIcons
 				name='hamburger'
 				size={24}
-				color='#E8242F'
+				color={isDark ? '#FF66CC' : '#E8242F'}
 				style={{ opacity: favorited ? 1 : 0.5 }}
 			/>
 		</Pressable>

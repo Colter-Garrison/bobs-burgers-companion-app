@@ -180,10 +180,10 @@ export default function Index() {
 				<View className='gap-[10px]'>
 					<TextInput
 						placeholder='Search burgers, characters, episodes...'
-						placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
+						placeholderTextColor={isDark ? '#F0F0F0' : '#E8242F'}
 						value={query}
 						onChangeText={handleQueryChange}
-						className='font-chewy rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
+						className='font-chewy rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkAccent'
 					/>
 					<FilterPanel
 						categoryFilter={categoryFilter}
@@ -208,12 +208,12 @@ export default function Index() {
 						// succeeded are still shown below — this banner
 						// doesn't replace the results the way a category
 						// screen's full ErrorState does.
-						<View className='flex-row items-center justify-between gap-[10px] rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-[10px]'>
-							<Text className='flex-1 font-chewy text-bbRed dark:text-darkRed'>
+						<View className='flex-row items-center justify-between gap-[10px] rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-[10px]'>
+							<Text className='flex-1 font-chewy text-bbRed dark:text-darkAccent'>
 								{error}
 							</Text>
 							<Pressable onPress={retry} accessibilityRole='button'>
-								<Text className='font-chewy text-bbRed dark:text-darkRed underline'>
+								<Text className='font-chewy text-bbRed dark:text-darkAccent underline'>
 									Retry
 								</Text>
 							</Pressable>
@@ -223,7 +223,7 @@ export default function Index() {
 			}
 			ListEmptyComponent={
 				isSearching && !searchLoading ? (
-					<Text className='font-chewy text-bbRed dark:text-darkRed'>
+					<Text className='font-chewy text-bbRed dark:text-darkAccent'>
 						No results found.
 					</Text>
 				) : !isSearching && characterOfTheDay && characterOfTheDayBlurb ? (

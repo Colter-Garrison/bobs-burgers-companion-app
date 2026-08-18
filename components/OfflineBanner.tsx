@@ -19,13 +19,13 @@ export function OfflineBanner({ cachedAt, onRetry }: OfflineBannerProps) {
 		: null;
 
 	return (
-		<View className='flex-row items-center justify-between gap-[10px] rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-[10px]'>
-			<Text className='flex-1 font-chewy text-bbRed dark:text-darkRed'>
+		<View className='flex-row items-center justify-between gap-[10px] rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-[10px]'>
+			<Text className='flex-1 font-chewy text-bbRed dark:text-darkAccent'>
 				You&apos;re offline — showing saved data
 				{formattedTime ? ` from ${formattedTime}` : ''}.
 			</Text>
 			<Pressable onPress={onRetry} accessibilityRole='button'>
-				<Text className='font-chewy text-bbRed dark:text-darkRed underline'>
+				<Text className='font-chewy text-bbRed dark:text-darkAccent underline'>
 					Retry
 				</Text>
 			</Pressable>

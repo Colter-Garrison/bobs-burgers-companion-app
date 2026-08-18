@@ -16,7 +16,7 @@ import { ThemeToggleButton } from './ThemeToggleButton';
 // yellow box) — matches the font of react-navigation's own DrawerItem
 // label (screenOptions.drawerLabelStyle in app/_layout.tsx).
 const navLinkClassName =
-	'rounded-lg px-4 py-3 font-chewy text-[16px] text-bbRed dark:text-darkRed';
+	'rounded-lg px-4 py-3 font-chewy text-[16px] text-bbRed dark:text-darkAccent';
 
 const boxedItemLabelStyle = { fontFamily: 'Chewy', fontSize: 16 };
 
@@ -45,8 +45,8 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 	// here rather than via a dark: Tailwind variant.
 	const boxedItemStyle = {
 		borderWidth: 4,
-		borderColor: isDark ? '#F2545B' : '#E8242F',
-		backgroundColor: isDark ? '#373108' : '#F8DF24',
+		borderColor: isDark ? '#66D9EF' : '#E8242F',
+		backgroundColor: isDark ? '#323233' : '#F8DF24',
 		borderRadius: 8,
 	};
 
@@ -100,8 +100,8 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 					onPress={() => router.push('/favorites')}
 					labelStyle={boxedItemLabelStyle}
 					style={boxedItemStyle}
-					activeTintColor={isDark ? '#F2545B' : '#E8242F'}
-					inactiveTintColor={isDark ? '#F2545B' : '#E8242F'}
+					activeTintColor={isDark ? '#66D9EF' : '#E8242F'}
+					inactiveTintColor={isDark ? '#66D9EF' : '#E8242F'}
 				/>
 			) : null}
 

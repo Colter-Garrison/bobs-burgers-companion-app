@@ -26,7 +26,7 @@ function ThemedDrawer() {
 			drawerContent={(props) => <DrawerContent {...props} />}
 			screenOptions={{
 				headerStyle: {
-					backgroundColor: isDark ? '#252E42' : '#5D74A6',
+					backgroundColor: isDark ? '#3C3C3C' : '#5D74A6',
 					// React Navigation's default header carries its own
 					// border-bottom/shadow (a platform-default light
 					// gray/white, unrelated to our own color scheme) —
@@ -50,10 +50,10 @@ function ThemedDrawer() {
 					/>
 				),
 				drawerStyle: {
-					backgroundColor: isDark ? '#13190C' : '#BDFB73',
+					backgroundColor: isDark ? '#222222' : '#BDFB73',
 				},
-				drawerActiveTintColor: isDark ? '#F2545B' : '#E8242F',
-				drawerInactiveTintColor: isDark ? '#F2545B' : '#E8242F',
+				drawerActiveTintColor: isDark ? '#66D9EF' : '#E8242F',
+				drawerInactiveTintColor: isDark ? '#66D9EF' : '#E8242F',
 				drawerLabelStyle: {
 					fontFamily: 'Chewy',
 					fontSize: 16,
@@ -65,8 +65,8 @@ function ThemedDrawer() {
 				// DrawerItemList and so doesn't pick this up automatically.
 				drawerItemStyle: {
 					borderWidth: 4,
-					borderColor: isDark ? '#F2545B' : '#E8242F',
-					backgroundColor: isDark ? '#373108' : '#F8DF24',
+					borderColor: isDark ? '#66D9EF' : '#E8242F',
+					backgroundColor: isDark ? '#323233' : '#F8DF24',
 					borderRadius: 8,
 				},
 			}}

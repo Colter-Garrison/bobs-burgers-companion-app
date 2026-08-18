@@ -79,50 +79,52 @@ export default function Signup() {
 
 	return (
 		<View className='flex-1 items-center justify-center gap-[10px] bg-bbGreen dark:bg-darkBg p-[10px]'>
-			<Text className='font-chewy text-[32px] text-bbRed dark:text-darkRed'>
+			<Text className='font-chewy text-[32px] text-bbRed dark:text-darkAccent'>
 				Sign Up
 			</Text>
 
 			<TextInput
 				placeholder='Username (2-25 chars)'
-				placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
+				placeholderTextColor={isDark ? '#F0F0F0' : '#E8242F'}
 				value={username}
 				onChangeText={handleUsernameChange}
 				autoCapitalize='none'
 				maxLength={25}
-				className='w-full rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
+				className='w-full rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkAccent'
 			/>
 			{usernameError ? (
-				<Text className='font-chewy text-[14px] text-bbRed dark:text-darkRed'>
+				<Text className='font-chewy text-[14px] text-bbRed dark:text-darkAccent'>
 					{usernameError}
 				</Text>
 			) : null}
 			<TextInput
 				placeholder='Password (min. 8 characters)'
-				placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
+				placeholderTextColor={isDark ? '#F0F0F0' : '#E8242F'}
 				value={password}
 				onChangeText={setPassword}
 				secureTextEntry
-				className='w-full rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
+				className='w-full rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkAccent'
 			/>
 
 			{error ? (
-				<Text className='font-chewy text-bbRed dark:text-darkRed'>{error}</Text>
+				<Text className='font-chewy text-bbRed dark:text-darkAccent'>
+					{error}
+				</Text>
 			) : null}
 
 			<Pressable
-				className='w-full items-center justify-center rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2'
+				className='w-full items-center justify-center rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-2'
 				onPress={handleSubmit}
 				disabled={submitting}
 				accessibilityRole='button'
 			>
-				<Text className='font-chewy text-[20px] text-bbRed dark:text-darkRed'>
+				<Text className='font-chewy text-[20px] text-bbRed dark:text-darkAccent'>
 					{submitting ? 'Signing Up...' : 'Sign Up'}
 				</Text>
 			</Pressable>
 
 			<Pressable onPress={() => router.push('/login')}>
-				<Text className='font-chewy text-bbRed dark:text-darkRed underline'>
+				<Text className='font-chewy text-bbRed dark:text-darkAccent underline'>
 					Already have an account? Log In
 				</Text>
 			</Pressable>

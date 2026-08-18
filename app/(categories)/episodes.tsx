@@ -68,18 +68,18 @@ export default function Episodes() {
 
 	const renderItem = useCallback(
 		({ item: episode }: { item: Episode }) => (
-			<View className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2'>
+			<View className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-2'>
 				<Pressable
 					className='flex-1 flex-col'
 					onPress={() => handlePress(episode)}
 				>
 					<Text
 						testID='card-title'
-						className='font-chewy text-base text-bbRed dark:text-darkRed'
+						className='font-chewy text-base text-bbRed dark:text-darkAccent'
 					>
 						{episode.name}
 					</Text>
-					<Text className='font-chewy text-base text-bbRed dark:text-darkRed'>
+					<Text className='font-chewy text-base text-bbRed dark:text-darkAccent'>
 						{composeEpisodeShortBio(episode)}
 					</Text>
 				</Pressable>
@@ -118,10 +118,10 @@ export default function Episodes() {
 				<View className='flex-col gap-2'>
 					<TextInput
 						placeholder='Search Episodes...'
-						placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
+						placeholderTextColor={isDark ? '#F0F0F0' : '#E8242F'}
 						value={query}
 						onChangeText={setQuery}
-						className='font-chewy rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
+						className='font-chewy rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkAccent'
 					/>
 					<FilterPanel
 						sortDirection={attributeFilters.sortDirection}
@@ -139,7 +139,9 @@ export default function Episodes() {
 			}
 			ListEmptyComponent={
 				<View className='flex-1 flex-col items-center justify-center'>
-					<Text className='font-chewy text-[44px]'>Episode UH OH...</Text>
+					<Text className='font-chewy text-[44px] text-bbRed dark:text-darkAccent'>
+						Episode UH OH...
+					</Text>
 				</View>
 			}
 		/>

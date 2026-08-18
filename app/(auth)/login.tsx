@@ -51,45 +51,47 @@ export default function Login() {
 
 	return (
 		<View className='flex-1 items-center justify-center gap-[10px] bg-bbGreen dark:bg-darkBg p-[10px]'>
-			<Text className='font-chewy text-[32px] text-bbRed dark:text-darkRed'>
+			<Text className='font-chewy text-[32px] text-bbRed dark:text-darkAccent'>
 				Log In
 			</Text>
 
 			<TextInput
 				placeholder='Username'
-				placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
+				placeholderTextColor={isDark ? '#F0F0F0' : '#E8242F'}
 				value={username}
 				onChangeText={setUsername}
 				autoCapitalize='none'
 				maxLength={25}
-				className='w-full rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
+				className='w-full rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkAccent'
 			/>
 			<TextInput
 				placeholder='Password'
-				placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
+				placeholderTextColor={isDark ? '#F0F0F0' : '#E8242F'}
 				value={password}
 				onChangeText={setPassword}
 				secureTextEntry
-				className='w-full rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
+				className='w-full rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkAccent'
 			/>
 
 			{error ? (
-				<Text className='font-chewy text-bbRed dark:text-darkRed'>{error}</Text>
+				<Text className='font-chewy text-bbRed dark:text-darkAccent'>
+					{error}
+				</Text>
 			) : null}
 
 			<Pressable
-				className='w-full items-center justify-center rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2'
+				className='w-full items-center justify-center rounded-lg border-4 border-bbRed dark:border-darkAccent bg-bbYellow dark:bg-darkSurface p-2'
 				onPress={handleSubmit}
 				disabled={submitting}
 				accessibilityRole='button'
 			>
-				<Text className='font-chewy text-[20px] text-bbRed dark:text-darkRed'>
+				<Text className='font-chewy text-[20px] text-bbRed dark:text-darkAccent'>
 					{submitting ? 'Logging In...' : 'Log In'}
 				</Text>
 			</Pressable>
 
 			<Pressable onPress={() => router.push('/signup')}>
-				<Text className='font-chewy text-bbRed dark:text-darkRed underline'>
+				<Text className='font-chewy text-bbRed dark:text-darkAccent underline'>
 					Need an account? Sign Up
 				</Text>
 			</Pressable>

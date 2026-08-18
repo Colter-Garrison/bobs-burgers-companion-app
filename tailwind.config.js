@@ -21,26 +21,27 @@ module.exports = {
 				bbYellow: '#F8DF24',
 				bbRed: '#E8242F',
 				bbGreen: '#BDFB73',
-				// Dark mode palette — a dimmed rendition of the light
-				// theme's own hues (bbGreen/bbYellow/bbRed), not neutral
-				// Material-style grays. darkBg/darkSurface are the same
-				// green/yellow hues at a fraction of their light-mode
-				// brightness (darkSurface dimmed noticeably less than
-				// darkBg, deliberately — the two source colors are
-				// already close in raw lightness, so an equal dimming
-				// factor made cards nearly disappear into the
-				// background; borders alone weren't enough separation).
-				// darkRed/darkText stay close to their light-mode
-				// brightness on purpose — dimming text/accent color by
-				// the same factor as the backgrounds crushes contrast
-				// (red is a low-luminance hue to begin with), so those
-				// two keep doing the "readable on dark" job the neutral
-				// palette's red/off-white already did well.
-				darkBg: '#13190C',
-				darkSurface: '#373108',
-				darkRed: '#F2545B',
-				darkText: '#ECEDEE',
-				darkHeader: '#252E42',
+				// Dark mode palette — pulled from the user's own VS Code
+				// theme (Neon Vommit: ghgofort.neon-vommit) rather than a
+				// dimmed rendition of the light theme's hues, per their
+				// explicit request. darkBg/darkSurface are the theme's
+				// own neutral grays (card lighter than the screen behind
+				// it, so it pops, matching normal dark-theme elevation
+				// convention). darkAccent is the theme's most-used syntax
+				// color (cyan, used for variables) — chosen by the user
+				// over the theme's other accent options (neon green,
+				// magenta). darkOnAccent is NOT general dark-mode text —
+				// its only consumer is text/icons sitting on top of a
+				// darkAccent-filled surface (e.g. a selected filter
+				// pill). Cyan is a light color (luminance close to
+				// bbYellow's), so unlike the old darkRed, off-white text
+				// on it is unreadable (~1.45:1 contrast) — this has to
+				// be dark instead (~9.6:1).
+				darkBg: '#222222',
+				darkSurface: '#323233',
+				darkAccent: '#66D9EF',
+				darkOnAccent: '#222222',
+				darkHeader: '#3C3C3C',
 			},
 			fontFamily: {
 				chewy: ['Chewy'],
