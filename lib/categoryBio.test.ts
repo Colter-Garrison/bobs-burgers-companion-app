@@ -185,9 +185,13 @@ describe('composeBurgerShortBio / composeBurgerFullBio', () => {
 		url: 'https://url',
 	};
 
-	it('short bio mentions name, price, and season/episode', () => {
+	it('short bio starts with "Priced at" and mentions price and season/episode, without repeating the name', () => {
 		const bio = composeBurgerShortBio(burger);
-		expect(bio).toContain('"NEW BACON-INGS" (Comes with Bacon)');
+		// The card this renders on already shows the name as its own
+		// title directly above the bio — repeating it here read as
+		// redundant, so the short bio (unlike the full one) omits it.
+		expect(bio.startsWith('Priced at')).toBe(true);
+		expect(bio).not.toContain('"NEW BACON-INGS" (Comes with Bacon)');
 		expect(bio).toContain('$5.95');
 		expect(bio).toContain('Season 1, Episode 1');
 	});

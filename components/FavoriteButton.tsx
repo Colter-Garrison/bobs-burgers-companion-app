@@ -17,6 +17,12 @@ export function FavoriteButton({ favorited, onToggle }: FavoriteButtonProps) {
 		<Pressable
 			onPress={() => (token ? onToggle() : router.push('/login'))}
 			hitSlop={8}
+			// Every card puts this next to a flexible-width text column —
+			// a long wrapped bio's last line otherwise runs right up
+			// against the icon with no breathing room. Left margin only:
+			// the spacing on every other side already comes from the
+			// card's own layout and looked right as-is.
+			className='ml-1'
 			accessibilityRole='button'
 			accessibilityLabel={
 				favorited ? 'Remove from favorites' : 'Add to favorites'

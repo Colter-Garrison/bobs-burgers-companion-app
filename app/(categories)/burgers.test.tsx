@@ -72,7 +72,7 @@ describe('Burgers screen', () => {
 		expect(screen.getByText('Test Burger')).toBeVisible();
 		expect(
 			screen.getByText(
-				'Test Burger, priced at $6.75, was the Burger of the Day in Season 1, Episode 1.',
+				'Priced at $6.75, it was the Burger of the Day in Season 1, Episode 1.',
 			),
 		).toBeVisible();
 		expect(screen.queryByTestId('category-skeleton')).toBeNull();
