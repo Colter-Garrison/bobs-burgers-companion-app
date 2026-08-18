@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
 // auth section (only a Log In link at the top when logged out — Sign Up
 // isn't a separate drawer link, it's reached from the Log In screen's own
 // "Need an account? Sign Up" link — swapping to a clickable
-// "Hello {username}!" once logged in; Favorites and Log Out only shown
+// "Hello, {username}!" once logged in; Favorites and Log Out only shown
 // when logged in).
 // components/DrawerContent.test.tsx covers this component in isolation
 // with a mocked router and a stubbed DrawerItemList — this spec drives
@@ -42,7 +42,9 @@ test('drawer shows only Log In when logged out, and Hello/Favorites/Log Out when
 	await expect(
 		page.getByRole('button', { name: 'Log In (menu)' }),
 	).toBeVisible();
-	await expect(page.getByRole('button', { name: /^Hello / })).not.toBeVisible();
+	await expect(
+		page.getByRole('button', { name: /^Hello, / }),
+	).not.toBeVisible();
 	await expect(
 		page.getByRole('button', { name: 'Favorites' }),
 	).not.toBeVisible();
@@ -56,22 +58,22 @@ test('drawer shows only Log In when logged out, and Hello/Favorites/Log Out when
 	await page.getByRole('button', { name: 'Sign Up', exact: true }).click();
 	await expect(page).toHaveURL('/');
 
-	// Now logged in: the top of the drawer should show "Hello
-	// {username}!" instead of Log In, and Favorites should appear below
+	// Now logged in: the top of the drawer should show "Hello, {username}!"
+	// instead of Log In, and Favorites should appear below
 	// the six category links.
 	await openDrawer();
 	await expect(
 		page.getByRole('button', { name: 'Log In (menu)' }),
 	).not.toBeVisible();
 	await expect(
-		page.getByRole('button', { name: `Hello ${username}!` }),
+		page.getByRole('button', { name: `Hello, ${username}!` }),
 	).toBeVisible();
 	await expect(page.getByRole('button', { name: 'Favorites' })).toBeVisible();
 	await expect(page.getByRole('button', { name: 'Log Out' })).toBeVisible();
 
-	// "Hello {username}!" navigates to the account page, not a separate
+	// "Hello, {username}!" navigates to the account page, not a separate
 	// "Account" link (there is no separate Account link anymore).
-	await page.getByRole('button', { name: `Hello ${username}!` }).click();
+	await page.getByRole('button', { name: `Hello, ${username}!` }).click();
 	await expect(page).toHaveURL(/\/account/);
 	await expect(page.getByText(username, { exact: true })).toBeVisible();
 
