@@ -27,6 +27,16 @@ function ThemedDrawer() {
 			screenOptions={{
 				headerStyle: {
 					backgroundColor: isDark ? '#252E42' : '#5D74A6',
+					// React Navigation's default header carries its own
+					// border-bottom/shadow (a platform-default light
+					// gray/white, unrelated to our own color scheme) —
+					// without disabling it explicitly, that shows up as a
+					// thin light seam between the header and the body
+					// background in both themes, most visible in dark
+					// mode against the darker body color.
+					borderBottomWidth: 0,
+					elevation: 0,
+					shadowOpacity: 0,
 				},
 				headerTitleStyle: {
 					fontFamily: 'Chewy',
