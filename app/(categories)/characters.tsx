@@ -106,11 +106,18 @@ export default function Characters() {
 							width={100}
 							height={100}
 							resizeMode='contain'
+							// Decorative — the name is shown as its own text
+							// right beside it, so a screen reader announcing
+							// the image too would just repeat that.
+							accessible={false}
+							accessibilityElementsHidden
+							importantForAccessibility='no-hide-descendants'
 						/>
 					) : null}
 					<View className='max-w-[70%] flex-col md:max-w-[90%]'>
 						<Text
 							testID='card-title'
+							accessibilityRole='header'
 							className='font-chewy text-base text-lightAccent dark:text-darkAccent'
 						>
 							{character.name}
@@ -121,6 +128,7 @@ export default function Characters() {
 					</View>
 				</Pressable>
 				<FavoriteButton
+					itemName={character.name}
 					favorited={isFavorited('character', character.id)}
 					onToggle={() =>
 						isFavorited('character', character.id)
@@ -177,7 +185,10 @@ export default function Characters() {
 			}
 			ListEmptyComponent={
 				<View className='flex-1 flex-col items-center justify-center'>
-					<Text className='font-chewy text-[44px] text-lightAccent dark:text-darkAccent'>
+					<Text
+						accessibilityRole='header'
+						className='font-chewy text-[44px] text-lightAccent dark:text-darkAccent'
+					>
 						Character UH OH...
 					</Text>
 				</View>

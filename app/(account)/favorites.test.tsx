@@ -134,7 +134,9 @@ describe('Favorites screen', () => {
 	it('tapping the star on a favorited row calls removeFavorite with its category and id', () => {
 		render(<Favorites />);
 
-		fireEvent.press(screen.getByLabelText('Remove from favorites'));
+		fireEvent.press(
+			screen.getByLabelText('Remove Favorited Burger from favorites'),
+		);
 
 		expect(mockRemoveFavorite).toHaveBeenCalledWith('burger', 1);
 	});

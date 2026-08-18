@@ -71,7 +71,10 @@ export default function Account() {
 
 	return (
 		<View className='flex-1 items-center justify-center gap-[10px] bg-lightBg dark:bg-darkBg p-[10px]'>
-			<Text className='font-chewy text-[32px] text-lightAccent dark:text-darkAccent'>
+			<Text
+				accessibilityRole='header'
+				className='font-chewy text-[32px] text-lightAccent dark:text-darkAccent'
+			>
 				Account
 			</Text>
 			<Text className='font-chewy text-lightAccent dark:text-darkAccent'>
@@ -79,7 +82,11 @@ export default function Account() {
 			</Text>
 
 			{error ? (
-				<Text className='font-chewy text-lightAccent dark:text-darkAccent'>
+				<Text
+					accessibilityRole='alert'
+					accessibilityLiveRegion='polite'
+					className='font-chewy text-lightAccent dark:text-darkAccent'
+				>
 					{error}
 				</Text>
 			) : null}
@@ -89,6 +96,7 @@ export default function Account() {
 				onPress={handleDeleteAccount}
 				disabled={deleting}
 				accessibilityRole='button'
+				accessibilityState={{ busy: deleting }}
 			>
 				<Text className='font-chewy text-[20px] text-lightAccent dark:text-darkAccent'>
 					{deleting ? 'Deleting...' : 'Delete Account'}

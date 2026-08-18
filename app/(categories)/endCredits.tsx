@@ -89,6 +89,14 @@ export default function EndCredits() {
 							width={100}
 							height={100}
 							resizeMode='contain'
+							// Decorative — the bio text right beside it already
+							// describes what this is (a hand-drawn end credits
+							// sequence from a given season/episode), so a
+							// screen reader announcing the image too would
+							// just repeat that.
+							accessible={false}
+							accessibilityElementsHidden
+							importantForAccessibility='no-hide-descendants'
 						/>
 					) : null}
 					<View className='max-w-[70%] flex-col'>
@@ -98,6 +106,7 @@ export default function EndCredits() {
 					</View>
 				</Pressable>
 				<FavoriteButton
+					itemName={`Season ${credits.season}, Episode ${credits.episode} end credits`}
 					favorited={isFavorited('end_credit', credits.id)}
 					onToggle={() =>
 						isFavorited('end_credit', credits.id)
@@ -153,7 +162,10 @@ export default function EndCredits() {
 			}
 			ListEmptyComponent={
 				<View className='flex-1 flex-col items-center justify-center'>
-					<Text className='font-chewy text-[44px] text-lightAccent dark:text-darkAccent'>
+					<Text
+						accessibilityRole='header'
+						className='font-chewy text-[44px] text-lightAccent dark:text-darkAccent'
+					>
 						End Credits UH OH...
 					</Text>
 				</View>

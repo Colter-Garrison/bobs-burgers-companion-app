@@ -72,7 +72,7 @@ describe('SearchResultCard', () => {
 			/>,
 		);
 
-		fireEvent.press(screen.getByLabelText('Add to favorites'));
+		fireEvent.press(screen.getByLabelText('Add Bob Belcher to favorites'));
 		expect(mockOnToggleFavorite).toHaveBeenCalled();
 		expect(mockOnPress).not.toHaveBeenCalled();
 	});
@@ -87,6 +87,8 @@ describe('SearchResultCard', () => {
 			/>,
 		);
 
-		expect(screen.getByLabelText('Remove from favorites')).toBeVisible();
+		expect(
+			screen.getByLabelText('Remove Bob Belcher from favorites'),
+		).toBeVisible();
 	});
 });

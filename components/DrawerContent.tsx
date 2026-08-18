@@ -67,6 +67,7 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 						<Pressable
 							onPress={() => router.push('/account')}
 							accessibilityRole='button'
+							accessibilityLabel={`Account settings for ${username}`}
 						>
 							<Text className={navLinkClassName}>Hello, {username}!</Text>
 						</Pressable>
@@ -125,6 +126,7 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 				<Pressable
 					onPress={() => Linking.openURL(BUY_ME_A_COFFEE_URL)}
 					accessibilityRole='button'
+					accessibilityLabel='Buy me a beer, opens a support page'
 				>
 					<Text className={navLinkClassName}>Buy me a beer 🍺</Text>
 				</Pressable>

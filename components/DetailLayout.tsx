@@ -85,9 +85,18 @@ export function DetailLayout({
 										objectFit: 'cover',
 									} as StyleProp<ImageStyle>
 								}
+								// Decorative — the name is right below it as its
+								// own text, so a screen reader announcing the
+								// image too would just repeat that.
+								accessible={false}
+								accessibilityElementsHidden
+								importantForAccessibility='no-hide-descendants'
 							/>
 						) : null}
-						<Text className='font-chewy text-center text-[24px] text-lightAccent dark:text-darkAccent'>
+						<Text
+							accessibilityRole='header'
+							className='font-chewy text-center text-[24px] text-lightAccent dark:text-darkAccent'
+						>
 							{name}
 						</Text>
 						<Text className='font-chewy text-center text-[16px] text-lightAccent dark:text-darkAccent'>
@@ -97,6 +106,7 @@ export function DetailLayout({
 							<Pressable
 								onPress={() => Linking.openURL(fandomUrl)}
 								accessibilityRole='button'
+								accessibilityLabel={`View ${name} on the Bob's Burgers Fandom wiki`}
 							>
 								<Text className='font-chewy text-lightAccent dark:text-darkAccent underline'>
 									View on Fandom

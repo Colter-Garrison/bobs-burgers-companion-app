@@ -181,7 +181,7 @@ describe('Home / search screen', () => {
 		);
 		await flush();
 
-		fireEvent.press(screen.getByLabelText('Add to favorites'));
+		fireEvent.press(screen.getByLabelText('Add Bob Belcher to favorites'));
 
 		expect(mockAddFavorite).toHaveBeenCalledWith('character', 2);
 	});

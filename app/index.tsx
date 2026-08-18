@@ -209,10 +209,17 @@ export default function Index() {
 						// doesn't replace the results the way a category
 						// screen's full ErrorState does.
 						<View className='flex-row items-center justify-between gap-[10px] rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-[10px]'>
-							<Text className='flex-1 font-chewy text-lightAccent dark:text-darkAccent'>
+							<Text
+								accessibilityLiveRegion='polite'
+								className='flex-1 font-chewy text-lightAccent dark:text-darkAccent'
+							>
 								{error}
 							</Text>
-							<Pressable onPress={retry} accessibilityRole='button'>
+							<Pressable
+								onPress={retry}
+								accessibilityRole='button'
+								accessibilityLabel='Retry loading'
+							>
 								<Text className='font-chewy text-lightAccent dark:text-darkAccent underline'>
 									Retry
 								</Text>

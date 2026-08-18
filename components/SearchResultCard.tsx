@@ -30,18 +30,31 @@ export function SearchResultCard({
 						width={60}
 						height={60}
 						resizeMode='contain'
+						// Decorative — item.label right beside it already
+						// carries the same information as text, so a screen
+						// reader announcing this too would just repeat it.
+						accessible={false}
+						accessibilityElementsHidden
+						importantForAccessibility='no-hide-descendants'
 					/>
 				) : null}
 				<View className='flex-1 flex-col'>
 					<Text className='font-chewy text-[12px] text-lightAccent dark:text-darkAccent'>
 						{item.category}
 					</Text>
-					<Text className='font-chewy text-[16px] text-lightAccent dark:text-darkAccent'>
+					<Text
+						accessibilityRole='header'
+						className='font-chewy text-[16px] text-lightAccent dark:text-darkAccent'
+					>
 						{item.label}
 					</Text>
 				</View>
 			</Pressable>
-			<FavoriteButton favorited={favorited} onToggle={onToggleFavorite} />
+			<FavoriteButton
+				itemName={item.label}
+				favorited={favorited}
+				onToggle={onToggleFavorite}
+			/>
 		</View>
 	);
 }

@@ -143,7 +143,7 @@ describe('Burgers screen', () => {
 			await Promise.resolve();
 		});
 
-		fireEvent.press(screen.getByLabelText('Add to favorites'));
+		fireEvent.press(screen.getByLabelText('Add Test Burger to favorites'));
 
 		expect(mockAddFavorite).toHaveBeenCalledWith('burger', 1);
 	});

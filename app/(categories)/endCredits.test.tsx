@@ -130,7 +130,9 @@ describe('EndCredits screen', () => {
 		render(<EndCredits />);
 		await flush();
 
-		fireEvent.press(screen.getByLabelText('Add to favorites'));
+		fireEvent.press(
+			screen.getByLabelText('Add Season 1, Episode 2 end credits to favorites'),
+		);
 
 		expect(mockAddFavorite).toHaveBeenCalledWith('end_credit', 1);
 	});

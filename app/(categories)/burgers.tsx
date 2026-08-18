@@ -78,6 +78,7 @@ export default function Burgers() {
 				>
 					<Text
 						testID='card-title'
+						accessibilityRole='header'
 						className='font-chewy text-base text-lightAccent dark:text-darkAccent'
 					>
 						{burger.name}
@@ -87,6 +88,7 @@ export default function Burgers() {
 					</Text>
 				</Pressable>
 				<FavoriteButton
+					itemName={burger.name}
 					favorited={isFavorited('burger', burger.id)}
 					onToggle={() =>
 						isFavorited('burger', burger.id)
@@ -146,7 +148,10 @@ export default function Burgers() {
 			}
 			ListEmptyComponent={
 				<View className='flex-1 flex-col items-center justify-center'>
-					<Text className='font-chewy text-[44px] text-lightAccent dark:text-darkAccent'>
+					<Text
+						accessibilityRole='header'
+						className='font-chewy text-[44px] text-lightAccent dark:text-darkAccent'
+					>
 						Burger of the Day UH OH...
 					</Text>
 				</View>

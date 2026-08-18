@@ -75,6 +75,7 @@ export default function Episodes() {
 				>
 					<Text
 						testID='card-title'
+						accessibilityRole='header'
 						className='font-chewy text-base text-lightAccent dark:text-darkAccent'
 					>
 						{episode.name}
@@ -84,6 +85,7 @@ export default function Episodes() {
 					</Text>
 				</Pressable>
 				<FavoriteButton
+					itemName={episode.name}
 					favorited={isFavorited('episode', episode.id)}
 					onToggle={() =>
 						isFavorited('episode', episode.id)
@@ -139,7 +141,10 @@ export default function Episodes() {
 			}
 			ListEmptyComponent={
 				<View className='flex-1 flex-col items-center justify-center'>
-					<Text className='font-chewy text-[44px] text-lightAccent dark:text-darkAccent'>
+					<Text
+						accessibilityRole='header'
+						className='font-chewy text-[44px] text-lightAccent dark:text-darkAccent'
+					>
 						Episode UH OH...
 					</Text>
 				</View>

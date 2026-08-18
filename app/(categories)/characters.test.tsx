@@ -140,7 +140,7 @@ describe('Characters screen', () => {
 		render(<Characters />);
 		await flush();
 
-		fireEvent.press(screen.getByLabelText('Add to favorites'));
+		fireEvent.press(screen.getByLabelText('Add Bob Belcher to favorites'));
 
 		expect(mockAddFavorite).toHaveBeenCalledWith('character', 1);
 		expect(mockPush).not.toHaveBeenCalled();

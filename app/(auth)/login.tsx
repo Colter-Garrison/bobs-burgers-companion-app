@@ -51,7 +51,10 @@ export default function Login() {
 
 	return (
 		<View className='flex-1 items-center justify-center gap-[10px] bg-lightBg dark:bg-darkBg p-[10px]'>
-			<Text className='font-chewy text-[32px] text-lightAccent dark:text-darkAccent'>
+			<Text
+				accessibilityRole='header'
+				className='font-chewy text-[32px] text-lightAccent dark:text-darkAccent'
+			>
 				Log In
 			</Text>
 
@@ -62,6 +65,7 @@ export default function Login() {
 				onChangeText={setUsername}
 				autoCapitalize='none'
 				maxLength={25}
+				accessibilityLabel='Username'
 				className='w-full rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'
 			/>
 			<TextInput
@@ -70,11 +74,18 @@ export default function Login() {
 				value={password}
 				onChangeText={setPassword}
 				secureTextEntry
+				textContentType='password'
+				autoComplete='current-password'
+				accessibilityLabel='Password'
 				className='w-full rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'
 			/>
 
 			{error ? (
-				<Text className='font-chewy text-lightAccent dark:text-darkAccent'>
+				<Text
+					accessibilityRole='alert'
+					accessibilityLiveRegion='polite'
+					className='font-chewy text-lightAccent dark:text-darkAccent'
+				>
 					{error}
 				</Text>
 			) : null}
@@ -84,13 +95,17 @@ export default function Login() {
 				onPress={handleSubmit}
 				disabled={submitting}
 				accessibilityRole='button'
+				accessibilityState={{ busy: submitting }}
 			>
 				<Text className='font-chewy text-[20px] text-lightAccent dark:text-darkAccent'>
 					{submitting ? 'Logging In...' : 'Log In'}
 				</Text>
 			</Pressable>
 
-			<Pressable onPress={() => router.push('/signup')}>
+			<Pressable
+				onPress={() => router.push('/signup')}
+				accessibilityRole='button'
+			>
 				<Text className='font-chewy text-lightAccent dark:text-darkAccent underline'>
 					Need an account? Sign Up
 				</Text>

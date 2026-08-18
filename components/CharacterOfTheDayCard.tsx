@@ -36,9 +36,18 @@ export function CharacterOfTheDayCard({
 						height={160}
 						resizeMode='cover'
 						style={{ borderRadius: 8 }}
+						// Decorative — the character's name is right below it
+						// as its own text, so a screen reader announcing the
+						// image too would just repeat that.
+						accessible={false}
+						accessibilityElementsHidden
+						importantForAccessibility='no-hide-descendants'
 					/>
 				) : null}
-				<Text className='font-chewy text-center text-[22px] text-lightAccent dark:text-darkAccent'>
+				<Text
+					accessibilityRole='header'
+					className='font-chewy text-center text-[22px] text-lightAccent dark:text-darkAccent'
+				>
 					{character.name}
 				</Text>
 				<Text className='font-chewy text-center text-[14px] text-lightAccent dark:text-darkAccent'>

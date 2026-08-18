@@ -8,9 +8,18 @@ import { useTheme } from '../hooks/useTheme';
 interface FavoriteButtonProps {
 	favorited: boolean;
 	onToggle: () => void;
+	// Required, not optional — every card lives in a list of many, and a
+	// screen-reader user swiping through relies on this to tell which
+	// item's favorite button they're on. Without it, every button in a
+	// list of 20 announces the same generic "Add to favorites."
+	itemName: string;
 }
 
-export function FavoriteButton({ favorited, onToggle }: FavoriteButtonProps) {
+export function FavoriteButton({
+	favorited,
+	onToggle,
+	itemName,
+}: FavoriteButtonProps) {
 	const { token } = useAuth();
 	const router = useRouter();
 	// Was hardcoded to the light-mode red in both themes — on the dark
@@ -31,7 +40,9 @@ export function FavoriteButton({ favorited, onToggle }: FavoriteButtonProps) {
 			className='ml-1'
 			accessibilityRole='button'
 			accessibilityLabel={
-				favorited ? 'Remove from favorites' : 'Add to favorites'
+				favorited
+					? `Remove ${itemName} from favorites`
+					: `Add ${itemName} to favorites`
 			}
 		>
 			{/* MaterialCommunityIcons' "hamburger" has no outline variant

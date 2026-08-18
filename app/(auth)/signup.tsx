@@ -79,7 +79,10 @@ export default function Signup() {
 
 	return (
 		<View className='flex-1 items-center justify-center gap-[10px] bg-lightBg dark:bg-darkBg p-[10px]'>
-			<Text className='font-chewy text-[32px] text-lightAccent dark:text-darkAccent'>
+			<Text
+				accessibilityRole='header'
+				className='font-chewy text-[32px] text-lightAccent dark:text-darkAccent'
+			>
 				Sign Up
 			</Text>
 
@@ -90,10 +93,15 @@ export default function Signup() {
 				onChangeText={handleUsernameChange}
 				autoCapitalize='none'
 				maxLength={25}
+				accessibilityLabel='Username, 2 to 25 letters and numbers'
 				className='w-full rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'
 			/>
 			{usernameError ? (
-				<Text className='font-chewy text-[14px] text-lightAccent dark:text-darkAccent'>
+				<Text
+					accessibilityRole='alert'
+					accessibilityLiveRegion='polite'
+					className='font-chewy text-[14px] text-lightAccent dark:text-darkAccent'
+				>
 					{usernameError}
 				</Text>
 			) : null}
@@ -103,11 +111,18 @@ export default function Signup() {
 				value={password}
 				onChangeText={setPassword}
 				secureTextEntry
+				textContentType='newPassword'
+				autoComplete='new-password'
+				accessibilityLabel='Password, minimum 8 characters'
 				className='w-full rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'
 			/>
 
 			{error ? (
-				<Text className='font-chewy text-lightAccent dark:text-darkAccent'>
+				<Text
+					accessibilityRole='alert'
+					accessibilityLiveRegion='polite'
+					className='font-chewy text-lightAccent dark:text-darkAccent'
+				>
 					{error}
 				</Text>
 			) : null}
@@ -117,13 +132,17 @@ export default function Signup() {
 				onPress={handleSubmit}
 				disabled={submitting}
 				accessibilityRole='button'
+				accessibilityState={{ busy: submitting }}
 			>
 				<Text className='font-chewy text-[20px] text-lightAccent dark:text-darkAccent'>
 					{submitting ? 'Signing Up...' : 'Sign Up'}
 				</Text>
 			</Pressable>
 
-			<Pressable onPress={() => router.push('/login')}>
+			<Pressable
+				onPress={() => router.push('/login')}
+				accessibilityRole='button'
+			>
 				<Text className='font-chewy text-lightAccent dark:text-darkAccent underline'>
 					Already have an account? Log In
 				</Text>

@@ -107,7 +107,7 @@ describe('Episodes screen', () => {
 		render(<Episodes />);
 		await flush();
 
-		fireEvent.press(screen.getByLabelText('Add to favorites'));
+		fireEvent.press(screen.getByLabelText('Add Human Flesh to favorites'));
 
 		expect(mockAddFavorite).toHaveBeenCalledWith('episode', 1);
 		expect(mockPush).not.toHaveBeenCalled();

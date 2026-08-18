@@ -145,7 +145,7 @@ describe('PestControl screen', () => {
 		render(<PestControl />);
 		await flush();
 
-		fireEvent.press(screen.getByLabelText('Add to favorites'));
+		fireEvent.press(screen.getByLabelText('Add Test Truck to favorites'));
 
 		expect(mockAddFavorite).toHaveBeenCalledWith('pest_control_truck', 1);
 	});

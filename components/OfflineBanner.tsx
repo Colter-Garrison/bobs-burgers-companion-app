@@ -20,11 +20,18 @@ export function OfflineBanner({ cachedAt, onRetry }: OfflineBannerProps) {
 
 	return (
 		<View className='flex-row items-center justify-between gap-[10px] rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-[10px]'>
-			<Text className='flex-1 font-chewy text-lightAccent dark:text-darkAccent'>
+			<Text
+				accessibilityLiveRegion='polite'
+				className='flex-1 font-chewy text-lightAccent dark:text-darkAccent'
+			>
 				You&apos;re offline — showing saved data
 				{formattedTime ? ` from ${formattedTime}` : ''}.
 			</Text>
-			<Pressable onPress={onRetry} accessibilityRole='button'>
+			<Pressable
+				onPress={onRetry}
+				accessibilityRole='button'
+				accessibilityLabel='Retry loading'
+			>
 				<Text className='font-chewy text-lightAccent dark:text-darkAccent underline'>
 					Retry
 				</Text>

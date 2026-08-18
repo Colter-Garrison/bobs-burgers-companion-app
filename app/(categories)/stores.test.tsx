@@ -147,7 +147,7 @@ describe('Stores screen', () => {
 		render(<Stores />);
 		await flush();
 
-		fireEvent.press(screen.getByLabelText('Add to favorites'));
+		fireEvent.press(screen.getByLabelText('Add Test Store to favorites'));
 
 		expect(mockAddFavorite).toHaveBeenCalledWith('store', 1);
 	});

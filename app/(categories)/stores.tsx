@@ -86,11 +86,18 @@ export default function Stores() {
 							width={100}
 							height={100}
 							resizeMode='contain'
+							// Decorative — the name is shown as its own text
+							// right beside it, so a screen reader announcing
+							// the image too would just repeat that.
+							accessible={false}
+							accessibilityElementsHidden
+							importantForAccessibility='no-hide-descendants'
 						/>
 					) : null}
 					<View className='max-w-[70%] flex-col'>
 						<Text
 							testID='card-title'
+							accessibilityRole='header'
 							className='font-chewy text-base text-lightAccent dark:text-darkAccent'
 						>
 							{store.name}
@@ -101,6 +108,7 @@ export default function Stores() {
 					</View>
 				</Pressable>
 				<FavoriteButton
+					itemName={store.name}
 					favorited={isFavorited('store', store.id)}
 					onToggle={() =>
 						isFavorited('store', store.id)
@@ -156,7 +164,10 @@ export default function Stores() {
 			}
 			ListEmptyComponent={
 				<View className='flex-1 flex-col items-center justify-center'>
-					<Text className='font-chewy text-[44px] text-lightAccent dark:text-darkAccent'>
+					<Text
+						accessibilityRole='header'
+						className='font-chewy text-[44px] text-lightAccent dark:text-darkAccent'
+					>
 						Store Next Door UH OH...
 					</Text>
 				</View>
