@@ -22,7 +22,7 @@ const getSearchableText = (burger: Burger) =>
 
 export default function Burgers() {
 	const router = useRouter();
-	const { isDark } = useTheme();
+	const { isDark, colors } = useTheme();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const {
 		data: burgers,
@@ -76,6 +76,8 @@ export default function Burgers() {
 				<Pressable
 					className='flex-1 flex-col'
 					onPress={() => handlePress(burger)}
+					accessibilityRole='button'
+					accessibilityLabel={`View details for ${burger.name}`}
 				>
 					<Text
 						testID='card-title'
@@ -128,7 +130,8 @@ export default function Burgers() {
 				<View className='flex-col gap-2'>
 					<TextInput
 						placeholder='Search Burgers of the Day...'
-						placeholderTextColor={isDark ? '#F0F0F0' : '#2C4A63'}
+						accessibilityLabel='Search Burgers of the Day'
+						placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
 						value={query}
 						onChangeText={setQuery}
 						className='font-chewy rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'

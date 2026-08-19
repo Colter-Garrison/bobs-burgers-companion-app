@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import Login from './login';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
+import { LIGHT_THEME_COLORS } from '../../jest/themeColorsFixture';
 
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
@@ -30,6 +31,7 @@ describe('Login screen', () => {
 		(useTheme as jest.Mock).mockReturnValue({
 			isDark: false,
 			toggleTheme: jest.fn(),
+			colors: LIGHT_THEME_COLORS,
 		});
 		(useRouter as jest.Mock).mockReturnValue({ push: mockPush });
 		(useAuth as jest.Mock).mockReturnValue({ login: mockLogin });

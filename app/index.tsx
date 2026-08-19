@@ -19,7 +19,7 @@ import { useTheme } from '../hooks/useTheme';
 
 export default function Index() {
 	const router = useRouter();
-	const { isDark } = useTheme();
+	const { isDark, colors } = useTheme();
 	const { items, error, retry, cachedAt } = useSearchableItems();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const { character: characterOfTheDay, blurb: characterOfTheDayBlurb } =
@@ -181,7 +181,8 @@ export default function Index() {
 				<View className='gap-[10px]'>
 					<TextInput
 						placeholder='Search burgers, characters, episodes...'
-						placeholderTextColor={isDark ? '#F0F0F0' : '#2C4A63'}
+						accessibilityLabel='Search burgers, characters, episodes'
+						placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
 						value={query}
 						onChangeText={handleQueryChange}
 						className='font-chewy rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'

@@ -19,7 +19,7 @@ SplashScreen.preventAutoHideAsync();
 // the current theme, unlike every other screen's own dark:-prefixed
 // Tailwind classes.
 function ThemedDrawer() {
-	const { isDark } = useTheme();
+	const { isDark, colors } = useTheme();
 
 	return (
 		<Drawer
@@ -27,11 +27,17 @@ function ThemedDrawer() {
 			screenOptions={{
 				headerStyle: {
 					// Light-mode header was an unrelated arbitrary blue
-					// (#5D74A6) — now matches lightAccent exactly, both for
-					// visual cohesion with the rest of the Chambray Blue
-					// palette and because it raises the header text's own
-					// contrast from ~3.66:1 to ~7.29:1 as a side effect.
-					backgroundColor: isDark ? '#3C3C3C' : '#2C4A63',
+					// (#5D74A6) — now matches the active accent color
+					// exactly, both for visual cohesion with the rest of
+					// the palette and because it raises the header text's
+					// own contrast from ~3.66:1 to ~7.29:1 as a side
+					// effect. `colors` (from useTheme) is already resolved
+					// for the current isDark + colorblindMode combination,
+					// so a plain isDark ternary would be wrong once a
+					// colorblind palette is active — dark mode itself
+					// still stays a fixed neutral gray regardless of
+					// palette, so that half stays a literal.
+					backgroundColor: isDark ? '#3C3C3C' : colors.accent,
 					// React Navigation's default header carries its own
 					// border-bottom/shadow (a platform-default light
 					// gray/white, unrelated to our own color scheme) —
@@ -55,10 +61,10 @@ function ThemedDrawer() {
 					/>
 				),
 				drawerStyle: {
-					backgroundColor: isDark ? '#222222' : '#8FCBEA',
+					backgroundColor: colors.bg,
 				},
-				drawerActiveTintColor: isDark ? '#66D9EF' : '#2C4A63',
-				drawerInactiveTintColor: isDark ? '#66D9EF' : '#2C4A63',
+				drawerActiveTintColor: colors.accent,
+				drawerInactiveTintColor: colors.accent,
 				drawerLabelStyle: {
 					fontFamily: 'Chewy',
 					fontSize: 16,
@@ -70,8 +76,8 @@ function ThemedDrawer() {
 				// DrawerItemList and so doesn't pick this up automatically.
 				drawerItemStyle: {
 					borderWidth: 4,
-					borderColor: isDark ? '#66D9EF' : '#2C4A63',
-					backgroundColor: isDark ? '#323233' : '#C9D9E4',
+					borderColor: colors.accent,
+					backgroundColor: colors.surface,
 					borderRadius: 8,
 				},
 			}}

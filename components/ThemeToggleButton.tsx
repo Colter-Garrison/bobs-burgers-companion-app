@@ -6,7 +6,7 @@ import { useTheme } from '../hooks/useTheme';
 // Shows only one icon at a time, reflecting the CURRENT mode (sun while
 // light, moon while dark) — tapping switches both the icon and the mode.
 export function ThemeToggleButton() {
-	const { isDark, toggleTheme } = useTheme();
+	const { isDark, toggleTheme, colors } = useTheme();
 
 	return (
 		<Pressable
@@ -23,7 +23,12 @@ export function ThemeToggleButton() {
 			<MaterialCommunityIcons
 				name={isDark ? 'moon-waning-crescent' : 'white-balance-sunny'}
 				size={22}
-				color={isDark ? '#F0F0F0' : '#2C4A63'}
+				// Dark-mode half stays a fixed off-white — it sits on the
+				// plain drawer background, not an accent fill, so it's
+				// safe/readable regardless of which colorblind palette (if
+				// any) is active, unlike the light half which needs to
+				// track the active accent color.
+				color={isDark ? '#F0F0F0' : colors.accent}
 			/>
 		</Pressable>
 	);

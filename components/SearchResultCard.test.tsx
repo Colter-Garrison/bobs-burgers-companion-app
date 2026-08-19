@@ -4,6 +4,7 @@ import { SearchItem } from '../hooks/useSearchableItems';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
 import { useRouter } from 'expo-router';
+import { LIGHT_THEME_COLORS } from '../jest/themeColorsFixture';
 
 jest.mock('../hooks/useAuth');
 jest.mock('../hooks/useTheme');
@@ -26,7 +27,11 @@ describe('SearchResultCard', () => {
 
 	beforeEach(() => {
 		(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' });
-		(useTheme as jest.Mock).mockReturnValue({ isDark: false });
+		(useTheme as jest.Mock).mockReturnValue({
+			isDark: false,
+			colors: LIGHT_THEME_COLORS,
+			colorblindMode: 'none',
+		});
 		(useRouter as jest.Mock).mockReturnValue({ push: jest.fn() });
 	});
 

@@ -23,6 +23,8 @@ export function SearchResultCard({
 			<Pressable
 				className='flex-1 flex-row items-center gap-[10px]'
 				onPress={onPress}
+				accessibilityRole='button'
+				accessibilityLabel={`View details for ${item.label}`}
 			>
 				{item.image ? (
 					<Image
@@ -30,6 +32,11 @@ export function SearchResultCard({
 						width={60}
 						height={60}
 						resizeMode='contain'
+						// iOS's Smart Invert Colors accessibility setting
+						// would otherwise flip this photo's colors along
+						// with the rest of the UI, which looks wrong for
+						// real photographic content.
+						accessibilityIgnoresInvertColors
 						// Decorative — item.label right beside it already
 						// carries the same information as text, so a screen
 						// reader announcing this too would just repeat it.

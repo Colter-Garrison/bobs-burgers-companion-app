@@ -6,6 +6,7 @@ import { getEpisodes } from '../../hooks/fetchEpisodes';
 import { useFavorites } from '../../hooks/useFavorites';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
+import { LIGHT_THEME_COLORS } from '../../jest/themeColorsFixture';
 
 jest.mock('../../hooks/fetchEpisodes');
 jest.mock('../../hooks/useFavorites');
@@ -53,6 +54,7 @@ describe('Episodes screen', () => {
 		(useTheme as jest.Mock).mockReturnValue({
 			isDark: false,
 			toggleTheme: jest.fn(),
+			colors: LIGHT_THEME_COLORS,
 		});
 		(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => false,

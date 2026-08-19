@@ -3,6 +3,7 @@ import { useLocalSearchParams } from 'expo-router';
 import DetailScreen from './[id]';
 import { useCategoryItem } from '../../../hooks/useCategoryItem';
 import { useTheme } from '../../../hooks/useTheme';
+import { LIGHT_THEME_COLORS } from '../../../jest/themeColorsFixture';
 
 jest.mock('../../../hooks/useCategoryItem');
 // Pulled in indirectly via CategorySkeleton (the loading state below).
@@ -18,6 +19,7 @@ beforeEach(() => {
 	(useTheme as jest.Mock).mockReturnValue({
 		isDark: false,
 		toggleTheme: jest.fn(),
+		colors: LIGHT_THEME_COLORS,
 	});
 });
 

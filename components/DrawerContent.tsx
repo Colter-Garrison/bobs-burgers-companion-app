@@ -11,6 +11,7 @@ import {
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
 import { ThemeToggleButton } from './ThemeToggleButton';
+import { ColorblindModeButton } from './ColorblindModeButton';
 
 // For the auth block and Log Out, which intentionally stay plain (no
 // yellow box) — matches the font of react-navigation's own DrawerItem
@@ -32,7 +33,7 @@ const BUY_ME_A_COFFEE_URL = 'https://www.buymeacoffee.com/colterg';
 export function DrawerContent(props: DrawerContentComponentProps) {
 	const router = useRouter();
 	const { token, username, logout } = useAuth();
-	const { isDark } = useTheme();
+	const { colors } = useTheme();
 	const insets = useSafeAreaInsets();
 
 	// Matches app/_layout.tsx's screenOptions.drawerItemStyle so the
@@ -41,12 +42,13 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 	// guaranteed pixel match — looks identical to Home and the six
 	// category items. DrawerItem's style/labelStyle props are plain
 	// style objects, not classNames, so (like _layout.tsx's
-	// screenOptions) the dark-mode colors have to be picked explicitly
-	// here rather than via a dark: Tailwind variant.
+	// screenOptions) the colors have to be picked explicitly here rather
+	// than via a dark: Tailwind variant. `colors` is already resolved
+	// for the current isDark + colorblindMode combination.
 	const boxedItemStyle = {
 		borderWidth: 4,
-		borderColor: isDark ? '#66D9EF' : '#2C4A63',
-		backgroundColor: isDark ? '#323233' : '#C9D9E4',
+		borderColor: colors.accent,
+		backgroundColor: colors.surface,
 		borderRadius: 8,
 	};
 
@@ -89,8 +91,14 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 				</View>
 				{/* Right side of the Hello/Log In row, per the user's own
 				request — usernames are capped at 25 characters
-				specifically so this can never collide with the icon. */}
-				<ThemeToggleButton />
+				specifically so this can never collide with the icon.
+				Colorblind mode sits to the left of light/dark, per the
+				user's own request — it's a menu button, not a toggle, so
+				it opens a modal rather than switching state on tap. */}
+				<View className='flex-row items-center gap-2'>
+					<ColorblindModeButton />
+					<ThemeToggleButton />
+				</View>
 			</View>
 
 			<DrawerItemList {...props} />
@@ -101,8 +109,8 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 					onPress={() => router.push('/favorites')}
 					labelStyle={boxedItemLabelStyle}
 					style={boxedItemStyle}
-					activeTintColor={isDark ? '#66D9EF' : '#2C4A63'}
-					inactiveTintColor={isDark ? '#66D9EF' : '#2C4A63'}
+					activeTintColor={colors.accent}
+					inactiveTintColor={colors.accent}
 				/>
 			) : null}
 

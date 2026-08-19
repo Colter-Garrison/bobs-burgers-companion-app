@@ -7,6 +7,7 @@ import { useFavorites } from '../hooks/useFavorites';
 import { useAuth } from '../hooks/useAuth';
 import { useCharacterOfTheDay } from '../hooks/useCharacterOfTheDay';
 import { useTheme } from '../hooks/useTheme';
+import { LIGHT_THEME_COLORS } from '../jest/themeColorsFixture';
 
 jest.mock('../hooks/useSearchableItems');
 jest.mock('../hooks/useFavorites');
@@ -48,6 +49,7 @@ describe('Home / search screen', () => {
 		(useTheme as jest.Mock).mockReturnValue({
 			isDark: false,
 			toggleTheme: jest.fn(),
+			colors: LIGHT_THEME_COLORS,
 		});
 		mockRetry.mockResolvedValue(undefined);
 		(useSearchableItems as jest.Mock).mockReturnValue({

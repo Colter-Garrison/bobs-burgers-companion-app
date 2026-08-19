@@ -26,7 +26,18 @@ export function FavoriteButton({
 	// card background (#323233) that measured ~2.9:1 contrast, below even
 	// the 3:1 floor for graphical objects. #FF66CC (a brighter/lighter
 	// take on the dark palette's own magenta, #FF00AA) gets ~4.9:1 instead.
-	const { isDark } = useTheme();
+	// That dedicated pink is only used in dark mode with colorblind mode
+	// off, though — once a colorblind palette is active, it tracks that
+	// palette's own accent like everything else, rather than keeping a
+	// second hardcoded hue that palette wasn't designed around (and for
+	// blue-yellow color blindness specifically, whose accent already IS
+	// this same pink, a distinct "favorite" hue wouldn't even read as
+	// distinct). The favorited/not-favorited distinction still comes
+	// through via opacity below either way, which — unlike a second
+	// hue — reads for every vision type, colorblind mode or not.
+	const { isDark, colors, colorblindMode } = useTheme();
+	const iconColor =
+		isDark && colorblindMode === 'none' ? '#FF66CC' : colors.accent;
 
 	return (
 		<Pressable
@@ -54,7 +65,7 @@ export function FavoriteButton({
 			<MaterialCommunityIcons
 				name='hamburger'
 				size={24}
-				color={isDark ? '#FF66CC' : '#2C4A63'}
+				color={iconColor}
 				style={{ opacity: favorited ? 1 : 0.5 }}
 			/>
 		</Pressable>

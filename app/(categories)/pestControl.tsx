@@ -32,7 +32,7 @@ const getSearchableText = (truck: Truck) =>
 
 export default function PestControl() {
 	const router = useRouter();
-	const { isDark } = useTheme();
+	const { isDark, colors } = useTheme();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const {
 		data: trucks,
@@ -83,6 +83,8 @@ export default function PestControl() {
 				<Pressable
 					className='flex-1 flex-row items-center gap-2'
 					onPress={() => handlePress(truck)}
+					accessibilityRole='button'
+					accessibilityLabel={`View details for ${truck.name}`}
 				>
 					{truck.image ? (
 						<Image
@@ -90,6 +92,11 @@ export default function PestControl() {
 							width={100}
 							height={100}
 							resizeMode='contain'
+							// iOS's Smart Invert Colors accessibility setting
+							// would otherwise flip this photo's colors along
+							// with the rest of the UI, which looks wrong for
+							// real photographic content.
+							accessibilityIgnoresInvertColors
 							// Decorative — the name is shown as its own text
 							// right beside it, so a screen reader announcing
 							// the image too would just repeat that.
@@ -147,7 +154,8 @@ export default function PestControl() {
 				<View className='flex-col gap-2'>
 					<TextInput
 						placeholder='Search Pest Control Trucks...'
-						placeholderTextColor={isDark ? '#F0F0F0' : '#2C4A63'}
+						accessibilityLabel='Search Pest Control Trucks'
+						placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
 						value={query}
 						onChangeText={setQuery}
 						className='font-chewy rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'

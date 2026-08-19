@@ -6,6 +6,10 @@ import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { DrawerContent } from './DrawerContent';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
+import {
+	DARK_THEME_COLORS,
+	LIGHT_THEME_COLORS,
+} from '../jest/themeColorsFixture';
 
 jest.mock('../hooks/useAuth');
 jest.mock('../hooks/useTheme');
@@ -54,12 +58,16 @@ describe('DrawerContent', () => {
 	const mockLogout = jest.fn();
 
 	const mockToggleTheme = jest.fn();
+	const mockSetColorblindMode = jest.fn();
 
 	beforeEach(() => {
 		(useRouter as jest.Mock).mockReturnValue({ push: mockPush });
 		(useTheme as jest.Mock).mockReturnValue({
 			isDark: false,
 			toggleTheme: mockToggleTheme,
+			colors: LIGHT_THEME_COLORS,
+			colorblindMode: 'none',
+			setColorblindMode: mockSetColorblindMode,
 		});
 	});
 
@@ -170,6 +178,9 @@ describe('DrawerContent', () => {
 		(useTheme as jest.Mock).mockReturnValue({
 			isDark: false,
 			toggleTheme: mockToggleTheme,
+			colors: LIGHT_THEME_COLORS,
+			colorblindMode: 'none',
+			setColorblindMode: mockSetColorblindMode,
 		});
 
 		render(<DrawerContent {...fakeDrawerProps} />);
@@ -190,6 +201,9 @@ describe('DrawerContent', () => {
 		(useTheme as jest.Mock).mockReturnValue({
 			isDark: true,
 			toggleTheme: mockToggleTheme,
+			colors: DARK_THEME_COLORS,
+			colorblindMode: 'none',
+			setColorblindMode: mockSetColorblindMode,
 		});
 
 		render(<DrawerContent {...fakeDrawerProps} />);

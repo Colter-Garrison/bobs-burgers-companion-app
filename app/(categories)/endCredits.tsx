@@ -32,7 +32,7 @@ const getSearchableText = (credits: EndCredit) =>
 
 export default function EndCredits() {
 	const router = useRouter();
-	const { isDark } = useTheme();
+	const { isDark, colors } = useTheme();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const {
 		data: endCredits,
@@ -83,6 +83,8 @@ export default function EndCredits() {
 				<Pressable
 					className='flex-1 flex-row items-center gap-2'
 					onPress={() => handlePress(credits)}
+					accessibilityRole='button'
+					accessibilityLabel={`View details for Season ${credits.season}, Episode ${credits.episode} end credits`}
 				>
 					{credits.image ? (
 						<Image
@@ -90,6 +92,11 @@ export default function EndCredits() {
 							width={100}
 							height={100}
 							resizeMode='contain'
+							// iOS's Smart Invert Colors accessibility setting
+							// would otherwise flip this photo's colors along
+							// with the rest of the UI, which looks wrong for
+							// real photographic content.
+							accessibilityIgnoresInvertColors
 							// Decorative — the bio text right beside it already
 							// describes what this is (a hand-drawn end credits
 							// sequence from a given season/episode), so a
@@ -142,7 +149,8 @@ export default function EndCredits() {
 				<View className='flex-col gap-2'>
 					<TextInput
 						placeholder='Search End Credits...'
-						placeholderTextColor={isDark ? '#F0F0F0' : '#2C4A63'}
+						accessibilityLabel='Search End Credits'
+						placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
 						value={query}
 						onChangeText={setQuery}
 						className='font-chewy rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'

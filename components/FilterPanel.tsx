@@ -58,8 +58,9 @@ export function FilterPanel({
 	// MaterialCommunityIcons' `color` prop is a plain prop, not a
 	// className — NativeWind's dark: variant can't reach it, so (like
 	// app/_layout.tsx's screenOptions) the color has to be picked
-	// explicitly based on the current theme.
-	const { isDark } = useTheme();
+	// explicitly. `colors` is already resolved for the current isDark +
+	// colorblindMode combination.
+	const { colors } = useTheme();
 	// Category counts toward the badge too, now that it's tucked inside
 	// this panel instead of always sitting visible on its own — otherwise
 	// a collapsed panel with a category chosen would look like nothing
@@ -125,7 +126,7 @@ export function FilterPanel({
 				<MaterialCommunityIcons
 					name='filter-outline'
 					size={16}
-					color={isDark ? '#66D9EF' : '#2C4A63'}
+					color={colors.accent}
 				/>
 				<Text className='font-chewy text-[14px] text-lightAccent dark:text-darkAccent'>
 					Filter By{displayCount > 0 ? ` (${displayCount})` : ''}
@@ -235,15 +236,7 @@ export function FilterPanel({
 										: 'sort-alphabetical-ascending'
 								}
 								size={16}
-								color={
-									sortDirection !== null
-										? isDark
-											? '#222222'
-											: '#C9D9E4'
-										: isDark
-											? '#66D9EF'
-											: '#2C4A63'
-								}
+								color={sortDirection !== null ? colors.onAccent : colors.accent}
 							/>
 							<Text className={pillTextClassName(sortDirection !== null)}>
 								{sortDirection === 'desc' ? 'Z-A' : 'A-Z'}

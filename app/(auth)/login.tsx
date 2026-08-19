@@ -7,7 +7,7 @@ import { useTheme } from '../../hooks/useTheme';
 
 export default function Login() {
 	const router = useRouter();
-	const { isDark } = useTheme();
+	const { isDark, colors } = useTheme();
 	const { login } = useAuth();
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
@@ -60,7 +60,7 @@ export default function Login() {
 
 			<TextInput
 				placeholder='Username'
-				placeholderTextColor={isDark ? '#F0F0F0' : '#2C4A63'}
+				placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
 				value={username}
 				onChangeText={setUsername}
 				autoCapitalize='none'
@@ -70,7 +70,7 @@ export default function Login() {
 			/>
 			<TextInput
 				placeholder='Password'
-				placeholderTextColor={isDark ? '#F0F0F0' : '#2C4A63'}
+				placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
 				value={password}
 				onChangeText={setPassword}
 				secureTextEntry

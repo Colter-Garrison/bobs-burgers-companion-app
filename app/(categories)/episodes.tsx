@@ -22,7 +22,7 @@ const getSearchableText = (episode: Episode) =>
 
 export default function Episodes() {
 	const router = useRouter();
-	const { isDark } = useTheme();
+	const { isDark, colors } = useTheme();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const {
 		data: episodes,
@@ -73,6 +73,8 @@ export default function Episodes() {
 				<Pressable
 					className='flex-1 flex-col'
 					onPress={() => handlePress(episode)}
+					accessibilityRole='button'
+					accessibilityLabel={`View details for ${episode.name}`}
 				>
 					<Text
 						testID='card-title'
@@ -121,7 +123,8 @@ export default function Episodes() {
 				<View className='flex-col gap-2'>
 					<TextInput
 						placeholder='Search Episodes...'
-						placeholderTextColor={isDark ? '#F0F0F0' : '#2C4A63'}
+						accessibilityLabel='Search Episodes'
+						placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
 						value={query}
 						onChangeText={setQuery}
 						className='font-chewy rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'

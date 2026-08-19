@@ -32,7 +32,7 @@ const getSearchableText = (character: Character) => character.name;
 
 export default function Characters() {
 	const router = useRouter();
-	const { isDark } = useTheme();
+	const { isDark, colors } = useTheme();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const {
 		data: characters,
@@ -100,6 +100,8 @@ export default function Characters() {
 				<Pressable
 					className='flex-1 flex-row items-center gap-2'
 					onPress={() => handlePress(character)}
+					accessibilityRole='button'
+					accessibilityLabel={`View details for ${character.name}`}
 				>
 					{character.image ? (
 						<Image
@@ -107,6 +109,11 @@ export default function Characters() {
 							width={100}
 							height={100}
 							resizeMode='contain'
+							// iOS's Smart Invert Colors accessibility setting
+							// would otherwise flip this photo's colors along
+							// with the rest of the UI, which looks wrong for
+							// real photographic content.
+							accessibilityIgnoresInvertColors
 							// Decorative — the name is shown as its own text
 							// right beside it, so a screen reader announcing
 							// the image too would just repeat that.
@@ -164,7 +171,8 @@ export default function Characters() {
 				<View className='flex-col gap-2'>
 					<TextInput
 						placeholder='Search Characters...'
-						placeholderTextColor={isDark ? '#F0F0F0' : '#2C4A63'}
+						accessibilityLabel='Search Characters'
+						placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
 						value={query}
 						onChangeText={setQuery}
 						className='font-chewy rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'

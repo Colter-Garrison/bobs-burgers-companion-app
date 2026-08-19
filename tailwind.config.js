@@ -42,9 +42,22 @@ module.exports = {
 				// saturated value than lightSurface, so cards read as
 				// lighter "clouds" floating on the sky behind them,
 				// rather than nearly blending into a lighter background.
-				lightBg: '#8FCBEA',
-				lightSurface: '#C9D9E4',
-				lightAccent: '#2C4A63',
+				// var(...) with a fallback, not a literal hex, as of the
+				// colorblind-mode work (priority #12 phase 4) — these six
+				// tokens (plus darkOnAccent below) are how a selected
+				// colorblind palette actually reaches every existing
+				// className in the app without editing any of them.
+				// hooks/useTheme.tsx computes the active palette (from
+				// colorblindMode) and applies it via nativewind's vars() on
+				// a root-level wrapper in app/_layout.tsx; every
+				// `text-lightAccent`-style class here just reads whatever
+				// that wrapper currently has --light-accent set to. The
+				// fallback value is what's shown before that wrapper's
+				// first render and is also this app's own default (normal,
+				// non-colorblind) palette — see lib/colorblindPalettes.ts.
+				lightBg: 'var(--light-bg, #8FCBEA)',
+				lightSurface: 'var(--light-surface, #C9D9E4)',
+				lightAccent: 'var(--light-accent, #2C4A63)',
 				// Dark mode palette — pulled from the user's own VS Code
 				// theme (Neon Vommit: ghgofort.neon-vommit) rather than a
 				// dimmed rendition of the light theme's hues, per their
@@ -61,10 +74,13 @@ module.exports = {
 				// lightSurface's), so unlike lightAccent, off-white text
 				// on it is unreadable (~1.45:1 contrast) — this has to
 				// be dark instead (~9.6:1).
-				darkBg: '#222222',
-				darkSurface: '#323233',
-				darkAccent: '#66D9EF',
-				darkOnAccent: '#222222',
+				darkBg: 'var(--dark-bg, #222222)',
+				darkSurface: 'var(--dark-surface, #323233)',
+				darkAccent: 'var(--dark-accent, #66D9EF)',
+				darkOnAccent: 'var(--dark-on-accent, #222222)',
+				// Not palette-dependent — stays this same neutral gray
+				// regardless of colorblindMode, so it's a plain literal,
+				// not a seventh CSS var.
 				darkHeader: '#3C3C3C',
 			},
 			fontFamily: {

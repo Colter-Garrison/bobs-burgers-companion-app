@@ -7,7 +7,7 @@ import { useTheme } from '../../hooks/useTheme';
 
 export default function Signup() {
 	const router = useRouter();
-	const { isDark } = useTheme();
+	const { isDark, colors } = useTheme();
 	const { signup } = useAuth();
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
@@ -88,7 +88,7 @@ export default function Signup() {
 
 			<TextInput
 				placeholder='Username (2-25 chars)'
-				placeholderTextColor={isDark ? '#F0F0F0' : '#2C4A63'}
+				placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
 				value={username}
 				onChangeText={handleUsernameChange}
 				autoCapitalize='none'
@@ -107,7 +107,7 @@ export default function Signup() {
 			) : null}
 			<TextInput
 				placeholder='Password (min. 8 characters)'
-				placeholderTextColor={isDark ? '#F0F0F0' : '#2C4A63'}
+				placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
 				value={password}
 				onChangeText={setPassword}
 				secureTextEntry

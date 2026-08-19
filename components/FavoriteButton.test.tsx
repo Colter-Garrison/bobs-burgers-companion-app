@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { FavoriteButton } from './FavoriteButton';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
+import { LIGHT_THEME_COLORS } from '../jest/themeColorsFixture';
 
 jest.mock('../hooks/useAuth');
 jest.mock('../hooks/useTheme');
@@ -16,7 +17,11 @@ describe('FavoriteButton', () => {
 
 	beforeEach(() => {
 		(useRouter as jest.Mock).mockReturnValue({ push: mockPush });
-		(useTheme as jest.Mock).mockReturnValue({ isDark: false });
+		(useTheme as jest.Mock).mockReturnValue({
+			isDark: false,
+			colors: LIGHT_THEME_COLORS,
+			colorblindMode: 'none',
+		});
 	});
 
 	afterEach(() => {
@@ -76,5 +81,29 @@ describe('FavoriteButton', () => {
 		expect(
 			screen.getByLabelText('Remove Bob Belcher from favorites'),
 		).toBeVisible();
+	});
+
+	it('still renders (and stays pressable) when a colorblind mode is active in dark mode', () => {
+		// Regression coverage for the dedicated dark-mode pink accent —
+		// it's only used when colorblindMode is 'none'; this just proves
+		// the component doesn't crash or lose functionality once that
+		// branch is skipped in favor of the active palette's accent.
+		(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' });
+		(useTheme as jest.Mock).mockReturnValue({
+			isDark: true,
+			colors: { bg: '#222222', surface: '#323233', accent: '#7A2E45' },
+			colorblindMode: 'blueYellow',
+		});
+		render(
+			<FavoriteButton
+				favorited={false}
+				onToggle={mockOnToggle}
+				itemName='Bob Belcher'
+			/>,
+		);
+
+		fireEvent.press(screen.getByRole('button'));
+
+		expect(mockOnToggle).toHaveBeenCalled();
 	});
 });

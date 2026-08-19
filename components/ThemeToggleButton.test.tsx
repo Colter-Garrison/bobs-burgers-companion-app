@@ -1,6 +1,10 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { ThemeToggleButton } from './ThemeToggleButton';
 import { useTheme } from '../hooks/useTheme';
+import {
+	DARK_THEME_COLORS,
+	LIGHT_THEME_COLORS,
+} from '../jest/themeColorsFixture';
 
 jest.mock('../hooks/useTheme');
 
@@ -15,6 +19,7 @@ describe('ThemeToggleButton', () => {
 		(useTheme as jest.Mock).mockReturnValue({
 			isDark: false,
 			toggleTheme: mockToggleTheme,
+			colors: LIGHT_THEME_COLORS,
 		});
 
 		render(<ThemeToggleButton />);
@@ -27,6 +32,7 @@ describe('ThemeToggleButton', () => {
 		(useTheme as jest.Mock).mockReturnValue({
 			isDark: true,
 			toggleTheme: mockToggleTheme,
+			colors: DARK_THEME_COLORS,
 		});
 
 		render(<ThemeToggleButton />);
@@ -39,6 +45,7 @@ describe('ThemeToggleButton', () => {
 		(useTheme as jest.Mock).mockReturnValue({
 			isDark: false,
 			toggleTheme: mockToggleTheme,
+			colors: LIGHT_THEME_COLORS,
 		});
 
 		render(<ThemeToggleButton />);

@@ -85,6 +85,12 @@ export function DetailLayout({
 										objectFit: 'cover',
 									} as StyleProp<ImageStyle>
 								}
+								// iOS's Smart Invert Colors accessibility
+								// setting would otherwise flip this photo's
+								// colors along with the rest of the UI,
+								// which looks wrong for real photographic
+								// content.
+								accessibilityIgnoresInvertColors
 								// Decorative — the name is right below it as its
 								// own text, so a screen reader announcing the
 								// image too would just repeat that.
