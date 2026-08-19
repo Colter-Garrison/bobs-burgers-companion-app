@@ -65,9 +65,15 @@ export function DetailLayout({
 								source={{ width: 260, height: 190, uri: image }}
 								width={260}
 								height={190}
-								resizeMode='cover'
+								// Was 'cover' — cropped portrait-oriented images
+								// (e.g. "Double Butt") right through the actual
+								// subject to fill this landscape box. 'contain'
+								// never crops, at the cost of an occasional
+								// letterboxed gap for images whose aspect ratio
+								// doesn't match the box — a much better trade.
+								resizeMode='contain'
 								// Belt-and-suspenders: computed style showed
-								// object-fit: fill here despite resizeMode='cover'
+								// object-fit: fill here despite resizeMode
 								// (unlike CharacterOfTheDayCard with near-identical
 								// props, which showed the same computed mismatch
 								// yet still rendered correctly once fully painted —
@@ -82,7 +88,7 @@ export function DetailLayout({
 								style={
 									{
 										borderRadius: 8,
-										objectFit: 'cover',
+										objectFit: 'contain',
 									} as StyleProp<ImageStyle>
 								}
 								// iOS's Smart Invert Colors accessibility

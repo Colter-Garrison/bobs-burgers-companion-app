@@ -22,19 +22,21 @@ export function CharacterOfTheDayCard({
 					Character of the Day
 				</Text>
 				{character.image ? (
-					// cover, not contain (unlike the smaller thumbnails
-					// elsewhere in the app) — these character images are wide
-					// show screenshots (roughly 16:9), not square portraits,
-					// so `contain` inside a square box leaves visible empty
-					// letterboxing above and below. This is the one prominent
-					// showcase image on the screen, so filling the box
-					// (cropping the edges) reads better than a smaller,
-					// gapped image would.
+					// Was 'cover' — most character images are wide show
+					// screenshots (roughly 16:9), and filling this box
+					// avoided empty letterboxing for those. But not every
+					// image is that shape: a handful (e.g. "Double Butt")
+					// are portrait-oriented, and cover-cropping a portrait
+					// image into a landscape box cut off the top and
+					// bottom of the actual subject — cropping is a much
+					// worse failure mode than an occasional letterboxed
+					// gap, so 'contain' (same as the smaller thumbnails
+					// elsewhere in the app) never crops, full stop.
 					<Image
 						source={{ width: 220, height: 160, uri: character.image }}
 						width={220}
 						height={160}
-						resizeMode='cover'
+						resizeMode='contain'
 						style={{ borderRadius: 8 }}
 						// iOS's Smart Invert Colors accessibility setting
 						// would otherwise flip this photo's colors along

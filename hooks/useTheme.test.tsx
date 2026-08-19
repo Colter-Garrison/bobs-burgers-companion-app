@@ -163,4 +163,27 @@ describe('useTheme', () => {
 			onAccent: '#222222',
 		});
 	});
+
+	it('reports isThemeReady false until the theme preference lookup resolves, then true', async () => {
+		const { result } = renderHook(() => useTheme(), { wrapper });
+
+		expect(result.current.isThemeReady).toBe(false);
+
+		await waitFor(() => expect(result.current.isThemeReady).toBe(true));
+	});
+
+	it('still reports isThemeReady true even if the AsyncStorage read rejects', async () => {
+		// Regression coverage: isThemeReady is what SplashOverlay covers
+		// the screen with — a rejected (not just empty) read must still
+		// mark it ready, or a storage failure would leave the overlay
+		// covering the app forever instead of just falling back to the
+		// system/light default.
+		jest
+			.spyOn(AsyncStorage, 'getItem')
+			.mockRejectedValueOnce(new Error('storage unavailable'));
+
+		const { result } = renderHook(() => useTheme(), { wrapper });
+
+		await waitFor(() => expect(result.current.isThemeReady).toBe(true));
+	});
 });

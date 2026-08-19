@@ -14,6 +14,7 @@ import {
 	COLORBLIND_MODES,
 	COLORBLIND_PALETTES,
 } from '../lib/colorblindPalettes';
+import { SplashOverlay } from '../components/SplashOverlay';
 
 const THEME_PREFERENCE_KEY = 'bbca_theme_preference';
 const COLORBLIND_MODE_KEY = 'bbca_colorblind_mode';
@@ -39,6 +40,15 @@ interface ThemeContextValue {
 	// `color` prop, TextInput's placeholderTextColor) and so wouldn't
 	// otherwise pick up a selected colorblind palette at all.
 	colors: ThemeColors;
+	// False until the AsyncStorage read below has resolved (one way or
+	// another) and colorScheme.set() has actually been called — used by
+	// components/SplashOverlay.tsx to keep covering the screen until
+	// then. Without this, the very first render happens in nativewind's
+	// un-set default (light) before that async read resolves, which on
+	// a device with a saved dark preference was visible as a real flash:
+	// light mode (and, on web, the drawer starting open) for a moment,
+	// then flipping to dark and closing.
+	isThemeReady: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
@@ -51,6 +61,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 	const { colorScheme: activeScheme } = useColorScheme();
 	const [colorblindMode, setColorblindModeState] =
 		useState<ColorblindMode>('none');
+	const [isThemeReady, setIsThemeReady] = useState(false);
 
 	// Runs once, on app launch: if the user has manually picked a theme
 	// before, restore that override.
@@ -72,13 +83,24 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 	// long as no manual override exists, which isn't worth the added
 	// complexity for what's a rare mid-session event.
 	useEffect(() => {
-		AsyncStorage.getItem(THEME_PREFERENCE_KEY).then((saved) => {
-			if (saved === 'light' || saved === 'dark') {
-				colorScheme.set(saved);
-			} else {
+		AsyncStorage.getItem(THEME_PREFERENCE_KEY)
+			.then((saved) => {
+				if (saved === 'light' || saved === 'dark') {
+					colorScheme.set(saved);
+				} else {
+					colorScheme.set(Appearance.getColorScheme() ?? 'light');
+				}
+			})
+			// AsyncStorage.getItem can reject (e.g. a browser blocking
+			// storage access), not just resolve — without this, a reject
+			// would skip both branches above AND skip marking the theme
+			// ready, leaving SplashOverlay covering the screen forever.
+			// Falls back to the same system/light default the "no saved
+			// preference" branch above already uses.
+			.catch(() => {
 				colorScheme.set(Appearance.getColorScheme() ?? 'light');
-			}
-		});
+			})
+			.finally(() => setIsThemeReady(true));
 	}, []);
 
 	useEffect(() => {
@@ -146,6 +168,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 				colorblindMode,
 				setColorblindMode,
 				colors,
+				isThemeReady,
 			}}
 		>
 			{/* Wraps the whole app so every screen's existing Tailwind
@@ -153,7 +176,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 			inherit these CSS custom properties — the actual mechanism
 			that lets a selected colorblind palette reach the app
 			without editing any of those classNames. */}
-			<View style={[{ flex: 1 }, themeVars]}>{children}</View>
+			<View style={[{ flex: 1 }, themeVars]}>
+				{children}
+				{/* Rendered here (inside the Provider, alongside children,
+				not blocking their mount) so it can read isThemeReady via
+				the same useTheme() everything else uses, and so the rest
+				of the app is already mounting/fetching underneath it
+				rather than being delayed until the overlay lifts. */}
+				<SplashOverlay />
+			</View>
 		</ThemeContext.Provider>
 	);
 }
