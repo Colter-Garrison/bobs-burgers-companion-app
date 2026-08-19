@@ -26,16 +26,23 @@ test('favoriting/unfavoriting on one screen stays in sync with Favorites and oth
 	const characterName = (await firstNameText.textContent())!;
 
 	// Favorite it here, then confirm it shows up on the Favorites screen.
-	// Document order matches: the first "Add to favorites" button belongs
-	// to the same card as the first card-title text.
-	await page.getByRole('button', { name: 'Add to favorites' }).first().click();
+	// Document order matches: the first "Add ... to favorites" button
+	// belongs to the same card as the first card-title text.
+	// components/FavoriteButton.tsx labels each button with its own item
+	// name (e.g. "Add Bob's Burger to favorites"), not a generic "Add to
+	// favorites" — so screen readers can tell 20 identical buttons in a
+	// list apart.
+	await page
+		.getByRole('button', { name: /^Add .+ to favorites$/ })
+		.first()
+		.click();
 	await page.goto('/favorites');
 	await expect(page.getByText(characterName)).toBeVisible();
 
 	// Un-favorite from the Favorites screen — it should disappear from here
 	// (this direction already worked before the fix)...
 	await page
-		.getByRole('button', { name: 'Remove from favorites' })
+		.getByRole('button', { name: /^Remove .+ from favorites$/ })
 		.first()
 		.click();
 	await expect(page.getByText('No favorites yet.')).toBeVisible();
@@ -44,12 +51,15 @@ test('favoriting/unfavoriting on one screen stays in sync with Favorites and oth
 	// unfavorited, not keep showing as favorited.
 	await page.goto('/characters');
 	await expect(
-		page.getByRole('button', { name: 'Add to favorites' }).first(),
+		page.getByRole('button', { name: /^Add .+ to favorites$/ }).first(),
 	).toBeVisible({ timeout: 10_000 });
 
 	// Bug 2: re-favoriting from that same screen must make it reappear in
 	// Favorites, not silently no-op against a stale list there.
-	await page.getByRole('button', { name: 'Add to favorites' }).first().click();
+	await page
+		.getByRole('button', { name: /^Add .+ to favorites$/ })
+		.first()
+		.click();
 	await page.goto('/favorites');
 	await expect(page.getByText(characterName)).toBeVisible();
 

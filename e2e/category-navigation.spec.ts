@@ -16,7 +16,11 @@ test('drawer link navigates to the category screen and back', async ({
 	// A real network round-trip to the third-party Bob's Burgers API is
 	// real here — wait for the real UI to settle rather than asserting
 	// immediately.
-	await expect(page.getByLabel('Add to favorites').first()).toBeVisible({
+	// components/FavoriteButton.tsx labels each button with its own item
+	// name (e.g. "Add Bob's Burger to favorites"), not a generic "Add to
+	// favorites" — so screen readers can tell 20 identical buttons in a
+	// list apart. This test just needs any one of them.
+	await expect(page.getByLabel(/^Add .+ to favorites$/).first()).toBeVisible({
 		timeout: 10_000,
 	});
 
@@ -35,7 +39,11 @@ test('a direct link to a category screen works (not just in-app navigation)', as
 	// simulated renderer can't verify at all.
 	await page.goto('/characters');
 
-	await expect(page.getByLabel('Add to favorites').first()).toBeVisible({
+	// components/FavoriteButton.tsx labels each button with its own item
+	// name (e.g. "Add Bob's Burger to favorites"), not a generic "Add to
+	// favorites" — so screen readers can tell 20 identical buttons in a
+	// list apart. This test just needs any one of them.
+	await expect(page.getByLabel(/^Add .+ to favorites$/).first()).toBeVisible({
 		timeout: 10_000,
 	});
 });
