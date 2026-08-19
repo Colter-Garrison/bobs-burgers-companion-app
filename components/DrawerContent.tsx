@@ -11,12 +11,13 @@ import {
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
 import { ThemeToggleButton } from './ThemeToggleButton';
+import { ColorblindModeButton } from './ColorblindModeButton';
 
 // For the auth block and Log Out, which intentionally stay plain (no
 // yellow box) — matches the font of react-navigation's own DrawerItem
 // label (screenOptions.drawerLabelStyle in app/_layout.tsx).
 const navLinkClassName =
-	'rounded-lg px-4 py-3 font-chewy text-[16px] text-bbRed dark:text-darkRed';
+	'rounded-lg px-4 py-3 font-chewy text-[16px] text-lightAccent dark:text-darkAccent';
 
 const boxedItemLabelStyle = { fontFamily: 'Chewy', fontSize: 16 };
 
@@ -32,7 +33,7 @@ const BUY_ME_A_COFFEE_URL = 'https://www.buymeacoffee.com/colterg';
 export function DrawerContent(props: DrawerContentComponentProps) {
 	const router = useRouter();
 	const { token, username, logout } = useAuth();
-	const { isDark } = useTheme();
+	const { colors } = useTheme();
 	const insets = useSafeAreaInsets();
 
 	// Matches app/_layout.tsx's screenOptions.drawerItemStyle so the
@@ -41,12 +42,13 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 	// guaranteed pixel match — looks identical to Home and the six
 	// category items. DrawerItem's style/labelStyle props are plain
 	// style objects, not classNames, so (like _layout.tsx's
-	// screenOptions) the dark-mode colors have to be picked explicitly
-	// here rather than via a dark: Tailwind variant.
+	// screenOptions) the colors have to be picked explicitly here rather
+	// than via a dark: Tailwind variant. `colors` is already resolved
+	// for the current isDark + colorblindMode combination.
 	const boxedItemStyle = {
 		borderWidth: 4,
-		borderColor: isDark ? '#F2545B' : '#E8242F',
-		backgroundColor: isDark ? '#373108' : '#F8DF24',
+		borderColor: colors.accent,
+		backgroundColor: colors.surface,
 		borderRadius: 8,
 	};
 
@@ -58,7 +60,7 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 	return (
 		<DrawerContentScrollView
 			{...props}
-			className='bg-bbGreen dark:bg-darkBg'
+			className='bg-lightBg dark:bg-darkBg'
 			contentContainerStyle={{ flexGrow: 1 }}
 		>
 			<View className='flex-row items-center justify-between gap-1 p-2'>
@@ -67,6 +69,7 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 						<Pressable
 							onPress={() => router.push('/account')}
 							accessibilityRole='button'
+							accessibilityLabel={`Account settings for ${username}`}
 						>
 							<Text className={navLinkClassName}>Hello, {username}!</Text>
 						</Pressable>
@@ -88,8 +91,14 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 				</View>
 				{/* Right side of the Hello/Log In row, per the user's own
 				request — usernames are capped at 25 characters
-				specifically so this can never collide with the icon. */}
-				<ThemeToggleButton />
+				specifically so this can never collide with the icon.
+				Colorblind mode sits to the left of light/dark, per the
+				user's own request — it's a menu button, not a toggle, so
+				it opens a modal rather than switching state on tap. */}
+				<View className='flex-row items-center gap-2'>
+					<ColorblindModeButton />
+					<ThemeToggleButton />
+				</View>
 			</View>
 
 			<DrawerItemList {...props} />
@@ -100,8 +109,8 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 					onPress={() => router.push('/favorites')}
 					labelStyle={boxedItemLabelStyle}
 					style={boxedItemStyle}
-					activeTintColor={isDark ? '#F2545B' : '#E8242F'}
-					inactiveTintColor={isDark ? '#F2545B' : '#E8242F'}
+					activeTintColor={colors.accent}
+					inactiveTintColor={colors.accent}
 				/>
 			) : null}
 
@@ -125,6 +134,7 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 				<Pressable
 					onPress={() => Linking.openURL(BUY_ME_A_COFFEE_URL)}
 					accessibilityRole='button'
+					accessibilityLabel='Buy me a beer, opens a support page'
 				>
 					<Text className={navLinkClassName}>Buy me a beer 🍺</Text>
 				</Pressable>

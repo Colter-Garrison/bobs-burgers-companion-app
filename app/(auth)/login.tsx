@@ -7,7 +7,7 @@ import { useTheme } from '../../hooks/useTheme';
 
 export default function Login() {
 	const router = useRouter();
-	const { isDark } = useTheme();
+	const { isDark, colors } = useTheme();
 	const { login } = useAuth();
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
@@ -50,46 +50,66 @@ export default function Login() {
 	};
 
 	return (
-		<View className='flex-1 items-center justify-center gap-[10px] bg-bbGreen dark:bg-darkBg p-[10px]'>
-			<Text className='font-chewy text-[32px] text-bbRed dark:text-darkRed'>
+		<View className='flex-1 items-center justify-center gap-[10px] bg-lightBg dark:bg-darkBg p-[10px]'>
+			<Text
+				accessibilityRole='header'
+				className='font-chewy text-[32px] text-lightAccent dark:text-darkAccent'
+			>
 				Log In
 			</Text>
 
 			<TextInput
 				placeholder='Username'
-				placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
+				placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
 				value={username}
 				onChangeText={setUsername}
 				autoCapitalize='none'
 				maxLength={25}
-				className='w-full rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
+				accessibilityLabel='Username'
+				className='w-full rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'
 			/>
 			<TextInput
 				placeholder='Password'
-				placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
+				placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
 				value={password}
 				onChangeText={setPassword}
 				secureTextEntry
-				className='w-full rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
+				textContentType='password'
+				autoComplete='current-password'
+				accessibilityLabel='Password'
+				className='w-full rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'
 			/>
 
 			{error ? (
-				<Text className='font-chewy text-bbRed dark:text-darkRed'>{error}</Text>
+				<Text
+					accessibilityRole='alert'
+					accessibilityLiveRegion='polite'
+					className='font-chewy text-lightAccent dark:text-darkAccent'
+				>
+					{error}
+				</Text>
 			) : null}
 
 			<Pressable
-				className='w-full items-center justify-center rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2'
+				className='w-full items-center justify-center rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2'
 				onPress={handleSubmit}
 				disabled={submitting}
 				accessibilityRole='button'
+				accessibilityState={{ busy: submitting }}
 			>
-				<Text className='font-chewy text-[20px] text-bbRed dark:text-darkRed'>
+				<Text className='font-chewy text-[20px] text-lightAccent dark:text-darkAccent'>
 					{submitting ? 'Logging In...' : 'Log In'}
 				</Text>
 			</Pressable>
 
-			<Pressable onPress={() => router.push('/signup')}>
-				<Text className='font-chewy text-bbRed dark:text-darkRed underline'>
+			<Pressable
+				onPress={() => router.push('/signup')}
+				// Plain underlined text with no padding at all measures
+				// well under the 44x44 minimum touch target guideline.
+				hitSlop={12}
+				accessibilityRole='button'
+			>
+				<Text className='font-chewy text-lightAccent dark:text-darkAccent underline'>
 					Need an account? Sign Up
 				</Text>
 			</Pressable>

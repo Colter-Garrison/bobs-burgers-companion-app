@@ -41,20 +41,21 @@ export function CategoryFilterPills({
 					<Pressable
 						key={option}
 						onPress={() => onSelect(option)}
+						hitSlop={5}
 						accessibilityRole='button'
 						accessibilityLabel={`Filter by ${option}`}
 						accessibilityState={{ selected: isSelected }}
 						className={
 							isSelected
-								? 'items-center justify-center rounded-full border-4 border-bbRed dark:border-darkRed bg-bbRed dark:bg-darkRed px-4 py-2'
-								: 'items-center justify-center rounded-full border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface px-4 py-2'
+								? 'items-center justify-center rounded-full border-4 border-lightAccent dark:border-darkAccent bg-lightAccent dark:bg-darkAccent px-4 py-2'
+								: 'items-center justify-center rounded-full border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface px-4 py-2'
 						}
 					>
 						<Text
 							className={
 								isSelected
-									? 'font-chewy text-[14px] text-bbYellow dark:text-darkText'
-									: 'font-chewy text-[14px] text-bbRed dark:text-darkRed'
+									? 'font-chewy text-[14px] text-lightSurface dark:text-darkOnAccent'
+									: 'font-chewy text-[14px] text-lightAccent dark:text-darkAccent'
 							}
 						>
 							{option}

@@ -19,13 +19,23 @@ export function OfflineBanner({ cachedAt, onRetry }: OfflineBannerProps) {
 		: null;
 
 	return (
-		<View className='flex-row items-center justify-between gap-[10px] rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-[10px]'>
-			<Text className='flex-1 font-chewy text-bbRed dark:text-darkRed'>
+		<View className='flex-row items-center justify-between gap-[10px] rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-[10px]'>
+			<Text
+				accessibilityLiveRegion='polite'
+				className='flex-1 font-chewy text-lightAccent dark:text-darkAccent'
+			>
 				You&apos;re offline — showing saved data
 				{formattedTime ? ` from ${formattedTime}` : ''}.
 			</Text>
-			<Pressable onPress={onRetry} accessibilityRole='button'>
-				<Text className='font-chewy text-bbRed dark:text-darkRed underline'>
+			<Pressable
+				onPress={onRetry}
+				// Plain underlined text with no padding at all measures well
+				// under the 44x44 minimum touch target guideline.
+				hitSlop={12}
+				accessibilityRole='button'
+				accessibilityLabel='Retry loading'
+			>
+				<Text className='font-chewy text-lightAccent dark:text-darkAccent underline'>
 					Retry
 				</Text>
 			</Pressable>

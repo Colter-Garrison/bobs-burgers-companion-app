@@ -10,6 +10,7 @@ import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
 import { useFavorites } from '../../hooks/useFavorites';
 import { composeEpisodeShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
+import { LoadMoreButton } from '../../components/LoadMoreButton';
 import { FilterPanel } from '../../components/FilterPanel';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
@@ -21,7 +22,7 @@ const getSearchableText = (episode: Episode) =>
 
 export default function Episodes() {
 	const router = useRouter();
-	const { isDark } = useTheme();
+	const { isDark, colors } = useTheme();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const {
 		data: episodes,
@@ -54,7 +55,7 @@ export default function Episodes() {
 		searchedEpisodes,
 		(episode) => episode.name,
 	);
-	const { visibleItems, loadMore } = usePagination(visibleEpisodes);
+	const { visibleItems, loadMore, hasMore } = usePagination(visibleEpisodes);
 
 	const handlePress = useCallback(
 		(episode: Episode) => {
@@ -68,22 +69,26 @@ export default function Episodes() {
 
 	const renderItem = useCallback(
 		({ item: episode }: { item: Episode }) => (
-			<View className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2'>
+			<View className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2'>
 				<Pressable
 					className='flex-1 flex-col'
 					onPress={() => handlePress(episode)}
+					accessibilityRole='button'
+					accessibilityLabel={`View details for ${episode.name}`}
 				>
 					<Text
 						testID='card-title'
-						className='font-chewy text-base text-bbRed dark:text-darkRed'
+						accessibilityRole='header'
+						className='font-chewy text-base text-lightAccent dark:text-darkAccent'
 					>
 						{episode.name}
 					</Text>
-					<Text className='font-chewy text-base text-bbRed dark:text-darkRed'>
+					<Text className='font-chewy text-base text-lightAccent dark:text-darkAccent'>
 						{composeEpisodeShortBio(episode)}
 					</Text>
 				</Pressable>
 				<FavoriteButton
+					itemName={episode.name}
 					favorited={isFavorited('episode', episode.id)}
 					onToggle={() =>
 						isFavorited('episode', episode.id)
@@ -106,7 +111,7 @@ export default function Episodes() {
 
 	return (
 		<FlatList
-			className='flex-1 bg-bbGreen dark:bg-darkBg'
+			className='flex-1 bg-lightBg dark:bg-darkBg'
 			contentContainerClassName='flex-col gap-2 p-2'
 			data={visibleItems}
 			renderItem={renderItem}
@@ -118,10 +123,11 @@ export default function Episodes() {
 				<View className='flex-col gap-2'>
 					<TextInput
 						placeholder='Search Episodes...'
-						placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
+						accessibilityLabel='Search Episodes'
+						placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
 						value={query}
 						onChangeText={setQuery}
-						className='font-chewy rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
+						className='font-chewy rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'
 					/>
 					<FilterPanel
 						sortDirection={attributeFilters.sortDirection}
@@ -139,8 +145,16 @@ export default function Episodes() {
 			}
 			ListEmptyComponent={
 				<View className='flex-1 flex-col items-center justify-center'>
-					<Text className='font-chewy text-[44px]'>Episode UH OH...</Text>
+					<Text
+						accessibilityRole='header'
+						className='font-chewy text-[44px] text-lightAccent dark:text-darkAccent'
+					>
+						Episode UH OH...
+					</Text>
 				</View>
+			}
+			ListFooterComponent={
+				hasMore ? <LoadMoreButton onPress={loadMore} /> : null
 			}
 		/>
 	);

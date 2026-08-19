@@ -32,7 +32,11 @@ jest.mock('../../hooks/useSearchableItems', () => ({
 // itself, so a no-op stand-in is enough, same reasoning as the
 // useFocusEffect mock below.
 jest.mock('../../hooks/useTheme', () => ({
-	useTheme: () => ({ isDark: false, toggleTheme: jest.fn() }),
+	useTheme: () => ({
+		isDark: false,
+		toggleTheme: jest.fn(),
+		colors: { bg: '#8FCBEA', surface: '#C9D9E4', accent: '#2C4A63' },
+	}),
 }));
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),

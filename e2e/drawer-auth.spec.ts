@@ -42,8 +42,13 @@ test('drawer shows only Log In when logged out, and Hello/Favorites/Log Out when
 	await expect(
 		page.getByRole('button', { name: 'Log In (menu)' }),
 	).toBeVisible();
+	// components/DrawerContent.tsx gives this button a distinct
+	// accessibilityLabel ("Account settings for {username}") separate from
+	// its visible "Hello, {username}!" text, so a screen reader hears where
+	// tapping it leads rather than just a bare greeting — that's the name
+	// role-based lookups below have to match, not the visible copy.
 	await expect(
-		page.getByRole('button', { name: /^Hello, / }),
+		page.getByRole('button', { name: /^Account settings for / }),
 	).not.toBeVisible();
 	await expect(
 		page.getByRole('button', { name: 'Favorites' }),
@@ -66,14 +71,19 @@ test('drawer shows only Log In when logged out, and Hello/Favorites/Log Out when
 		page.getByRole('button', { name: 'Log In (menu)' }),
 	).not.toBeVisible();
 	await expect(
-		page.getByRole('button', { name: `Hello, ${username}!` }),
+		page.getByRole('button', { name: `Account settings for ${username}` }),
 	).toBeVisible();
 	await expect(page.getByRole('button', { name: 'Favorites' })).toBeVisible();
 	await expect(page.getByRole('button', { name: 'Log Out' })).toBeVisible();
+	// Confirms the visible greeting itself, since the role/name check above
+	// only proves the button (by its accessible name) exists.
+	await expect(page.getByText(`Hello, ${username}!`)).toBeVisible();
 
 	// "Hello, {username}!" navigates to the account page, not a separate
 	// "Account" link (there is no separate Account link anymore).
-	await page.getByRole('button', { name: `Hello, ${username}!` }).click();
+	await page
+		.getByRole('button', { name: `Account settings for ${username}` })
+		.click();
 	await expect(page).toHaveURL(/\/account/);
 	await expect(page.getByText(username, { exact: true })).toBeVisible();
 

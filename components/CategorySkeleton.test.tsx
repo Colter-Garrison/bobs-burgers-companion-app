@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react-native';
 import { CategorySkeleton } from './CategorySkeleton';
 import { useTheme } from '../hooks/useTheme';
+import { LIGHT_THEME_COLORS } from '../jest/themeColorsFixture';
 
 jest.mock('../hooks/useTheme');
 
@@ -9,6 +10,7 @@ describe('CategorySkeleton', () => {
 		(useTheme as jest.Mock).mockReturnValue({
 			isDark: false,
 			toggleTheme: jest.fn(),
+			colors: LIGHT_THEME_COLORS,
 		});
 	});
 

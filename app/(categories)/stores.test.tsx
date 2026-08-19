@@ -6,6 +6,7 @@ import { getStoresNextDoor } from '../../hooks/fetchStoresNextDoor';
 import { useFavorites } from '../../hooks/useFavorites';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
+import { LIGHT_THEME_COLORS } from '../../jest/themeColorsFixture';
 
 jest.mock('../../hooks/fetchStoresNextDoor');
 jest.mock('../../hooks/useFavorites');
@@ -40,6 +41,7 @@ describe('Stores screen', () => {
 		(useTheme as jest.Mock).mockReturnValue({
 			isDark: false,
 			toggleTheme: jest.fn(),
+			colors: LIGHT_THEME_COLORS,
 		});
 		(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => false,
@@ -147,7 +149,7 @@ describe('Stores screen', () => {
 		render(<Stores />);
 		await flush();
 
-		fireEvent.press(screen.getByLabelText('Add to favorites'));
+		fireEvent.press(screen.getByLabelText('Add Test Store to favorites'));
 
 		expect(mockAddFavorite).toHaveBeenCalledWith('store', 1);
 	});

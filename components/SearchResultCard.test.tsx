@@ -2,9 +2,12 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { SearchResultCard } from './SearchResultCard';
 import { SearchItem } from '../hooks/useSearchableItems';
 import { useAuth } from '../hooks/useAuth';
+import { useTheme } from '../hooks/useTheme';
 import { useRouter } from 'expo-router';
+import { LIGHT_THEME_COLORS } from '../jest/themeColorsFixture';
 
 jest.mock('../hooks/useAuth');
+jest.mock('../hooks/useTheme');
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
@@ -24,6 +27,11 @@ describe('SearchResultCard', () => {
 
 	beforeEach(() => {
 		(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' });
+		(useTheme as jest.Mock).mockReturnValue({
+			isDark: false,
+			colors: LIGHT_THEME_COLORS,
+			colorblindMode: 'none',
+		});
 		(useRouter as jest.Mock).mockReturnValue({ push: jest.fn() });
 	});
 
@@ -69,7 +77,7 @@ describe('SearchResultCard', () => {
 			/>,
 		);
 
-		fireEvent.press(screen.getByLabelText('Add to favorites'));
+		fireEvent.press(screen.getByLabelText('Add Bob Belcher to favorites'));
 		expect(mockOnToggleFavorite).toHaveBeenCalled();
 		expect(mockOnPress).not.toHaveBeenCalled();
 	});
@@ -84,6 +92,8 @@ describe('SearchResultCard', () => {
 			/>,
 		);
 
-		expect(screen.getByLabelText('Remove from favorites')).toBeVisible();
+		expect(
+			screen.getByLabelText('Remove Bob Belcher from favorites'),
+		).toBeVisible();
 	});
 });

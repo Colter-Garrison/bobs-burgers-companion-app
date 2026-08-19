@@ -11,11 +11,18 @@ test('tapping a favorite star while logged out routes to the login screen', asyn
 }) => {
 	await page.goto('/burgers');
 
-	await expect(page.getByLabel('Add to favorites').first()).toBeVisible({
+	// components/FavoriteButton.tsx labels each button with its own item
+	// name (e.g. "Add Bob's Burger to favorites"), not a generic "Add to
+	// favorites" — so screen readers can tell 20 identical buttons in a
+	// list apart. This test just needs any one of them.
+	await expect(page.getByLabel(/^Add .+ to favorites$/).first()).toBeVisible({
 		timeout: 10_000,
 	});
 
-	await page.getByLabel('Add to favorites').first().click();
+	await page
+		.getByLabel(/^Add .+ to favorites$/)
+		.first()
+		.click();
 
 	await expect(page).toHaveURL(/\/login/);
 });

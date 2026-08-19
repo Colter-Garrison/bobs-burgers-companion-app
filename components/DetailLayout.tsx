@@ -54,20 +54,26 @@ export function DetailLayout({
 	return (
 		<>
 			<Drawer.Screen options={{ title: name }} />
-			<ScrollView className='flex-1 bg-bbGreen dark:bg-darkBg'>
+			<ScrollView className='flex-1 bg-lightBg dark:bg-darkBg'>
 				<View className='flex-col items-center gap-[10px] p-[16px]'>
 					{cachedAt ? (
 						<OfflineBanner cachedAt={cachedAt} onRetry={onRetry} />
 					) : null}
-					<View className='w-full max-w-[420px] items-center gap-[10px] rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-[16px]'>
+					<View className='w-full max-w-[420px] items-center gap-[10px] rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-[16px]'>
 						{image ? (
 							<Image
 								source={{ width: 260, height: 190, uri: image }}
 								width={260}
 								height={190}
-								resizeMode='cover'
+								// Was 'cover' — cropped portrait-oriented images
+								// (e.g. "Double Butt") right through the actual
+								// subject to fill this landscape box. 'contain'
+								// never crops, at the cost of an occasional
+								// letterboxed gap for images whose aspect ratio
+								// doesn't match the box — a much better trade.
+								resizeMode='contain'
 								// Belt-and-suspenders: computed style showed
-								// object-fit: fill here despite resizeMode='cover'
+								// object-fit: fill here despite resizeMode
 								// (unlike CharacterOfTheDayCard with near-identical
 								// props, which showed the same computed mismatch
 								// yet still rendered correctly once fully painted —
@@ -82,23 +88,43 @@ export function DetailLayout({
 								style={
 									{
 										borderRadius: 8,
-										objectFit: 'cover',
+										objectFit: 'contain',
 									} as StyleProp<ImageStyle>
 								}
+								// iOS's Smart Invert Colors accessibility
+								// setting would otherwise flip this photo's
+								// colors along with the rest of the UI,
+								// which looks wrong for real photographic
+								// content.
+								accessibilityIgnoresInvertColors
+								// Decorative — the name is right below it as its
+								// own text, so a screen reader announcing the
+								// image too would just repeat that.
+								accessible={false}
+								accessibilityElementsHidden
+								importantForAccessibility='no-hide-descendants'
 							/>
 						) : null}
-						<Text className='font-chewy text-center text-[24px] text-bbRed dark:text-darkRed'>
+						<Text
+							accessibilityRole='header'
+							className='font-chewy text-center text-[24px] text-lightAccent dark:text-darkAccent'
+						>
 							{name}
 						</Text>
-						<Text className='font-chewy text-center text-[16px] text-bbRed dark:text-darkRed'>
+						<Text className='font-chewy text-center text-[16px] text-lightAccent dark:text-darkAccent'>
 							{bio}
 						</Text>
 						{fandomUrl ? (
 							<Pressable
 								onPress={() => Linking.openURL(fandomUrl)}
+								// Plain underlined text with no padding at all
+								// measures well under the 44x44 minimum touch
+								// target guideline.
+								hitSlop={12}
 								accessibilityRole='button'
+								accessibilityLabel={`View ${name} on the Bob's Burgers Fandom wiki`}
 							>
-								<Text className='font-chewy text-bbRed dark:text-darkRed underline'>
+								<Text className='font-chewy text-lightAccent dark:text-darkAccent underline'>
 									View on Fandom
 								</Text>
 							</Pressable>

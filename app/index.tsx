@@ -8,6 +8,7 @@ import { useFavorites } from '../hooks/useFavorites';
 import { PAGE_SIZE, usePagination } from '../hooks/usePagination';
 import { useAttributeFilters } from '../hooks/useAttributeFilters';
 import { SearchResultCard } from '../components/SearchResultCard';
+import { LoadMoreButton } from '../components/LoadMoreButton';
 import { CategoryFilter } from '../components/CategoryFilterPills';
 import { FilterPanel } from '../components/FilterPanel';
 import { CategorySkeleton } from '../components/CategorySkeleton';
@@ -18,7 +19,7 @@ import { useTheme } from '../hooks/useTheme';
 
 export default function Index() {
 	const router = useRouter();
-	const { isDark } = useTheme();
+	const { isDark, colors } = useTheme();
 	const { items, error, retry, cachedAt } = useSearchableItems();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const { character: characterOfTheDay, blurb: characterOfTheDayBlurb } =
@@ -68,7 +69,7 @@ export default function Index() {
 		attributeFilters.sortItems,
 	]);
 
-	const { visibleItems, loadMore } = usePagination(filteredItems);
+	const { visibleItems, loadMore, hasMore } = usePagination(filteredItems);
 
 	// Gender/Hair Color only make sense (and only show, via
 	// showGenderHairFilters below) while filtering by Characters — moving
@@ -164,7 +165,7 @@ export default function Index() {
 	return (
 		<FlatList
 			testID='search-results-list'
-			className='flex-1 bg-bbGreen dark:bg-darkBg'
+			className='flex-1 bg-lightBg dark:bg-darkBg'
 			contentContainerClassName='flex-col gap-[10px] p-[10px]'
 			data={isSearching && !searchLoading ? visibleItems : []}
 			renderItem={renderItem}
@@ -180,10 +181,11 @@ export default function Index() {
 				<View className='gap-[10px]'>
 					<TextInput
 						placeholder='Search burgers, characters, episodes...'
-						placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
+						accessibilityLabel='Search burgers, characters, episodes'
+						placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
 						value={query}
 						onChangeText={handleQueryChange}
-						className='font-chewy rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
+						className='font-chewy rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'
 					/>
 					<FilterPanel
 						categoryFilter={categoryFilter}
@@ -208,12 +210,19 @@ export default function Index() {
 						// succeeded are still shown below — this banner
 						// doesn't replace the results the way a category
 						// screen's full ErrorState does.
-						<View className='flex-row items-center justify-between gap-[10px] rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-[10px]'>
-							<Text className='flex-1 font-chewy text-bbRed dark:text-darkRed'>
+						<View className='flex-row items-center justify-between gap-[10px] rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-[10px]'>
+							<Text
+								accessibilityLiveRegion='polite'
+								className='flex-1 font-chewy text-lightAccent dark:text-darkAccent'
+							>
 								{error}
 							</Text>
-							<Pressable onPress={retry} accessibilityRole='button'>
-								<Text className='font-chewy text-bbRed dark:text-darkRed underline'>
+							<Pressable
+								onPress={retry}
+								accessibilityRole='button'
+								accessibilityLabel='Retry loading'
+							>
+								<Text className='font-chewy text-lightAccent dark:text-darkAccent underline'>
 									Retry
 								</Text>
 							</Pressable>
@@ -223,7 +232,7 @@ export default function Index() {
 			}
 			ListEmptyComponent={
 				isSearching && !searchLoading ? (
-					<Text className='font-chewy text-bbRed dark:text-darkRed'>
+					<Text className='font-chewy text-lightAccent dark:text-darkAccent'>
 						No results found.
 					</Text>
 				) : !isSearching && characterOfTheDay && characterOfTheDayBlurb ? (
@@ -231,6 +240,11 @@ export default function Index() {
 						character={characterOfTheDay}
 						blurb={characterOfTheDayBlurb}
 					/>
+				) : null
+			}
+			ListFooterComponent={
+				isSearching && !searchLoading && hasMore ? (
+					<LoadMoreButton onPress={loadMore} />
 				) : null
 			}
 		/>

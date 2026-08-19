@@ -10,7 +10,7 @@
 		"splash": {
 			"image": "./assets/images/bobs-splash.png",
 			"resizeMode": "contain",
-			"backgroundColor": "#F8DF24"
+			"backgroundColor": "#8FCBEA"
 		},
 		"ios": {
 			"supportsTablet": true

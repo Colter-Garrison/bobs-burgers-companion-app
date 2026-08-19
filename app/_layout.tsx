@@ -10,6 +10,7 @@ import { AuthProvider } from '../hooks/useAuth';
 import { FavoritesProvider } from '../hooks/useFavorites';
 import { ThemeProvider, useTheme } from '../hooks/useTheme';
 import { DrawerContent } from '../components/DrawerContent';
+import { SplashOverlay } from '../components/SplashOverlay';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -19,14 +20,25 @@ SplashScreen.preventAutoHideAsync();
 // the current theme, unlike every other screen's own dark:-prefixed
 // Tailwind classes.
 function ThemedDrawer() {
-	const { isDark } = useTheme();
+	const { isDark, colors } = useTheme();
 
 	return (
 		<Drawer
 			drawerContent={(props) => <DrawerContent {...props} />}
 			screenOptions={{
 				headerStyle: {
-					backgroundColor: isDark ? '#252E42' : '#5D74A6',
+					// Light-mode header was an unrelated arbitrary blue
+					// (#5D74A6) — now matches the active accent color
+					// exactly, both for visual cohesion with the rest of
+					// the palette and because it raises the header text's
+					// own contrast from ~3.66:1 to ~7.29:1 as a side
+					// effect. `colors` (from useTheme) is already resolved
+					// for the current isDark + colorblindMode combination,
+					// so a plain isDark ternary would be wrong once a
+					// colorblind palette is active — dark mode itself
+					// still stays a fixed neutral gray regardless of
+					// palette, so that half stays a literal.
+					backgroundColor: isDark ? '#3C3C3C' : colors.accent,
 					// React Navigation's default header carries its own
 					// border-bottom/shadow (a platform-default light
 					// gray/white, unrelated to our own color scheme) —
@@ -50,10 +62,10 @@ function ThemedDrawer() {
 					/>
 				),
 				drawerStyle: {
-					backgroundColor: isDark ? '#13190C' : '#BDFB73',
+					backgroundColor: colors.bg,
 				},
-				drawerActiveTintColor: isDark ? '#F2545B' : '#E8242F',
-				drawerInactiveTintColor: isDark ? '#F2545B' : '#E8242F',
+				drawerActiveTintColor: colors.accent,
+				drawerInactiveTintColor: colors.accent,
 				drawerLabelStyle: {
 					fontFamily: 'Chewy',
 					fontSize: 16,
@@ -65,8 +77,8 @@ function ThemedDrawer() {
 				// DrawerItemList and so doesn't pick this up automatically.
 				drawerItemStyle: {
 					borderWidth: 4,
-					borderColor: isDark ? '#F2545B' : '#E8242F',
-					backgroundColor: isDark ? '#373108' : '#F8DF24',
+					borderColor: colors.accent,
+					backgroundColor: colors.surface,
 					borderRadius: 8,
 				},
 			}}
@@ -165,6 +177,14 @@ export default function RootLayout() {
 					</GestureHandlerRootView>
 				</FavoritesProvider>
 			</AuthProvider>
+			{/* A sibling of AuthProvider rather than nested inside it, so it
+			doesn't wait on anything below ThemeProvider to mount — it only
+			needs useTheme() (from ThemeProvider, its parent), the same
+			access it had when useTheme.tsx rendered it directly. Moved
+			here instead of staying inline in useTheme.tsx to break a
+			require cycle: useTheme.tsx importing SplashOverlay, which
+			itself imports useTheme, was flagged by Metro on every build. */}
+			<SplashOverlay />
 		</ThemeProvider>
 	);
 }

@@ -19,10 +19,12 @@ export function SearchResultCard({
 	onPress,
 }: SearchResultCardProps) {
 	return (
-		<View className='flex-row items-start justify-between gap-[10px] rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-[10px]'>
+		<View className='flex-row items-start justify-between gap-[10px] rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-[10px]'>
 			<Pressable
 				className='flex-1 flex-row items-center gap-[10px]'
 				onPress={onPress}
+				accessibilityRole='button'
+				accessibilityLabel={`View details for ${item.label}`}
 			>
 				{item.image ? (
 					<Image
@@ -30,18 +32,36 @@ export function SearchResultCard({
 						width={60}
 						height={60}
 						resizeMode='contain'
+						// iOS's Smart Invert Colors accessibility setting
+						// would otherwise flip this photo's colors along
+						// with the rest of the UI, which looks wrong for
+						// real photographic content.
+						accessibilityIgnoresInvertColors
+						// Decorative — item.label right beside it already
+						// carries the same information as text, so a screen
+						// reader announcing this too would just repeat it.
+						accessible={false}
+						accessibilityElementsHidden
+						importantForAccessibility='no-hide-descendants'
 					/>
 				) : null}
 				<View className='flex-1 flex-col'>
-					<Text className='font-chewy text-[12px] text-bbRed dark:text-darkRed'>
+					<Text className='font-chewy text-[12px] text-lightAccent dark:text-darkAccent'>
 						{item.category}
 					</Text>
-					<Text className='font-chewy text-[16px] text-bbRed dark:text-darkRed'>
+					<Text
+						accessibilityRole='header'
+						className='font-chewy text-[16px] text-lightAccent dark:text-darkAccent'
+					>
 						{item.label}
 					</Text>
 				</View>
 			</Pressable>
-			<FavoriteButton favorited={favorited} onToggle={onToggleFavorite} />
+			<FavoriteButton
+				itemName={item.label}
+				favorited={favorited}
+				onToggle={onToggleFavorite}
+			/>
 		</View>
 	);
 }

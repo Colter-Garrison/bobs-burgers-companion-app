@@ -6,6 +6,7 @@ import { getBurgersOfTheDay } from '../../hooks/fetchBurgersOfTheDay';
 import { useFavorites } from '../../hooks/useFavorites';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
+import { LIGHT_THEME_COLORS } from '../../jest/themeColorsFixture';
 import { saveToCache } from '../../lib/dataCache';
 
 jest.mock('../../hooks/fetchBurgersOfTheDay');
@@ -41,6 +42,7 @@ describe('Burgers screen', () => {
 		(useTheme as jest.Mock).mockReturnValue({
 			isDark: false,
 			toggleTheme: jest.fn(),
+			colors: LIGHT_THEME_COLORS,
 		});
 		(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => false,
@@ -143,7 +145,7 @@ describe('Burgers screen', () => {
 			await Promise.resolve();
 		});
 
-		fireEvent.press(screen.getByLabelText('Add to favorites'));
+		fireEvent.press(screen.getByLabelText('Add Test Burger to favorites'));
 
 		expect(mockAddFavorite).toHaveBeenCalledWith('burger', 1);
 	});

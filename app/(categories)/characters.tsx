@@ -17,6 +17,7 @@ import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
 import { useFavorites } from '../../hooks/useFavorites';
 import { composeCharacterShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
+import { LoadMoreButton } from '../../components/LoadMoreButton';
 import { FilterPanel } from '../../components/FilterPanel';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
@@ -31,7 +32,7 @@ const getSearchableText = (character: Character) => character.name;
 
 export default function Characters() {
 	const router = useRouter();
-	const { isDark } = useTheme();
+	const { isDark, colors } = useTheme();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const {
 		data: characters,
@@ -81,7 +82,7 @@ export default function Characters() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[searchedCharacters, attributeFilters.matches, attributeFilters.sortItems],
 	);
-	const { visibleItems, loadMore } = usePagination(visibleCharacters);
+	const { visibleItems, loadMore, hasMore } = usePagination(visibleCharacters);
 
 	const handlePress = useCallback(
 		(character: Character) => {
@@ -95,10 +96,12 @@ export default function Characters() {
 
 	const renderItem = useCallback(
 		({ item: character }: { item: Character }) => (
-			<View className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2'>
+			<View className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2'>
 				<Pressable
 					className='flex-1 flex-row items-center gap-2'
 					onPress={() => handlePress(character)}
+					accessibilityRole='button'
+					accessibilityLabel={`View details for ${character.name}`}
 				>
 					{character.image ? (
 						<Image
@@ -106,21 +109,34 @@ export default function Characters() {
 							width={100}
 							height={100}
 							resizeMode='contain'
+							// iOS's Smart Invert Colors accessibility setting
+							// would otherwise flip this photo's colors along
+							// with the rest of the UI, which looks wrong for
+							// real photographic content.
+							accessibilityIgnoresInvertColors
+							// Decorative — the name is shown as its own text
+							// right beside it, so a screen reader announcing
+							// the image too would just repeat that.
+							accessible={false}
+							accessibilityElementsHidden
+							importantForAccessibility='no-hide-descendants'
 						/>
 					) : null}
 					<View className='max-w-[70%] flex-col md:max-w-[90%]'>
 						<Text
 							testID='card-title'
-							className='font-chewy text-base text-bbRed dark:text-darkRed'
+							accessibilityRole='header'
+							className='font-chewy text-base text-lightAccent dark:text-darkAccent'
 						>
 							{character.name}
 						</Text>
-						<Text className='font-chewy text-base text-bbRed dark:text-darkRed'>
+						<Text className='font-chewy text-base text-lightAccent dark:text-darkAccent'>
 							{composeCharacterShortBio(character)}
 						</Text>
 					</View>
 				</Pressable>
 				<FavoriteButton
+					itemName={character.name}
 					favorited={isFavorited('character', character.id)}
 					onToggle={() =>
 						isFavorited('character', character.id)
@@ -143,7 +159,7 @@ export default function Characters() {
 
 	return (
 		<FlatList
-			className='flex-1 bg-bbGreen dark:bg-darkBg'
+			className='flex-1 bg-lightBg dark:bg-darkBg'
 			contentContainerClassName='flex-col gap-2 p-2'
 			data={visibleItems}
 			renderItem={renderItem}
@@ -155,10 +171,11 @@ export default function Characters() {
 				<View className='flex-col gap-2'>
 					<TextInput
 						placeholder='Search Characters...'
-						placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
+						accessibilityLabel='Search Characters'
+						placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
 						value={query}
 						onChangeText={setQuery}
-						className='font-chewy rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
+						className='font-chewy rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'
 					/>
 					<FilterPanel
 						showGenderHairFilters
@@ -177,8 +194,16 @@ export default function Characters() {
 			}
 			ListEmptyComponent={
 				<View className='flex-1 flex-col items-center justify-center'>
-					<Text className='font-chewy text-[44px]'>Character UH OH...</Text>
+					<Text
+						accessibilityRole='header'
+						className='font-chewy text-[44px] text-lightAccent dark:text-darkAccent'
+					>
+						Character UH OH...
+					</Text>
 				</View>
+			}
+			ListFooterComponent={
+				hasMore ? <LoadMoreButton onPress={loadMore} /> : null
 			}
 		/>
 	);

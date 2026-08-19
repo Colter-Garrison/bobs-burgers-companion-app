@@ -2,6 +2,7 @@ import { Image, Linking } from 'react-native';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { DetailLayout } from './DetailLayout';
 import { useTheme } from '../hooks/useTheme';
+import { LIGHT_THEME_COLORS } from '../jest/themeColorsFixture';
 
 jest.mock('expo-router/drawer', () => ({
 	// <Drawer.Screen> is a config-only element consumed by the navigator —
@@ -17,6 +18,7 @@ describe('DetailLayout', () => {
 		(useTheme as jest.Mock).mockReturnValue({
 			isDark: false,
 			toggleTheme: jest.fn(),
+			colors: LIGHT_THEME_COLORS,
 		});
 	});
 

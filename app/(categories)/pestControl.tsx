@@ -20,6 +20,7 @@ import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
 import { useFavorites } from '../../hooks/useFavorites';
 import { composeTruckShortBio } from '../../lib/categoryBio';
 import { FavoriteButton } from '../../components/FavoriteButton';
+import { LoadMoreButton } from '../../components/LoadMoreButton';
 import { FilterPanel } from '../../components/FilterPanel';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
 import { ErrorState } from '../../components/ErrorState';
@@ -31,7 +32,7 @@ const getSearchableText = (truck: Truck) =>
 
 export default function PestControl() {
 	const router = useRouter();
-	const { isDark } = useTheme();
+	const { isDark, colors } = useTheme();
 	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 	const {
 		data: trucks,
@@ -64,7 +65,7 @@ export default function PestControl() {
 		searchedTrucks,
 		(truck) => truck.name,
 	);
-	const { visibleItems, loadMore } = usePagination(visibleTrucks);
+	const { visibleItems, loadMore, hasMore } = usePagination(visibleTrucks);
 
 	const handlePress = useCallback(
 		(truck: Truck) => {
@@ -78,10 +79,12 @@ export default function PestControl() {
 
 	const renderItem = useCallback(
 		({ item: truck }: { item: Truck }) => (
-			<View className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2'>
+			<View className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2'>
 				<Pressable
 					className='flex-1 flex-row items-center gap-2'
 					onPress={() => handlePress(truck)}
+					accessibilityRole='button'
+					accessibilityLabel={`View details for ${truck.name}`}
 				>
 					{truck.image ? (
 						<Image
@@ -89,21 +92,34 @@ export default function PestControl() {
 							width={100}
 							height={100}
 							resizeMode='contain'
+							// iOS's Smart Invert Colors accessibility setting
+							// would otherwise flip this photo's colors along
+							// with the rest of the UI, which looks wrong for
+							// real photographic content.
+							accessibilityIgnoresInvertColors
+							// Decorative — the name is shown as its own text
+							// right beside it, so a screen reader announcing
+							// the image too would just repeat that.
+							accessible={false}
+							accessibilityElementsHidden
+							importantForAccessibility='no-hide-descendants'
 						/>
 					) : null}
 					<View className='max-w-[70%] flex-col'>
 						<Text
 							testID='card-title'
-							className='font-chewy text-base text-bbRed dark:text-darkRed'
+							accessibilityRole='header'
+							className='font-chewy text-base text-lightAccent dark:text-darkAccent'
 						>
 							{truck.name}
 						</Text>
-						<Text className='font-chewy text-base text-bbRed dark:text-darkRed'>
+						<Text className='font-chewy text-base text-lightAccent dark:text-darkAccent'>
 							{composeTruckShortBio(truck)}
 						</Text>
 					</View>
 				</Pressable>
 				<FavoriteButton
+					itemName={truck.name}
 					favorited={isFavorited('pest_control_truck', truck.id)}
 					onToggle={() =>
 						isFavorited('pest_control_truck', truck.id)
@@ -126,7 +142,7 @@ export default function PestControl() {
 
 	return (
 		<FlatList
-			className='flex-1 bg-bbGreen dark:bg-darkBg'
+			className='flex-1 bg-lightBg dark:bg-darkBg'
 			contentContainerClassName='flex-col gap-2 p-2'
 			data={visibleItems}
 			renderItem={renderItem}
@@ -138,10 +154,11 @@ export default function PestControl() {
 				<View className='flex-col gap-2'>
 					<TextInput
 						placeholder='Search Pest Control Trucks...'
-						placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
+						accessibilityLabel='Search Pest Control Trucks'
+						placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
 						value={query}
 						onChangeText={setQuery}
-						className='font-chewy rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
+						className='font-chewy rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'
 					/>
 					<FilterPanel
 						sortDirection={attributeFilters.sortDirection}
@@ -159,10 +176,16 @@ export default function PestControl() {
 			}
 			ListEmptyComponent={
 				<View className='flex-1 flex-col items-center justify-center'>
-					<Text className='font-chewy text-[44px]'>
+					<Text
+						accessibilityRole='header'
+						className='font-chewy text-[44px] text-lightAccent dark:text-darkAccent'
+					>
 						Pest Control Truck UH OH...
 					</Text>
 				</View>
+			}
+			ListFooterComponent={
+				hasMore ? <LoadMoreButton onPress={loadMore} /> : null
 			}
 		/>
 	);

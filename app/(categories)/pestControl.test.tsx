@@ -6,6 +6,7 @@ import { getPestControlTrucks } from '../../hooks/fetchPestControlTrucks';
 import { useFavorites } from '../../hooks/useFavorites';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
+import { LIGHT_THEME_COLORS } from '../../jest/themeColorsFixture';
 
 jest.mock('../../hooks/fetchPestControlTrucks');
 jest.mock('../../hooks/useFavorites');
@@ -40,6 +41,7 @@ describe('PestControl screen', () => {
 		(useTheme as jest.Mock).mockReturnValue({
 			isDark: false,
 			toggleTheme: jest.fn(),
+			colors: LIGHT_THEME_COLORS,
 		});
 		(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => false,
@@ -145,7 +147,7 @@ describe('PestControl screen', () => {
 		render(<PestControl />);
 		await flush();
 
-		fireEvent.press(screen.getByLabelText('Add to favorites'));
+		fireEvent.press(screen.getByLabelText('Add Test Truck to favorites'));
 
 		expect(mockAddFavorite).toHaveBeenCalledWith('pest_control_truck', 1);
 	});

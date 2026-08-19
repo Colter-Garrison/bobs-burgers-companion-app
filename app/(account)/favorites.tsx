@@ -9,6 +9,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
 import { useAttributeFilters } from '../../hooks/useAttributeFilters';
 import { SearchResultCard } from '../../components/SearchResultCard';
+import { LoadMoreButton } from '../../components/LoadMoreButton';
 import { CategoryFilter } from '../../components/CategoryFilterPills';
 import { FilterPanel } from '../../components/FilterPanel';
 import { CategorySkeleton } from '../../components/CategorySkeleton';
@@ -17,7 +18,7 @@ import { useTheme } from '../../hooks/useTheme';
 
 export default function Favorites() {
 	const router = useRouter();
-	const { isDark } = useTheme();
+	const { isDark, colors } = useTheme();
 	const { token, loading: authLoading } = useAuth();
 	const {
 		items,
@@ -116,7 +117,7 @@ export default function Favorites() {
 		attributeFilters.matches,
 		attributeFilters.sortItems,
 	]);
-	const { visibleItems, loadMore } = usePagination(favoritedItems);
+	const { visibleItems, loadMore, hasMore } = usePagination(favoritedItems);
 	const loading = itemsLoading || favoritesLoading;
 
 	// Defined once, up front, and handed to FlatList as `renderItem` —
@@ -145,7 +146,7 @@ export default function Favorites() {
 
 	return (
 		<FlatList
-			className='flex-1 bg-bbGreen dark:bg-darkBg'
+			className='flex-1 bg-lightBg dark:bg-darkBg'
 			contentContainerClassName='flex-col gap-[10px] p-[10px]'
 			data={visibleItems}
 			renderItem={renderItem}
@@ -161,10 +162,11 @@ export default function Favorites() {
 				<View className='gap-[10px]'>
 					<TextInput
 						placeholder='Search your favorites...'
-						placeholderTextColor={isDark ? '#ECEDEE' : '#E8242F'}
+						accessibilityLabel='Search your favorites'
+						placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
 						value={query}
 						onChangeText={setQuery}
-						className='font-chewy rounded-lg border-4 border-bbRed dark:border-darkRed bg-bbYellow dark:bg-darkSurface p-2 text-[18px] text-bbRed dark:text-darkRed'
+						className='font-chewy rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'
 					/>
 					<FilterPanel
 						categoryFilter={categoryFilter}
@@ -184,9 +186,12 @@ export default function Favorites() {
 				</View>
 			}
 			ListEmptyComponent={
-				<Text className='font-chewy text-bbRed dark:text-darkRed'>
+				<Text className='font-chewy text-lightAccent dark:text-darkAccent'>
 					No favorites yet.
 				</Text>
+			}
+			ListFooterComponent={
+				hasMore ? <LoadMoreButton onPress={loadMore} /> : null
 			}
 		/>
 	);

@@ -6,6 +6,7 @@ import { getCharacters } from '../../hooks/fetchCharacters';
 import { useFavorites } from '../../hooks/useFavorites';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
+import { LIGHT_THEME_COLORS } from '../../jest/themeColorsFixture';
 
 jest.mock('../../hooks/fetchCharacters');
 jest.mock('../../hooks/useFavorites');
@@ -57,6 +58,7 @@ describe('Characters screen', () => {
 		(useTheme as jest.Mock).mockReturnValue({
 			isDark: false,
 			toggleTheme: jest.fn(),
+			colors: LIGHT_THEME_COLORS,
 		});
 		(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => false,
@@ -140,7 +142,7 @@ describe('Characters screen', () => {
 		render(<Characters />);
 		await flush();
 
-		fireEvent.press(screen.getByLabelText('Add to favorites'));
+		fireEvent.press(screen.getByLabelText('Add Bob Belcher to favorites'));
 
 		expect(mockAddFavorite).toHaveBeenCalledWith('character', 1);
 		expect(mockPush).not.toHaveBeenCalled();
