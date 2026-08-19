@@ -10,6 +10,7 @@ import { AuthProvider } from '../hooks/useAuth';
 import { FavoritesProvider } from '../hooks/useFavorites';
 import { ThemeProvider, useTheme } from '../hooks/useTheme';
 import { DrawerContent } from '../components/DrawerContent';
+import { SplashOverlay } from '../components/SplashOverlay';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -176,6 +177,14 @@ export default function RootLayout() {
 					</GestureHandlerRootView>
 				</FavoritesProvider>
 			</AuthProvider>
+			{/* A sibling of AuthProvider rather than nested inside it, so it
+			doesn't wait on anything below ThemeProvider to mount — it only
+			needs useTheme() (from ThemeProvider, its parent), the same
+			access it had when useTheme.tsx rendered it directly. Moved
+			here instead of staying inline in useTheme.tsx to break a
+			require cycle: useTheme.tsx importing SplashOverlay, which
+			itself imports useTheme, was flagged by Metro on every build. */}
+			<SplashOverlay />
 		</ThemeProvider>
 	);
 }

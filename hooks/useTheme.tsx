@@ -14,7 +14,6 @@ import {
 	COLORBLIND_MODES,
 	COLORBLIND_PALETTES,
 } from '../lib/colorblindPalettes';
-import { SplashOverlay } from '../components/SplashOverlay';
 
 const THEME_PREFERENCE_KEY = 'bbca_theme_preference';
 const COLORBLIND_MODE_KEY = 'bbca_colorblind_mode';
@@ -176,15 +175,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 			inherit these CSS custom properties — the actual mechanism
 			that lets a selected colorblind palette reach the app
 			without editing any of those classNames. */}
-			<View style={[{ flex: 1 }, themeVars]}>
-				{children}
-				{/* Rendered here (inside the Provider, alongside children,
-				not blocking their mount) so it can read isThemeReady via
-				the same useTheme() everything else uses, and so the rest
-				of the app is already mounting/fetching underneath it
-				rather than being delayed until the overlay lifts. */}
-				<SplashOverlay />
-			</View>
+			<View style={[{ flex: 1 }, themeVars]}>{children}</View>
 		</ThemeContext.Provider>
 	);
 }
