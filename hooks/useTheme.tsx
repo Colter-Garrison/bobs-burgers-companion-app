@@ -6,7 +6,7 @@ import React, {
 	useMemo,
 	useState,
 } from 'react';
-import { Appearance, View } from 'react-native';
+import { Appearance, Platform, View } from 'react-native';
 import { colorScheme, useColorScheme, vars } from 'nativewind';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -158,6 +158,30 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 			}),
 		[palette],
 	);
+
+	// react-native-web's <Modal> (used by components/ColorblindModeButton.tsx
+	// for its dropdown) renders its children through a DOM portal straight
+	// onto document.body — a sibling of, not a descendant of, the View
+	// below that carries themeVars as inline style. CSS custom properties
+	// only cascade to actual DOM descendants, so the portaled dropdown
+	// never saw a selected colorblind palette's colors and silently fell
+	// back to each token's default (colorblind-off) value baked into
+	// tailwind.config.js — while light/dark mode kept working fine there
+	// regardless, since nativewind's own dark-mode class is set directly
+	// on <html> (see react-native-css-interop's color-scheme.js), an
+	// ancestor of every portal too. Mirroring that same approach — setting
+	// these custom properties on documentElement itself, not just the
+	// View — makes them reach any DOM node, portaled or not. Native has
+	// no document/DOM at all, hence the platform check; nativewind's own
+	// vars() already reaches Views there through its own native mechanism.
+	useEffect(() => {
+		if (Platform.OS !== 'web') {
+			return;
+		}
+		Object.entries(themeVars).forEach(([property, value]) => {
+			document.documentElement.style.setProperty(property, String(value));
+		});
+	}, [themeVars]);
 
 	return (
 		<ThemeContext.Provider
