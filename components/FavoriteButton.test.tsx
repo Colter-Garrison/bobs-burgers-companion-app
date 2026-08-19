@@ -84,10 +84,6 @@ describe('FavoriteButton', () => {
 	});
 
 	it('still renders (and stays pressable) when a colorblind mode is active in dark mode', () => {
-		// Regression coverage for the dedicated dark-mode pink accent —
-		// it's only used when colorblindMode is 'none'; this just proves
-		// the component doesn't crash or lose functionality once that
-		// branch is skipped in favor of the active palette's accent.
 		(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' });
 		(useTheme as jest.Mock).mockReturnValue({
 			isDark: true,
