@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 
 // However fast (or slow) useTheme resolves, the splash stays up at least
@@ -26,6 +26,19 @@ export function SplashOverlay() {
 	const { isThemeReady } = useTheme();
 	const [shouldRender, setShouldRender] = useState(true);
 	const mountedAtRef = useRef(Date.now());
+	// bobs-splash.png is a tall, portrait-shaped image (designed for a
+	// phone screen) — 'cover' fills a portrait/near-square viewport
+	// nicely, but on a wide landscape browser window it forces the image
+	// to scale up by width, cropping away almost all of its height and
+	// leaving little more than a random zoomed-in sliver on screen.
+	// banner-image.png is the same art directed for a 1366x768 (16:9)
+	// layout instead — the standard laptop/desktop aspect ratio, so
+	// 'cover' only ever needs a small crop off the sides rather than the
+	// extreme ratio mismatch the portrait image would hit at that shape.
+	// (Also referenced directly, unrelated to this component, by the
+	// README.)
+	const { width, height } = useWindowDimensions();
+	const isWideViewport = width > height;
 
 	useEffect(() => {
 		if (!isThemeReady) {
@@ -52,14 +65,18 @@ export function SplashOverlay() {
 			testID='splash-overlay'
 		>
 			<Image
-				source={require('../assets/images/bobs-splash.png')}
+				source={
+					isWideViewport
+						? require('../assets/images/banner-image.png')
+						: require('../assets/images/bobs-splash.png')
+				}
 				// react-native-web's Image, once the image finishes loading,
 				// sizes its wrapper to the image's natural pixel dimensions
 				// unless an explicit width/height is set — absoluteFillObject
 				// alone only sets position/inset, so on web the overlay
 				// would render correctly for an instant, then jump to the
-				// image's raw 1242x2436 size anchored top-left the moment
-				// it loaded. Explicit 100%/100% keeps it filling the screen
+				// image's raw pixel size anchored top-left the moment it
+				// loaded. Explicit 100%/100% keeps it filling the screen
 				// throughout.
 				style={[StyleSheet.absoluteFillObject, styles.image]}
 				resizeMode='cover'
