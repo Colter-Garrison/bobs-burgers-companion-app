@@ -9,7 +9,7 @@ A React Native app built with Expo, styled with NativeWind (Tailwind for RN), us
 - React Native + Expo
 - TypeScript
 - Styling: NativeWind (Tailwind for RN)
-- Backend: Node/Express + PostgreSQL (`server/`), a standalone project (its own package.json, not wired into the Expo app yet). Drizzle ORM, hand-rolled username/password + JWT auth (bcrypt) — see priority #10 below for why this is username, not email. See `server/` for the route list; run `npm run dev` inside `server/` and `server/scripts/smoke-test.sh` to verify it end-to-end.
+- Backend: Node/Express + PostgreSQL (`server/`), its own package.json (not part of the Expo app's build/dependency graph) but wired into the deployed app at runtime — deployed to Render, with the Netlify build's `EXPO_PUBLIC_API_URL` env var pointed at that Render URL. Locally, `.env`'s `EXPO_PUBLIC_API_URL` defaults to `http://localhost:3000` instead. Drizzle ORM, hand-rolled username/password + JWT auth (bcrypt) — see priority #10 below for why this is username, not email. See `server/` for the route list; run `npm run dev` inside `server/` and `server/scripts/smoke-test.sh` to verify it end-to-end.
 - Package manager: npm
 - Linting/formatting: ESLint (`eslint-config-expo`, legacy `.eslintrc.js` — this project is on Expo SDK 51, which predates `eslint-config-expo`'s flat config support) + Prettier, bridged via `eslint-plugin-prettier` so formatting issues surface as lint errors. Run `npm run lint` before considering any change done; `npx eslint . --fix` applies safe fixes.
 
