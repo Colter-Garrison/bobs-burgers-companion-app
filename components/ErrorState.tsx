@@ -6,9 +6,6 @@ interface ErrorStateProps {
 	onRetry: () => void;
 }
 
-// Shown in place of a category screen's list when its fetch fails —
-// distinct from an empty API result, which each screen still handles on
-// its own with a "no data" message.
 export function ErrorState({ message, onRetry }: ErrorStateProps) {
 	return (
 		<View className='flex-1 flex-col items-center justify-center gap-[10px] bg-lightBg dark:bg-darkBg p-[10px]'>

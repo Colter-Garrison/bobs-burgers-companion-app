@@ -75,21 +75,7 @@ describe('useNetworkStatus', () => {
 		expect(unsubscribe).toHaveBeenCalled();
 	});
 
-	// Regression coverage: NetInfo's web implementation prefers the
-	// browser's Network Information API (navigator.connection.onchange)
-	// over the standard window 'online'/'offline' events whenever the
-	// browser exposes it (true for Chromium) — and that API is known to
-	// not reliably fire on a real disconnect/reconnect, only on
-	// connection-*type* changes. Without the direct window listeners
-	// below, isOffline could get stuck true forever after a real
-	// disconnect, since NetInfo's own event would never tell it the
-	// connection came back. See useNetworkStatus.ts for the full story.
 	describe('on web', () => {
-		// This test environment has no real DOM (jest-expo targets React
-		// Native, not a browser), so `window` here has no working
-		// addEventListener to spy on — these stand in for it with a
-		// minimal, real pub-sub so `fire()` below behaves the way an
-		// actual browser dispatching 'online'/'offline' would.
 		let listeners: Record<string, (() => void)[]>;
 		let addSpy: jest.Mock;
 		let removeSpy: jest.Mock;

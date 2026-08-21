@@ -9,10 +9,6 @@ import { getStoresNextDoor } from './fetchStoresNextDoor';
 import { loadFromCache, saveToCache } from '../lib/dataCache';
 import { useNetworkStatus } from './useNetworkStatus';
 
-// jest.mock() (with no factory) replaces the entire module with an
-// auto-mocked version — every exported function becomes a jest.fn() we
-// control per-test below, instead of the real fetch-based implementation
-// running (which would make 6 real network calls per test otherwise).
 jest.mock('./fetchBurgersOfTheDay');
 jest.mock('./fetchCharacters');
 jest.mock('./fetchEndCreditsSequences');
@@ -56,10 +52,6 @@ describe('useSearchableItems', () => {
 
 		expect(result.current.loading).toBe(true);
 
-		// waitFor polls the callback until it stops throwing (or times
-		// out) — the standard way to wait for state that updates
-		// asynchronously after a promise resolves, without needing a real
-		// or fake timer here (nothing in this hook uses setTimeout).
 		await waitFor(() => expect(result.current.loading).toBe(false));
 
 		expect(result.current.items).toEqual(
@@ -74,8 +66,6 @@ describe('useSearchableItems', () => {
 					category: 'Characters',
 					label: 'Bob',
 				}),
-				// The end-credits API has no `name` field, so the hook
-				// synthesizes a label from season/episode instead.
 				expect.objectContaining({
 					id: 'endCredits-3',
 					category: 'End Credits',
@@ -91,9 +81,6 @@ describe('useSearchableItems', () => {
 		const { result } = renderHook(() => useSearchableItems());
 		await waitFor(() => expect(result.current.loading).toBe(false));
 
-		// Promise.allSettled doesn't let one rejected source discard the
-		// others — burgers and end credits (both mocked to succeed above)
-		// still show up, even though characters failed.
 		expect(result.current.items).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({ id: 'burger-1' }),
@@ -189,11 +176,6 @@ describe('useSearchableItems', () => {
 		expect(result.current.error).toBeTruthy();
 	});
 
-	// Regression coverage: useNetworkStatus's isOffline can get stuck
-	// true on web even after the connection is genuinely back (NetInfo's
-	// own web event source is unreliable there — see useNetworkStatus.ts).
-	// An explicit retry (the OfflineBanner's "Retry" button, or starting
-	// a new search) must never be silently defeated by that.
 	it('retry always attempts a real fetch, even while isOffline is (possibly incorrectly) still true', async () => {
 		(useNetworkStatus as jest.Mock).mockReturnValue({ isOffline: true });
 		(loadFromCache as jest.Mock).mockResolvedValue({

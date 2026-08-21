@@ -34,10 +34,6 @@ describe('pickCharacterOfTheDay', () => {
 				),
 			),
 		);
-		// Not every day needs a unique pick, but 30 different dates against
-		// 50 items should produce more than just one or two repeats — this
-		// guards against a degenerate hash that always lands on the same
-		// handful of indices.
 		expect(picks.size).toBeGreaterThan(5);
 	});
 

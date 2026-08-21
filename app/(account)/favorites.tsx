@@ -35,13 +35,6 @@ export default function Favorites() {
 	const [query, setQuery] = useState('');
 	const attributeFilters = useAttributeFilters<SearchItem>();
 
-	// Reachable by direct URL, not just the drawer link (which already
-	// hides itself when logged out) — same guard as app/account.tsx,
-	// deliberately depending on `authLoading` alone rather than `token`
-	// (see the comment there for why: Drawer screens never unmount, so
-	// this guard must only check "did we arrive here already logged
-	// out," not react to every later token change, or it can race
-	// Account's own post-logout navigation to /).
 	useEffect(() => {
 		if (!authLoading && !token) {
 			router.push('/login');
@@ -49,9 +42,6 @@ export default function Favorites() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [authLoading]);
 
-	// Same reasoning as app/index.tsx: this is a Drawer.Screen that stays
-	// mounted when you navigate away, so a chosen filter pill would
-	// otherwise still be sitting here the next time you land back here.
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
@@ -59,9 +49,6 @@ export default function Favorites() {
 				setQuery('');
 				attributeFilters.reset();
 			};
-			// attributeFilters.reset is stable (useCallback with no deps in
-			// useAttributeFilters) — omitted here so this effect doesn't
-			// re-run (and re-register its cleanup) on every render.
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, []),
 	);
@@ -73,9 +60,6 @@ export default function Favorites() {
 		[router],
 	);
 
-	// See app/index.tsx's identical handler for why this is needed:
-	// Gender/Hair Color selections must not silently persist (and keep
-	// filtering) once the category picker moves away from "Characters".
 	const handleSelectCategory = useCallback(
 		(category: CategoryFilter) => {
 			setCategoryFilter(category);
@@ -83,7 +67,6 @@ export default function Favorites() {
 				attributeFilters.clearGenderHair();
 			}
 		},
-		// attributeFilters.clearGenderHair is stable (useCallback, no deps)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[],
 	);
@@ -104,10 +87,6 @@ export default function Favorites() {
 				.filter(attributeFilters.matches),
 			(item) => item.label,
 		);
-		// attributeFilters itself is a fresh object every render — its
-		// `matches`/`sortItems` functions are what this actually reads,
-		// and those are independently memoized (stable unless the
-		// filters/sort they close over actually changed).
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		items,
@@ -120,8 +99,6 @@ export default function Favorites() {
 	const { visibleItems, loadMore, hasMore } = usePagination(favoritedItems);
 	const loading = itemsLoading || favoritesLoading;
 
-	// Defined once, up front, and handed to FlatList as `renderItem` —
-	// mirroring app/index.tsx's own list.
 	const renderItem = useCallback(
 		({ item }: { item: SearchItem }) => (
 			<SearchResultCard
@@ -153,10 +130,6 @@ export default function Favorites() {
 			keyExtractor={(item) => item.id}
 			onEndReached={loadMore}
 			onEndReachedThreshold={0.5}
-			// usePagination already caps `data` to one page at a time, so
-			// there's no need for FlatList's own default windowing
-			// (initialNumToRender=10) to further sub-render within that —
-			// the whole current page should mount together.
 			initialNumToRender={PAGE_SIZE}
 			ListHeaderComponent={
 				<View className='gap-[10px]'>

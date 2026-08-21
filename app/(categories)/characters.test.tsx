@@ -16,9 +16,6 @@ jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
 
-// See app/index.test.tsx's identical mock for why this is needed: a bare
-// RNTL render has no real navigation container, and characters.tsx now
-// calls useFocusEffect to clear its search query/filters on blur.
 let focusEffectCleanup: (() => void) | undefined;
 jest.mock('@react-navigation/native', () => ({
 	useFocusEffect: (callback: () => void | (() => void)) => {

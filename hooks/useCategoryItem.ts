@@ -2,21 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { loadFromCache, saveToCache } from '../lib/dataCache';
 import { useNetworkStatus } from './useNetworkStatus';
 
-// Single-item counterpart to useCategoryData.ts — same network-first,
-// cache-as-fallback, offline-aware behavior, just for one record (the
-// detail page, app/detail/[category]/[id].tsx) instead of a whole list
-// (the six category screens). See useCategoryData.ts for the full
-// reasoning; kept as a separate hook rather than a shared generic since
-// "one item" vs "a list" changes the empty/initial state (null vs []) at
-// every call site, not just internally.
-//
-// id may be null — used for the detail page's "associated episode"
-// fetch (Burger/EndCredit/Truck/Store don't have their own wiki page,
-// only the episode they're from does), whose id isn't known until the
-// primary item has already loaded. Hooks can't be called conditionally,
-// so this accepts null and simply doesn't fetch instead, rather than the
-// call site needing a placeholder id that would trigger a wasted (and
-// wrong) network request.
 export function useCategoryItem<T>(
 	fetchFn: (id: number) => Promise<T>,
 	cacheKey: string,

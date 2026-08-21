@@ -1,7 +1,3 @@
-// Everything this app knows about the server/ backend's URL paths and
-// request/response shapes lives here — hooks call these functions, they
-// never build a fetch call or a URL string themselves.
-
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export class ApiError extends Error {
@@ -37,8 +33,6 @@ async function apiFetch<T>(
 		body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
 	});
 
-	// A 204 (e.g. DELETE /favorites/:category/:itemId) has no body to
-	// parse — calling response.json() on it throws.
 	if (response.status === 204) {
 		return undefined as T;
 	}

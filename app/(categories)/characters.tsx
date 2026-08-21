@@ -24,10 +24,6 @@ import { ErrorState } from '../../components/ErrorState';
 import { OfflineBanner } from '../../components/OfflineBanner';
 import { useTheme } from '../../hooks/useTheme';
 
-// Name only, not the bio — the bio's "First appeared in <episode title>"
-// and relatives text pulls in unrelated matches (e.g. searching "Linda"
-// surfacing every character who first appeared in an episode with
-// "Linda" in the title), which isn't what a character name search means.
 const getSearchableText = (character: Character) => character.name;
 
 export default function Characters() {
@@ -48,9 +44,6 @@ export default function Characters() {
 	} = useCategorySearch(characters, getSearchableText);
 	const attributeFilters = useAttributeFilters<Character>();
 
-	// Same reasoning as app/index.tsx: this is a Drawer.Screen that stays
-	// mounted when you navigate away, so a typed-in query/filter/sort
-	// would otherwise still be sitting here the next time you land back.
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
@@ -61,24 +54,12 @@ export default function Characters() {
 		}, []),
 	);
 
-	// Array.filter always returns a new array, even when nothing was
-	// actually removed — without memoizing, this would be a fresh
-	// reference on every render, which would defeat usePagination's own
-	// "reset to page 1 only when the underlying list actually changes"
-	// check (it resets whenever the `items` reference changes) and snap
-	// the list back to 20 the instant loadMore's own setState re-renders
-	// this component.
 	const visibleCharacters = useMemo(
 		() =>
 			attributeFilters.sortItems(
 				searchedCharacters.filter(attributeFilters.matches),
 				(character) => character.name,
 			),
-		// attributeFilters itself is a fresh object every render — its
-		// `matches`/`sortItems` functions are what this actually reads,
-		// and those are independently memoized (stable unless the
-		// filters/sort they close over actually changed). Same reasoning
-		// as app/index.tsx's own filteredItems useMemo.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[searchedCharacters, attributeFilters.matches, attributeFilters.sortItems],
 	);
@@ -109,14 +90,7 @@ export default function Characters() {
 							width={100}
 							height={100}
 							resizeMode='contain'
-							// iOS's Smart Invert Colors accessibility setting
-							// would otherwise flip this photo's colors along
-							// with the rest of the UI, which looks wrong for
-							// real photographic content.
 							accessibilityIgnoresInvertColors
-							// Decorative — the name is shown as its own text
-							// right beside it, so a screen reader announcing
-							// the image too would just repeat that.
 							accessible={false}
 							accessibilityElementsHidden
 							importantForAccessibility='no-hide-descendants'

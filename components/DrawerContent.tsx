@@ -74,12 +74,6 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 							<Text className={navLinkClassName}>Hello, {username}!</Text>
 						</Pressable>
 					) : (
-						// Drawer.Screens (and this drawer itself) never unmount — the
-						// login screen's own submit button says the exact same
-						// thing, so this needs a distinct accessible name to stay
-						// unambiguous to assistive tech (and to Playwright). Sign Up
-						// isn't a separate drawer link — it's reached from the Log In
-						// screen's own "Need an account? Sign Up" link instead.
 						<Pressable
 							onPress={() => router.push('/login')}
 							accessibilityRole='button'
@@ -89,12 +83,6 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 						</Pressable>
 					)}
 				</View>
-				{/* Right side of the Hello/Log In row, per the user's own
-				request — usernames are capped at 25 characters
-				specifically so this can never collide with the icon.
-				Colorblind mode sits to the left of light/dark, per the
-				user's own request — it's a menu button, not a toggle, so
-				it opens a modal rather than switching state on tap. */}
 				<View className='flex-row items-center gap-2'>
 					<ColorblindModeButton />
 					<ThemeToggleButton />
@@ -114,23 +102,9 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 				/>
 			) : null}
 
-			{/* Pushes Buy Me a Beer/Log Out to the true bottom of the drawer,
-			not just after Favorites, however short the category list
-			leaves the content — contentContainerStyle's flexGrow: 1 above
-			is what lets this spacer actually grow. */}
 			<View className='flex-1' />
 
-			{/* Same className as the top auth block's wrapper — kept free
-			of any inline style prop, so its padding (including the left
-			inset that lines it up with "Hello {username}!") comes entirely
-			from className, with nothing for a className/style interop
-			quirk to clobber. */}
 			<View className='gap-1 p-2'>
-				{/* Support link, not an account action — unlike Log Out,
-				stays visible regardless of auth state. Same plain
-				navLinkClassName treatment as Hello/Log In/Log Out (no
-				yellow/red box) so it reads as part of the drawer's own
-				furniture rather than an ad. */}
 				<Pressable
 					onPress={() => Linking.openURL(BUY_ME_A_COFFEE_URL)}
 					accessibilityRole='button'
@@ -144,11 +118,6 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 					</Pressable>
 				) : null}
 			</View>
-			{/* A separate plain spacer for the device's real safe-area
-			inset (home indicator / rounded corner), so the last item
-			doesn't get visually clipped by the screen's own curvature on
-			phones like the iPhone 15 — a fixed pixel value here would
-			only be correct for one specific device. */}
 			<View style={{ height: insets.bottom }} />
 		</DrawerContentScrollView>
 	);

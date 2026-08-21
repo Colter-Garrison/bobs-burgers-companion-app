@@ -1,14 +1,3 @@
-// Bio-composition logic for all six Bob's Burgers categories — a short
-// version for each category screen's list card (matching the style of
-// Home's Character of the Day card) and a longer version, using every
-// field the API gives us, for the detail page
-// (app/detail/[category]/[id].tsx).
-//
-// Four of the six item types (Burger, EndCredit, Truck, Store) have no
-// wiki page of their own — only Character and Episode do — so their
-// bios optionally take the episode they're from, once resolved (see
-// extractEpisodeIdFromUrl below), to mention it by name instead of just
-// a season/episode number.
 import { Burger } from '../hooks/fetchBurgersOfTheDay';
 import { Character } from '../hooks/fetchCharacters';
 import { EndCredit } from '../hooks/fetchEndCreditsSequences';
@@ -30,19 +19,12 @@ function episodeClause(
 		: `Season ${season}, Episode ${episode}`;
 }
 
-// A resource URL like "https://bobsburgers-api.herokuapp.com/episodes/12"
-// -> 12. Burger/EndCredit/Truck/Store all carry an `episodeUrl` field in
-// exactly this shape — it's the one thread connecting them back to a
-// real Fandom-linkable page.
 export function extractEpisodeIdFromUrl(episodeUrl: string): number | null {
 	const match = episodeUrl.match(/\/(\d+)\/?$/);
 	return match ? Number(match[1]) : null;
 }
 
 // ---- Characters ----
-// Also used as-is by Home's Character of the Day card (see
-// hooks/useCharacterOfTheDay.ts) — that's the "little bio blurb" style
-// every category's list card is being matched to here.
 export function composeCharacterShortBio(character: Character): string {
 	const sentences: string[] = [];
 
@@ -135,9 +117,6 @@ export function composeEpisodeFullBio(episode: Episode): string {
 }
 
 // ---- Burgers of the Day ----
-// Deliberately doesn't repeat the burger's name (unlike the full bio
-// below) — the card that renders this already shows the name as its own
-// title directly above, so leading with it here read as redundant.
 export function composeBurgerShortBio(burger: Burger): string {
 	return `Priced at ${burger.price}, it was the Burger of the Day in Season ${burger.season}, Episode ${burger.episode}.`;
 }

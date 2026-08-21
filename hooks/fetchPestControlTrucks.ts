@@ -10,12 +10,6 @@ export interface Truck {
 	url: string;
 }
 
-// The API's own `image` field points at a path that 404s — it uses the
-// plural "pestControlTrucks", but the files actually live under the
-// singular "pestControlTruck" (matching the endpoint's own path). This
-// rewrites the URL to the one that actually resolves. Confirmed via
-// direct requests: /images/pestControlTrucks/1.jpg -> 404,
-// /images/pestControlTruck/1.jpg -> 200.
 function fixImageUrl(image: string): string {
 	return image.replace(
 		'/images/pestControlTrucks/',

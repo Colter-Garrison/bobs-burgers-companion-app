@@ -27,11 +27,6 @@ export function CategoryFilterPills({
 	return (
 		<View
 			className='gap-2 p-2'
-			// NativeWind doesn't generate a CSS rule for the flex-wrap
-			// utility class on web (it's present in the DOM's className
-			// attribute but computes to flex-wrap: nowrap) — flexWrap set
-			// inline is guaranteed to actually apply, unlike flexDirection/
-			// gap/padding above, which do render correctly via className.
 			style={{ flexDirection: 'row', flexWrap: 'wrap' }}
 			testID='category-filter-pills'
 		>

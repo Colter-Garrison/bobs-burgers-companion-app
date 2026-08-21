@@ -11,11 +11,6 @@ jest.mock('expo-router', () => ({
 jest.mock('../../hooks/useAuth');
 jest.mock('../../hooks/useTheme');
 
-// useFocusEffect is normally driven by real navigation focus events,
-// which don't exist in a bare RNTL render. Calling the callback directly
-// at render time captures its returned cleanup function so a test can
-// invoke it to simulate a blur (navigating away), without needing a real
-// navigation container.
 let focusEffectCleanup: (() => void) | undefined;
 jest.mock('@react-navigation/native', () => ({
 	useFocusEffect: (callback: () => void | (() => void)) => {

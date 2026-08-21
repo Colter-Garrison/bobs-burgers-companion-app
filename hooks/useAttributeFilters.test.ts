@@ -21,11 +21,6 @@ describe('useAttributeFilters', () => {
 		expect(result.current.matches(item)).toBe(true);
 	});
 
-	// Regression coverage: the five non-Character category screens
-	// (Burgers, End Credits, Episodes, Pest Control Trucks, Stores) use
-	// this same hook for their Sort-only Filter By pill, with item types
-	// that have no gender/hair fields at all — unlike Character or
-	// SearchItem, which at least have them as optional strings.
 	it('matches items of a type with no gender/hair fields at all, since those filters never activate for them', () => {
 		interface Burger {
 			id: number;

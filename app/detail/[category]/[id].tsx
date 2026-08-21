@@ -19,12 +19,6 @@ import {
 	extractEpisodeIdFromUrl,
 } from '../../../lib/categoryBio';
 
-// Burger/EndCredit/Truck/Store have no wiki page of their own — only
-// the episode they're from does (see lib/categoryBio.ts) — so their
-// detail views additionally resolve that episode, both to name-drop it
-// in the bio and to supply the "View on Fandom" link. The episode's id
-// isn't known until the primary item has loaded, hence the nullable id
-// useCategoryItem.ts supports.
 function useAssociatedEpisode(episodeUrl: string | undefined) {
 	const episodeId = episodeUrl ? extractEpisodeIdFromUrl(episodeUrl) : null;
 	const { data } = useCategoryItem(

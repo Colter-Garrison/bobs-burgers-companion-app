@@ -5,21 +5,10 @@ test('drawer link navigates to the category screen and back', async ({
 }) => {
 	await page.goto('/');
 
-	// Category links live inside the hamburger drawer now (closed by
-	// default), not directly on the Home screen body. Home's own
-	// always-visible filter pills share this same text, so the link role
-	// (vs. the pill's button role) is what disambiguates them.
 	await page.getByLabel('Open navigation menu').click();
 	await page.getByRole('link', { name: 'Burgers of the Day' }).click();
 	await expect(page).toHaveURL(/\/burgers/);
 
-	// A real network round-trip to the third-party Bob's Burgers API is
-	// real here — wait for the real UI to settle rather than asserting
-	// immediately.
-	// components/FavoriteButton.tsx labels each button with its own item
-	// name (e.g. "Add Bob's Burger to favorites"), not a generic "Add to
-	// favorites" — so screen readers can tell 20 identical buttons in a
-	// list apart. This test just needs any one of them.
 	await expect(page.getByLabel(/^Add .+ to favorites$/).first()).toBeVisible({
 		timeout: 10_000,
 	});
@@ -34,15 +23,8 @@ test('drawer link navigates to the category screen and back', async ({
 test('a direct link to a category screen works (not just in-app navigation)', async ({
 	page,
 }) => {
-	// Only a real server can prove Expo Router's static export actually
-	// handles a deep link — this is exactly the kind of thing RNTL's
-	// simulated renderer can't verify at all.
 	await page.goto('/characters');
 
-	// components/FavoriteButton.tsx labels each button with its own item
-	// name (e.g. "Add Bob's Burger to favorites"), not a generic "Add to
-	// favorites" — so screen readers can tell 20 identical buttons in a
-	// list apart. This test just needs any one of them.
 	await expect(page.getByLabel(/^Add .+ to favorites$/).first()).toBeVisible({
 		timeout: 10_000,
 	});

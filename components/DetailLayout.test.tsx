@@ -5,12 +5,8 @@ import { useTheme } from '../hooks/useTheme';
 import { LIGHT_THEME_COLORS } from '../jest/themeColorsFixture';
 
 jest.mock('expo-router/drawer', () => ({
-	// <Drawer.Screen> is a config-only element consumed by the navigator —
-	// rendering it as a no-op here keeps this a focused unit test of
-	// DetailLayout's own visible output.
 	Drawer: { Screen: () => null },
 }));
-// Pulled in indirectly via CategorySkeleton (the loading state below).
 jest.mock('../hooks/useTheme');
 
 describe('DetailLayout', () => {

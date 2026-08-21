@@ -6,10 +6,6 @@ interface OfflineBannerProps {
 	onRetry: () => void;
 }
 
-// Shown above a screen's list (not in place of it, unlike ErrorState) —
-// this only ever appears when there IS data to show, just not fresh
-// data. Same visual pattern as app/index.tsx's own "Some results may be
-// missing." banner.
 export function OfflineBanner({ cachedAt, onRetry }: OfflineBannerProps) {
 	const formattedTime = cachedAt
 		? new Date(cachedAt).toLocaleTimeString([], {
@@ -29,8 +25,6 @@ export function OfflineBanner({ cachedAt, onRetry }: OfflineBannerProps) {
 			</Text>
 			<Pressable
 				onPress={onRetry}
-				// Plain underlined text with no padding at all measures well
-				// under the 44x44 minimum touch target guideline.
 				hitSlop={12}
 				accessibilityRole='button'
 				accessibilityLabel='Retry loading'

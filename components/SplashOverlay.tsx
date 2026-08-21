@@ -56,11 +56,6 @@ export function SplashOverlay() {
 
 	return (
 		<View
-			// A solid fill behind the Image, not just the image itself —
-			// the image is an async network/asset load, so without this
-			// the overlay is glass (fully see-through) for however long
-			// that takes, defeating the entire point of covering the
-			// screen. Matches app.json's own splash backgroundColor.
 			style={[StyleSheet.absoluteFillObject, styles.container]}
 			testID='splash-overlay'
 		>
@@ -70,19 +65,9 @@ export function SplashOverlay() {
 						? require('../assets/images/banner-image.png')
 						: require('../assets/images/bobs-splash.png')
 				}
-				// react-native-web's Image, once the image finishes loading,
-				// sizes its wrapper to the image's natural pixel dimensions
-				// unless an explicit width/height is set — absoluteFillObject
-				// alone only sets position/inset, so on web the overlay
-				// would render correctly for an instant, then jump to the
-				// image's raw pixel size anchored top-left the moment it
-				// loaded. Explicit 100%/100% keeps it filling the screen
-				// throughout.
 				style={[StyleSheet.absoluteFillObject, styles.image]}
 				resizeMode='cover'
 				accessibilityIgnoresInvertColors
-				// Purely decorative chrome, on screen for a couple seconds —
-				// nothing here for a screen reader to announce.
 				accessible={false}
 				accessibilityElementsHidden
 				importantForAccessibility='no-hide-descendants'

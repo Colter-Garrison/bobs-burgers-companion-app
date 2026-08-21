@@ -2,13 +2,6 @@
 # End-to-end manual verification of the backend, exercising every
 # endpoint in sequence. Run this against a running `npm run dev` server
 # (from server/) with: ./scripts/smoke-test.sh
-#
-# There's no automated test suite yet (that's a separate, later project
-# priority), so this script is the closest thing to one for now — a
-# readable, re-runnable record of the whole request lifecycle: register
-# a user, log in as them, favorite something, list favorites, confirm a
-# duplicate favorite is rejected, remove the favorite, delete the
-# account, then confirm the old token no longer works.
 
 set -euo pipefail
 

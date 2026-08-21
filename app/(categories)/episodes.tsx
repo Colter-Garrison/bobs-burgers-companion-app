@@ -38,9 +38,6 @@ export default function Episodes() {
 	} = useCategorySearch(episodes, getSearchableText);
 	const attributeFilters = useAttributeFilters<Episode>();
 
-	// Same reasoning as app/index.tsx: this is a Drawer.Screen that stays
-	// mounted when you navigate away, so a typed-in query/sort would
-	// otherwise still be sitting here the next time you land back here.
 	useFocusEffect(
 		useCallback(() => {
 			return () => {

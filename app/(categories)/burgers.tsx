@@ -38,9 +38,6 @@ export default function Burgers() {
 	} = useCategorySearch(burgers, getSearchableText);
 	const attributeFilters = useAttributeFilters<Burger>();
 
-	// Same reasoning as app/index.tsx: this is a Drawer.Screen that stays
-	// mounted when you navigate away, so a typed-in query/sort would
-	// otherwise still be sitting here the next time you land back here.
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
@@ -67,9 +64,6 @@ export default function Burgers() {
 		[router],
 	);
 
-	// Defined once, up front, and handed to FlatList as `renderItem` —
-	// matching app/index.tsx's own list, rather than an inline arrow
-	// function rebuilt on every render.
 	const renderItem = useCallback(
 		({ item: burger }: { item: Burger }) => (
 			<View className='flex-row items-start justify-between gap-2 rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2'>
@@ -121,10 +115,6 @@ export default function Burgers() {
 			keyExtractor={(burger) => String(burger.id)}
 			onEndReached={loadMore}
 			onEndReachedThreshold={0.5}
-			// usePagination already caps `data` to one page at a time, so
-			// there's no need for FlatList's own default windowing
-			// (initialNumToRender=10) to further sub-render within that —
-			// the whole current page should mount together.
 			initialNumToRender={PAGE_SIZE}
 			ListHeaderComponent={
 				<View className='flex-col gap-2'>

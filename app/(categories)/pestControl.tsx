@@ -48,9 +48,6 @@ export default function PestControl() {
 	} = useCategorySearch(trucks, getSearchableText);
 	const attributeFilters = useAttributeFilters<Truck>();
 
-	// Same reasoning as app/index.tsx: this is a Drawer.Screen that stays
-	// mounted when you navigate away, so a typed-in query/sort would
-	// otherwise still be sitting here the next time you land back here.
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
@@ -92,14 +89,7 @@ export default function PestControl() {
 							width={100}
 							height={100}
 							resizeMode='contain'
-							// iOS's Smart Invert Colors accessibility setting
-							// would otherwise flip this photo's colors along
-							// with the rest of the UI, which looks wrong for
-							// real photographic content.
 							accessibilityIgnoresInvertColors
-							// Decorative — the name is shown as its own text
-							// right beside it, so a screen reader announcing
-							// the image too would just repeat that.
 							accessible={false}
 							accessibilityElementsHidden
 							importantForAccessibility='no-hide-descendants'

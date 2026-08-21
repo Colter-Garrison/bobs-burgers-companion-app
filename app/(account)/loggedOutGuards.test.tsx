@@ -1,13 +1,3 @@
-// Regression coverage for a real bug found while manually verifying
-// Delete Account against a live backend: deleting the account correctly
-// cleared auth state and called router.push('/'), but the browser ended
-// up on /login instead. The cause wasn't a same-screen race — it was
-// app/favorites.tsx's own logged-out guard, mounted independently
-// (Drawer.Screens never unmount) and reacting to the same global
-// AuthContext token change, firing its own router.push('/login') after
-// Account's navigation. A test that only renders <Account /> in
-// isolation can't reproduce this — it takes two guarded screens sharing
-// one real AuthProvider, which is what this file sets up.
 import React from 'react';
 import { Platform } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
@@ -28,9 +18,6 @@ jest.mock('../../lib/apiClient', () => ({
 jest.mock('../../hooks/useSearchableItems', () => ({
 	useSearchableItems: () => ({ items: [], loading: false }),
 }));
-// Favorites now also calls useTheme — this file doesn't exercise theming
-// itself, so a no-op stand-in is enough, same reasoning as the
-// useFocusEffect mock below.
 jest.mock('../../hooks/useTheme', () => ({
 	useTheme: () => ({
 		isDark: false,
@@ -41,9 +28,6 @@ jest.mock('../../hooks/useTheme', () => ({
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
-// Favorites now also calls useFocusEffect (to reset its category filter
-// on blur) — this file doesn't exercise that behavior itself, so a
-// no-op stand-in is enough to avoid needing a real NavigationContainer.
 jest.mock('@react-navigation/native', () => ({
 	useFocusEffect: (callback: () => void | (() => void)) => {
 		callback();
@@ -82,9 +66,6 @@ describe('guarded screens sharing one AuthProvider', () => {
 				</FavoritesProvider>
 			</AuthProvider>,
 		);
-		// Let the session-restore effect (AuthProvider) and Favorites'
-		// initial fetch both settle before either screen's mount-time
-		// guard runs its check.
 		await act(async () => {
 			await Promise.resolve();
 		});

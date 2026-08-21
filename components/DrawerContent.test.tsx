@@ -16,17 +16,9 @@ jest.mock('../hooks/useTheme');
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
-// Needs a real <SafeAreaProvider> ancestor this bare render() never sets
-// up — not this component's logic to test, so just stub a zero inset.
 jest.mock('react-native-safe-area-context', () => ({
 	useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
-// The real DrawerContentScrollView/DrawerItemList need a live navigation
-// state (drawer routes, descriptors) this test never constructs — they're
-// react-navigation's own machinery, not this component's logic. Stand
-// them in with plain View/Text so only DrawerContent's own auth-aware
-// section is under test here. DrawerItem (used for the Favorites link) is
-// stubbed just enough to stay pressable/findable by label.
 jest.mock('@react-navigation/drawer', () => {
 	const { Pressable, Text, View } = jest.requireActual('react-native');
 	return {
@@ -48,9 +40,6 @@ jest.mock('@react-navigation/drawer', () => {
 	};
 });
 
-// DrawerContent only ever spreads these into the (here, mocked-out)
-// DrawerContentScrollView/DrawerItemList, so a real navigation state
-// isn't needed for this component's own logic to be exercised.
 const fakeDrawerProps = {} as unknown as DrawerContentComponentProps;
 
 describe('DrawerContent', () => {

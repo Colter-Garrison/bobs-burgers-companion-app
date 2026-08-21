@@ -17,9 +17,6 @@ jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
 
-// See app/index.test.tsx's identical mock for why this is needed: a bare
-// RNTL render has no real navigation container, and burgers.tsx now calls
-// useFocusEffect to clear its search query/sort on blur.
 let focusEffectCleanup: (() => void) | undefined;
 jest.mock('@react-navigation/native', () => ({
 	useFocusEffect: (callback: () => void | (() => void)) => {
@@ -115,11 +112,6 @@ describe('Burgers screen', () => {
 	});
 
 	it('falls back to a saved copy (offline banner, not a hard error) when the fetch fails and a cache exists', async () => {
-		// Seeds the cache directly rather than going through a first
-		// successful render+fetch cycle — this is what
-		// hooks/useCategoryData.ts itself writes on a successful fetch
-		// (see lib/dataCache.ts), simulating "the app already saved this
-		// during an earlier, successful visit."
 		await saveToCache('burgers', [
 			{ id: 1, name: 'Saved Burger', price: '$5.00', season: 1, episode: 1 },
 		]);
@@ -258,10 +250,6 @@ describe('Burgers screen', () => {
 		expect(screen.queryByText('Burger Number 20')).toBeNull();
 		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(20);
 
-		// See app/index.test.tsx's equivalent test for why this asserts on
-		// `data` growing rather than newly revealed text actually
-		// rendering — that part is FlatList's own virtualization, not this
-		// app's logic, and RNTL can't simulate a real scroll.
 		act(() => {
 			screen.UNSAFE_getByType(FlatList).props.onEndReached();
 		});

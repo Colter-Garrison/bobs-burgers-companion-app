@@ -1,9 +1,3 @@
-// Pure logic for the Home screen's "Character of the Day" card — kept
-// framework-free (no React) so the date math can be tested directly,
-// without rendering anything. The blurb text itself is composed by
-// lib/categoryBio.ts's composeCharacterShortBio, shared with the
-// Characters category screen's own list cards.
-
 // Local (device) date, not UTC — "today" should change at the user's own
 // midnight, not Greenwich's.
 export function getLocalDateKey(date: Date = new Date()): string {

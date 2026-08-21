@@ -14,12 +14,6 @@ export default function Login() {
 	const [error, setError] = useState<string | null>(null);
 	const [submitting, setSubmitting] = useState(false);
 
-	// A Drawer.Screen stays mounted when you navigate away from it (unlike
-	// Stack, which unmounts), so this state would otherwise sit here
-	// unchanged — still showing whatever was typed — the next time this
-	// screen comes back into view. Clearing on blur means it's always
-	// fresh, whether that's from switching screens mid-typing or from a
-	// later log out.
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
@@ -35,12 +29,6 @@ export default function Login() {
 		setSubmitting(true);
 		try {
 			await login(username, password);
-			// router.replace('/') is a no-op here — /login is a
-			// Drawer.Screen, and expo-router's replace() doesn't
-			// navigate away from a screen inside a drawer navigator in
-			// this version. push() does, and drawer screens are
-			// siblings with no back-stack anyway, so there's no
-			// leftover history entry to worry about.
 			router.push('/');
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Something went wrong');
@@ -104,8 +92,6 @@ export default function Login() {
 
 			<Pressable
 				onPress={() => router.push('/signup')}
-				// Plain underlined text with no padding at all measures
-				// well under the 44x44 minimum touch target guideline.
 				hitSlop={12}
 				accessibilityRole='button'
 			>

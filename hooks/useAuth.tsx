@@ -15,9 +15,6 @@ import { tokenStorage } from '../lib/tokenStorage';
 interface AuthContextValue {
 	token: string | null;
 	username: string | null;
-	// True only while restoring a persisted session on app launch —
-	// screens that gate on auth state should wait for this before
-	// deciding whether to treat the user as logged out.
 	loading: boolean;
 	login: (username: string, password: string) => Promise<void>;
 	signup: (username: string, password: string) => Promise<void>;

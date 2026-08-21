@@ -1,10 +1,3 @@
-// A small persisted cache for the Bob's Burgers API's six category
-// datasets. This is deliberately not a general-purpose cache — no TTL,
-// no eviction — because it's used as a pure fallback (see
-// hooks/useCategoryData.ts and hooks/useSearchableItems.ts): the network
-// is always tried first, and this is only ever read when that fails.
-// Since the underlying data barely changes, there's no staleness policy
-// to design here beyond "prefer live data when it's reachable."
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const KEY_PREFIX = 'bbca_cache_';

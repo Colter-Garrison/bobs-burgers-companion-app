@@ -8,10 +8,6 @@ import { ThemeProvider, useTheme } from './useTheme';
 jest.mock('nativewind', () => ({
 	colorScheme: { set: jest.fn() },
 	useColorScheme: jest.fn(),
-	// The real vars() returns nativewind's own internal CSS-variable
-	// representation — tests here only care that ThemeProvider doesn't
-	// crash wiring it up and passes something through to style, not its
-	// exact shape, so an identity function is enough.
 	vars: (input: Record<string, string>) => input,
 }));
 
@@ -118,18 +114,10 @@ describe('useTheme', () => {
 	});
 
 	it('ignores a saved value that is no longer a valid mode, instead of crashing', async () => {
-		// Regression coverage: colorblind mode originally had 7 clinically-
-		// named values (e.g. 'tritanopia') before being collapsed to 3 —
-		// a device that saved one of those old values would otherwise
-		// restore a key COLORBLIND_PALETTES no longer has, and `colors`
-		// would crash trying to read .light/.dark off undefined.
 		await AsyncStorage.setItem('bbca_colorblind_mode', 'tritanopia');
 
 		const { result } = renderHook(() => useTheme(), { wrapper });
 
-		// Give the AsyncStorage.getItem effect a tick to resolve — asserting
-		// immediately would trivially pass either way, before the (invalid)
-		// saved value could have been applied at all.
 		await waitFor(() => expect(result.current.colorblindMode).toBe('none'));
 		expect(() => result.current.colors).not.toThrow();
 	});
@@ -173,11 +161,6 @@ describe('useTheme', () => {
 	});
 
 	it('still reports isThemeReady true even if the AsyncStorage read rejects', async () => {
-		// Regression coverage: isThemeReady is what SplashOverlay covers
-		// the screen with — a rejected (not just empty) read must still
-		// mark it ready, or a storage failure would leave the overlay
-		// covering the app forever instead of just falling back to the
-		// system/light default.
 		jest
 			.spyOn(AsyncStorage, 'getItem')
 			.mockRejectedValueOnce(new Error('storage unavailable'));

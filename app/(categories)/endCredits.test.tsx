@@ -16,9 +16,6 @@ jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
 
-// See app/index.test.tsx's identical mock for why this is needed: a bare
-// RNTL render has no real navigation container, and endCredits.tsx now
-// calls useFocusEffect to clear its search query/sort on blur.
 let focusEffectCleanup: (() => void) | undefined;
 jest.mock('@react-navigation/native', () => ({
 	useFocusEffect: (callback: () => void | (() => void)) => {
@@ -84,8 +81,6 @@ describe('EndCredits screen', () => {
 				'A hand-drawn end credits sequence from Season 1, Episode 2.',
 			),
 		).toBeVisible();
-		// No testID exists on the Image, so UNSAFE_queryByType is the way
-		// to assert on a host component by its React type directly.
 		expect(screen.UNSAFE_queryByType(Image)).not.toBeNull();
 	});
 

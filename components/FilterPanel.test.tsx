@@ -106,9 +106,6 @@ describe('FilterPanel', () => {
 		fireEvent.press(screen.getByLabelText('Sorted A to Z. Tap to sort Z to A'));
 		expect(mockOnToggleSort).toHaveBeenCalled();
 
-		// rerender keeps the same component instance mounted, so the
-		// panel is still expanded from the press above — no need to
-		// press "Show filter options" again.
 		rerender(<FilterPanel {...baseProps} sortDirection='desc' />);
 		expect(
 			screen.getByLabelText('Sorted Z to A. Tap to sort A to Z'),
@@ -138,10 +135,6 @@ describe('FilterPanel', () => {
 		).toEqual({ selected: true });
 	});
 
-	// Regression coverage for the two new scoped-down configurations: the
-	// standalone Characters screen (gender/hair, no category picker) and
-	// the other five single-category screens (Sort only, no category
-	// picker, no gender/hair — those fields don't exist on their data).
 	describe('scoped-down configurations', () => {
 		it('omits the Category section entirely when categoryFilter/onSelectCategory are not provided', () => {
 			render(

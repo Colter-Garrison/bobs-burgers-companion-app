@@ -10,10 +10,6 @@ import {
 } from '../lib/apiClient';
 
 jest.mock('./useAuth');
-// A partial mock, not jest.mock('../lib/apiClient') — an automock would
-// replace the ApiError class's constructor with a no-op, so `new
-// ApiError(...)` below would produce an instance missing .status/.message
-// and every instanceof/status check in the hook would break.
 jest.mock('../lib/apiClient', () => ({
 	...jest.requireActual('../lib/apiClient'),
 	fetchFavorites: jest.fn(),

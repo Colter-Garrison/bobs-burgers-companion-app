@@ -90,11 +90,6 @@ describe('useCategoryData', () => {
 		expect(result.current.error).toBeTruthy();
 	});
 
-	// Regression coverage: useNetworkStatus's isOffline can get stuck
-	// true on web even after the connection is genuinely back (NetInfo's
-	// own web event source is unreliable there — see useNetworkStatus.ts).
-	// An explicit retry (the OfflineBanner's "Retry" button, or
-	// ErrorState's) must never be silently defeated by that.
 	it('retry always attempts a real fetch, even while isOffline is (possibly incorrectly) still true', async () => {
 		(useNetworkStatus as jest.Mock).mockReturnValue({ isOffline: true });
 		(loadFromCache as jest.Mock).mockResolvedValue({

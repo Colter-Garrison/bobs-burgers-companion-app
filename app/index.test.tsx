@@ -18,11 +18,6 @@ jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
 
-// useFocusEffect is normally driven by real navigation focus events,
-// which don't exist in a bare RNTL render. Calling the callback directly
-// at render time captures its returned cleanup function so a test can
-// invoke it to simulate a blur (navigating away), without needing a real
-// navigation container.
 let focusEffectCleanup: (() => void) | undefined;
 jest.mock('@react-navigation/native', () => ({
 	useFocusEffect: (callback: () => void | (() => void)) => {
@@ -30,9 +25,6 @@ jest.mock('@react-navigation/native', () => ({
 	},
 }));
 
-// The first keystroke of a search triggers a real retry() call (see
-// app/index.tsx) whose resolution clears the skeleton — flush that
-// microtask so a test can assert on the post-loading content.
 async function flush() {
 	await act(async () => {
 		await Promise.resolve();
@@ -189,9 +181,6 @@ describe('Home / search screen', () => {
 	});
 
 	it('shows the skeleton the instant a search starts, before any promise has resolved', () => {
-		// A promise that never resolves during this test — proves the
-		// skeleton appears synchronously off the keystroke itself, not
-		// after retry()'s promise settles.
 		mockRetry.mockReturnValue(new Promise<void>(() => {}));
 		render(<Index />);
 
@@ -369,8 +358,6 @@ describe('Home / search screen', () => {
 		expect(screen.getByText('Linda Belcher')).toBeVisible();
 
 		fireEvent.press(screen.getByLabelText('Show filter options'));
-		// Gender/hair filters only appear once the user has narrowed to
-		// Characters — they're meaningless for the other five categories.
 		fireEvent.press(screen.getByLabelText('Filter by Characters'));
 		fireEvent.press(screen.getByLabelText('Filter by gender: Male'));
 
@@ -421,16 +408,6 @@ describe('Home / search screen', () => {
 		expect(screen.queryByText('Bob Number 20')).toBeNull();
 		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(20);
 
-		// What actually mounts newly revealed rows as the user scrolls is
-		// FlatList's own internal virtualization, which RNTL can't
-		// exercise without a real scroll — so this asserts on the `data`
-		// this screen hands to FlatList growing correctly, which is what
-		// usePagination (this app's own logic) is responsible for.
-		//
-		// fireEvent(el, 'endReached') doesn't reach onEndReached here —
-		// the testID forwards to an inner host node, not the composite
-		// FlatList element holding the original prop — so the prop is
-		// grabbed and called directly instead.
 		act(() => {
 			screen.UNSAFE_getByType(FlatList).props.onEndReached();
 		});
@@ -559,8 +536,6 @@ describe('Home / search screen', () => {
 		expect(screen.getByText('Bob Belcher')).toBeVisible();
 		expect(screen.queryByText('Test Burger')).toBeNull();
 
-		// Burgers has no gender field at all — if the Male selection were
-		// still silently active here, this would show nothing.
 		fireEvent.press(screen.getByLabelText('Filter by Burgers of the Day'));
 
 		expect(screen.getByText('Test Burger')).toBeVisible();

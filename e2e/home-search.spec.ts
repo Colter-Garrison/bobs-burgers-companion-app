@@ -10,16 +10,10 @@ test('home page loads and the search bar live-filters as the user types', async 
 	);
 	await expect(search).toBeVisible();
 
-	// No query yet — no results section should be showing.
 	await expect(page.getByText('No results found.')).not.toBeVisible();
 
-	// Real keystroke-by-keystroke typing, not a single fireEvent.changeText
-	// call like the RNTL test — this exercises the actual browser input
-	// event pipeline, which a simulated renderer can't fully replicate.
 	await search.pressSequentially('bob', { delay: 50 });
 
-	// At least one Bob-related result (most likely a character named
-	// Bob), sourced from the real live API.
 	await expect(page.getByText(/bob/i).first()).toBeVisible();
 });
 

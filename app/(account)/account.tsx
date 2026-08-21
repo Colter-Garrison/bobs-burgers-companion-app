@@ -9,22 +9,6 @@ export default function Account() {
 	const [error, setError] = useState<string | null>(null);
 	const [deleting, setDeleting] = useState(false);
 
-	// This screen is reachable by direct URL, not just the drawer link
-	// (which already hides itself when logged out) — so it needs its own
-	// guard against a logged-out visit. Deliberately depends on `loading`
-	// alone, not `token`: `loading` only flips true->false once, right
-	// after the initial session restore, so this only checks "did we
-	// arrive here already logged out" — it does NOT re-fire every time
-	// `token` later changes. That matters because Drawer screens never
-	// unmount, so this component is still mounted (and still has this
-	// effect registered) after Delete Account clears the token, or after
-	// Log Out is pressed in the drawer while this screen sits underneath
-	// it — if `token` were a dependency, this guard would fire a redirect
-	// to /login that races (and can override) those actions' own explicit
-	// navigation to /. A session expiring for some other reason (e.g. a
-	// 401 while mounted elsewhere) is already handled by
-	// useFavorites' own logout()+redirect, so this guard doesn't need to
-	// duplicate that.
 	useEffect(() => {
 		if (!loading && !token) {
 			router.push('/login');
@@ -50,8 +34,6 @@ export default function Account() {
 	};
 
 	const handleDeleteAccount = () => {
-		// Alert.alert is a no-op on react-native-web — window.confirm is
-		// the web equivalent.
 		if (Platform.OS === 'web') {
 			if (window.confirm('Delete your account? This cannot be undone.')) {
 				void performDelete();

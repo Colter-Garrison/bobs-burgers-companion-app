@@ -16,11 +16,6 @@ jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }));
 
-// useFocusEffect is normally driven by real navigation focus events,
-// which don't exist in a bare RNTL render. Calling the callback directly
-// at render time captures its returned cleanup function so a test can
-// invoke it to simulate a blur (navigating away), without needing a real
-// navigation container.
 let focusEffectCleanup: (() => void) | undefined;
 jest.mock('@react-navigation/native', () => ({
 	useFocusEffect: (callback: () => void | (() => void)) => {
@@ -309,8 +304,6 @@ describe('Favorites screen', () => {
 		expect(screen.getByText('Bob Belcher')).toBeVisible();
 		expect(screen.queryByText('Favorited Burger')).toBeNull();
 
-		// Burgers has no gender field at all — if the Male selection were
-		// still silently active here, this would show nothing.
 		fireEvent.press(screen.getByLabelText('Filter by Burgers of the Day'));
 
 		expect(screen.getByText('Favorited Burger')).toBeVisible();

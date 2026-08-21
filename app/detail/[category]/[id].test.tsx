@@ -6,7 +6,6 @@ import { useTheme } from '../../../hooks/useTheme';
 import { LIGHT_THEME_COLORS } from '../../../jest/themeColorsFixture';
 
 jest.mock('../../../hooks/useCategoryItem');
-// Pulled in indirectly via CategorySkeleton (the loading state below).
 jest.mock('../../../hooks/useTheme');
 jest.mock('expo-router', () => ({
 	useLocalSearchParams: jest.fn(),
@@ -92,12 +91,6 @@ const store = {
 	url: '',
 };
 
-// Mimics useCategoryItem well enough for these tests: keyed by the
-// exact cacheKey each container in app/detail/[category]/[id].tsx
-// actually uses (e.g. "episode-detail-10") — an exact match, not just a
-// prefix, so these tests also catch a wrong id being extracted from an
-// episodeUrl (see lib/categoryBio.ts's extractEpisodeIdFromUrl), not
-// just whether *an* episode was resolved at all.
 function mockDataByCacheKey(entries: Record<string, unknown>) {
 	(useCategoryItem as jest.Mock).mockImplementation(
 		(_fetchFn: unknown, cacheKey: string) => ({

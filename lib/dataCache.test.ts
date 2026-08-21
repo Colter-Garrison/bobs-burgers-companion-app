@@ -26,9 +26,6 @@ describe('dataCache', () => {
 	});
 
 	it('returns null instead of throwing when the stored value is corrupt JSON', async () => {
-		// Bypasses saveToCache to write a raw, invalid value directly under
-		// the same key prefix dataCache.ts uses internally — simulating
-		// corruption that couldn't happen through this module's own API.
 		await AsyncStorage.setItem('bbca_cache_broken', 'not valid json{{{');
 
 		const result = await loadFromCache('broken');
