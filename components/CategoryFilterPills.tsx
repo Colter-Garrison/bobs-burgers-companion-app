@@ -1,8 +1,8 @@
-import React from 'react';
-import { Pressable, Text, View } from 'react-native';
-import { SearchCategory } from '../hooks/useSearchableItems';
+import React from 'react'
+import { Pressable, Text, View } from 'react-native'
+import { SearchCategory } from '../hooks/useSearchableItems'
 
-export type CategoryFilter = SearchCategory | 'All';
+export type CategoryFilter = SearchCategory | 'All'
 
 const CATEGORIES: SearchCategory[] = [
 	'Burgers of the Day',
@@ -11,13 +11,13 @@ const CATEGORIES: SearchCategory[] = [
 	'Episodes',
 	'Pest Control Trucks',
 	'Stores Next Door',
-];
+]
 
-const OPTIONS: CategoryFilter[] = ['All', ...CATEGORIES];
+const OPTIONS: CategoryFilter[] = ['All', ...CATEGORIES]
 
 interface CategoryFilterPillsProps {
-	selected: CategoryFilter;
-	onSelect: (category: CategoryFilter) => void;
+	selected: CategoryFilter
+	onSelect: (category: CategoryFilter) => void
 }
 
 export function CategoryFilterPills({
@@ -27,16 +27,11 @@ export function CategoryFilterPills({
 	return (
 		<View
 			className='gap-2 p-2'
-			// NativeWind doesn't generate a CSS rule for the flex-wrap
-			// utility class on web (it's present in the DOM's className
-			// attribute but computes to flex-wrap: nowrap) — flexWrap set
-			// inline is guaranteed to actually apply, unlike flexDirection/
-			// gap/padding above, which do render correctly via className.
 			style={{ flexDirection: 'row', flexWrap: 'wrap' }}
 			testID='category-filter-pills'
 		>
 			{OPTIONS.map((option) => {
-				const isSelected = option === selected;
+				const isSelected = option === selected
 				return (
 					<Pressable
 						key={option}
@@ -61,8 +56,8 @@ export function CategoryFilterPills({
 							{option}
 						</Text>
 					</Pressable>
-				);
+				)
 			})}
 		</View>
-	);
+	)
 }

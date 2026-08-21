@@ -1,17 +1,17 @@
-import { fetchBobsBurgersApi } from '../lib/bobsBurgersApi';
+import { fetchBobsBurgersApi } from '../lib/bobsBurgersApi'
 
 export interface Burger {
-	id: number;
-	name: string;
-	price: string;
-	season: number;
-	episode: number;
-	episodeUrl: string;
-	url: string;
+	id: number
+	name: string
+	price: string
+	season: number
+	episode: number
+	episodeUrl: string
+	url: string
 }
 
 export const getBurgersOfTheDay = () =>
-	fetchBobsBurgersApi<Burger[]>('/burgerOfTheDay/');
+	fetchBobsBurgersApi<Burger[]>('/burgerOfTheDay/')
 
 export const getBurgerOfTheDayById = (id: number) =>
-	fetchBobsBurgersApi<Burger>(`/burgerOfTheDay/${id}`);
+	fetchBobsBurgersApi<Burger>(`/burgerOfTheDay/${id}`)

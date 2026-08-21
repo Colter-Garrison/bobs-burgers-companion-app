@@ -5,8 +5,8 @@
 // leak that cached data into a later test in the same file that expects
 // a clean, uncached fetch failure. Clearing after each test keeps them
 // isolated.
-const AsyncStorage = require('@react-native-async-storage/async-storage');
+const AsyncStorage = require('@react-native-async-storage/async-storage')
 
 afterEach(async () => {
-	await AsyncStorage.clear();
-});
+	await AsyncStorage.clear()
+})

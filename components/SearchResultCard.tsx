@@ -1,17 +1,15 @@
-import React from 'react';
-import { Image, Pressable, Text, View } from 'react-native';
-import { SearchItem } from '../hooks/useSearchableItems';
-import { FavoriteButton } from './FavoriteButton';
+import React from 'react'
+import { Image, Pressable, Text, View } from 'react-native'
+import { SearchItem } from '../hooks/useSearchableItems'
+import { FavoriteButton } from './FavoriteButton'
 
 interface SearchResultCardProps {
-	item: SearchItem;
-	favorited: boolean;
-	onToggleFavorite: () => void;
-	onPress: () => void;
+	item: SearchItem
+	favorited: boolean
+	onToggleFavorite: () => void
+	onPress: () => void
 }
 
-// The card layout shared by Home's search results and the Favorites
-// list — previously duplicated inline in both screens.
 export function SearchResultCard({
 	item,
 	favorited,
@@ -32,14 +30,7 @@ export function SearchResultCard({
 						width={60}
 						height={60}
 						resizeMode='contain'
-						// iOS's Smart Invert Colors accessibility setting
-						// would otherwise flip this photo's colors along
-						// with the rest of the UI, which looks wrong for
-						// real photographic content.
 						accessibilityIgnoresInvertColors
-						// Decorative — item.label right beside it already
-						// carries the same information as text, so a screen
-						// reader announcing this too would just repeat it.
 						accessible={false}
 						accessibilityElementsHidden
 						importantForAccessibility='no-hide-descendants'
@@ -63,5 +54,5 @@ export function SearchResultCard({
 				onToggle={onToggleFavorite}
 			/>
 		</View>
-	);
+	)
 }

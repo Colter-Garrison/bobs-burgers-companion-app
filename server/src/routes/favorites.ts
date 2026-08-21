@@ -8,10 +8,6 @@ import { requireAuth } from '../middleware/auth.js';
 const router = Router();
 router.use(requireAuth);
 
-// One parameterized route handles all 6 categories instead of 6
-// near-identical route handlers. z.enum(categoryEnum.enumValues) reuses
-// the exact same list of valid categories the database enum was created
-// from, so this can't silently drift out of sync with the schema.
 const categoryParamSchema = z.enum(categoryEnum.enumValues);
 const addFavoriteBodySchema = z.object({
 	itemId: z.number().int().positive(),
@@ -53,10 +49,6 @@ router.post('/:category', async (req, res, next) => {
 			.returning();
 		return res.status(201).json(favorite);
 	} catch (err: any) {
-		// 23505 = unique_violation — this exact (user, category, item)
-		// combination is already favorited. Treat re-favoriting the same
-		// item as "already done" rather than an error the caller needs to
-		// handle specially beyond checking the status code.
 		if (err.code === '23505') {
 			return res.status(409).json({ error: 'Already favorited' });
 		}

@@ -1,53 +1,45 @@
-// expo-secure-store has no web implementation at all, so this wraps it
-// with a localStorage fallback there. Native gets Keychain/Keystore-backed
-// encrypted storage; web gets the best available option (localStorage
-// isn't encrypted, but there's nothing more secure available to a
-// browser tab).
-import { Platform } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native'
+import * as SecureStore from 'expo-secure-store'
 
-const TOKEN_KEY = 'bbca_auth_token';
-const USERNAME_KEY = 'bbca_auth_username';
+const TOKEN_KEY = 'bbca_auth_token'
+const USERNAME_KEY = 'bbca_auth_username'
 
 async function getItem(key: string): Promise<string | null> {
 	if (Platform.OS === 'web') {
-		return globalThis.localStorage.getItem(key);
+		return globalThis.localStorage.getItem(key)
 	}
-	return SecureStore.getItemAsync(key);
+	return SecureStore.getItemAsync(key)
 }
 
 async function setItem(key: string, value: string): Promise<void> {
 	if (Platform.OS === 'web') {
-		globalThis.localStorage.setItem(key, value);
-		return;
+		globalThis.localStorage.setItem(key, value)
+		return
 	}
-	await SecureStore.setItemAsync(key, value);
+	await SecureStore.setItemAsync(key, value)
 }
 
 async function deleteItem(key: string): Promise<void> {
 	if (Platform.OS === 'web') {
-		globalThis.localStorage.removeItem(key);
-		return;
+		globalThis.localStorage.removeItem(key)
+		return
 	}
-	await SecureStore.deleteItemAsync(key);
+	await SecureStore.deleteItemAsync(key)
 }
 
 export const tokenStorage = {
 	getToken(): Promise<string | null> {
-		return getItem(TOKEN_KEY);
+		return getItem(TOKEN_KEY)
 	},
 	getUsername(): Promise<string | null> {
-		return getItem(USERNAME_KEY);
+		return getItem(USERNAME_KEY)
 	},
-	// The backend has no "who am I" endpoint — the JWT payload only
-	// carries a userId — so username has to be persisted alongside the
-	// token at login/signup time to survive an app relaunch.
 	async save(token: string, username: string): Promise<void> {
-		await setItem(TOKEN_KEY, token);
-		await setItem(USERNAME_KEY, username);
+		await setItem(TOKEN_KEY, token)
+		await setItem(USERNAME_KEY, username)
 	},
 	async clear(): Promise<void> {
-		await deleteItem(TOKEN_KEY);
-		await deleteItem(USERNAME_KEY);
+		await deleteItem(TOKEN_KEY)
+		await deleteItem(USERNAME_KEY)
 	},
-};
+}

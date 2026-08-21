@@ -1,81 +1,71 @@
-import React, { useCallback } from 'react';
-import {
-	FlatList,
-	Image,
-	Pressable,
-	Text,
-	TextInput,
-	View,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback } from 'react'
+import { FlatList, Image, Pressable, Text, TextInput, View } from 'react-native'
+import { useRouter } from 'expo-router'
+import { useFocusEffect } from '@react-navigation/native'
 import {
 	EndCredit,
 	getEndCreditsSequences,
-} from '../../hooks/fetchEndCreditsSequences';
-import { useCategoryData } from '../../hooks/useCategoryData';
-import { useCategorySearch } from '../../hooks/useCategorySearch';
-import { useAttributeFilters } from '../../hooks/useAttributeFilters';
-import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
-import { useFavorites } from '../../hooks/useFavorites';
-import { composeEndCreditShortBio } from '../../lib/categoryBio';
-import { FavoriteButton } from '../../components/FavoriteButton';
-import { LoadMoreButton } from '../../components/LoadMoreButton';
-import { FilterPanel } from '../../components/FilterPanel';
-import { CategorySkeleton } from '../../components/CategorySkeleton';
-import { ErrorState } from '../../components/ErrorState';
-import { OfflineBanner } from '../../components/OfflineBanner';
-import { useTheme } from '../../hooks/useTheme';
+} from '../../hooks/fetchEndCreditsSequences'
+import { useCategoryData } from '../../hooks/useCategoryData'
+import { useCategorySearch } from '../../hooks/useCategorySearch'
+import { useAttributeFilters } from '../../hooks/useAttributeFilters'
+import { PAGE_SIZE, usePagination } from '../../hooks/usePagination'
+import { useFavorites } from '../../hooks/useFavorites'
+import { composeEndCreditShortBio } from '../../lib/categoryBio'
+import { FavoriteButton } from '../../components/FavoriteButton'
+import { LoadMoreButton } from '../../components/LoadMoreButton'
+import { FilterPanel } from '../../components/FilterPanel'
+import { CategorySkeleton } from '../../components/CategorySkeleton'
+import { ErrorState } from '../../components/ErrorState'
+import { OfflineBanner } from '../../components/OfflineBanner'
+import { useTheme } from '../../hooks/useTheme'
 
 const getSearchableText = (credits: EndCredit) =>
-	composeEndCreditShortBio(credits);
+	composeEndCreditShortBio(credits)
 
 export default function EndCredits() {
-	const router = useRouter();
-	const { isDark, colors } = useTheme();
-	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
+	const router = useRouter()
+	const { isDark, colors } = useTheme()
+	const { isFavorited, addFavorite, removeFavorite } = useFavorites()
 	const {
 		data: endCredits,
 		loading,
 		error,
 		retry,
 		cachedAt,
-	} = useCategoryData<EndCredit>(getEndCreditsSequences, 'endCredits');
+	} = useCategoryData<EndCredit>(getEndCreditsSequences, 'endCredits')
 	const {
 		query,
 		setQuery,
 		filteredItems: searchedEndCredits,
-	} = useCategorySearch(endCredits, getSearchableText);
-	const attributeFilters = useAttributeFilters<EndCredit>();
+	} = useCategorySearch(endCredits, getSearchableText)
+	const attributeFilters = useAttributeFilters<EndCredit>()
 
-	// Same reasoning as app/index.tsx: this is a Drawer.Screen that stays
-	// mounted when you navigate away, so a typed-in query/sort would
-	// otherwise still be sitting here the next time you land back here.
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
-				setQuery('');
-				attributeFilters.reset();
-			};
+				setQuery('')
+				attributeFilters.reset()
+			}
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, []),
-	);
+	)
 
 	const visibleEndCredits = attributeFilters.sortItems(
 		searchedEndCredits,
 		getSearchableText,
-	);
-	const { visibleItems, loadMore, hasMore } = usePagination(visibleEndCredits);
+	)
+	const { visibleItems, loadMore, hasMore } = usePagination(visibleEndCredits)
 
 	const handlePress = useCallback(
 		(endCredit: EndCredit) => {
 			router.push({
 				pathname: '/detail/[category]/[id]',
 				params: { category: 'endCredits', id: String(endCredit.id) },
-			});
+			})
 		},
 		[router],
-	);
+	)
 
 	const renderItem = useCallback(
 		({ item: credits }: { item: EndCredit }) => (
@@ -92,16 +82,7 @@ export default function EndCredits() {
 							width={100}
 							height={100}
 							resizeMode='contain'
-							// iOS's Smart Invert Colors accessibility setting
-							// would otherwise flip this photo's colors along
-							// with the rest of the UI, which looks wrong for
-							// real photographic content.
 							accessibilityIgnoresInvertColors
-							// Decorative — the bio text right beside it already
-							// describes what this is (a hand-drawn end credits
-							// sequence from a given season/episode), so a
-							// screen reader announcing the image too would
-							// just repeat that.
 							accessible={false}
 							accessibilityElementsHidden
 							importantForAccessibility='no-hide-descendants'
@@ -125,14 +106,14 @@ export default function EndCredits() {
 			</View>
 		),
 		[isFavorited, addFavorite, removeFavorite, handlePress],
-	);
+	)
 
 	if (loading) {
-		return <CategorySkeleton />;
+		return <CategorySkeleton />
 	}
 
 	if (error) {
-		return <ErrorState message={error} onRetry={retry} />;
+		return <ErrorState message={error} onRetry={retry} />
 	}
 
 	return (
@@ -183,5 +164,5 @@ export default function EndCredits() {
 				hasMore ? <LoadMoreButton onPress={loadMore} /> : null
 			}
 		/>
-	);
+	)
 }

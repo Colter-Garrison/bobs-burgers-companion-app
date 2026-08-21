@@ -1,78 +1,68 @@
-import React, { useCallback } from 'react';
-import {
-	FlatList,
-	Image,
-	Pressable,
-	Text,
-	TextInput,
-	View,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
-import { Store, getStoresNextDoor } from '../../hooks/fetchStoresNextDoor';
-import { useCategoryData } from '../../hooks/useCategoryData';
-import { useCategorySearch } from '../../hooks/useCategorySearch';
-import { useAttributeFilters } from '../../hooks/useAttributeFilters';
-import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
-import { useFavorites } from '../../hooks/useFavorites';
-import { composeStoreShortBio } from '../../lib/categoryBio';
-import { FavoriteButton } from '../../components/FavoriteButton';
-import { LoadMoreButton } from '../../components/LoadMoreButton';
-import { FilterPanel } from '../../components/FilterPanel';
-import { CategorySkeleton } from '../../components/CategorySkeleton';
-import { ErrorState } from '../../components/ErrorState';
-import { OfflineBanner } from '../../components/OfflineBanner';
-import { useTheme } from '../../hooks/useTheme';
+import React, { useCallback } from 'react'
+import { FlatList, Image, Pressable, Text, TextInput, View } from 'react-native'
+import { useRouter } from 'expo-router'
+import { useFocusEffect } from '@react-navigation/native'
+import { Store, getStoresNextDoor } from '../../hooks/fetchStoresNextDoor'
+import { useCategoryData } from '../../hooks/useCategoryData'
+import { useCategorySearch } from '../../hooks/useCategorySearch'
+import { useAttributeFilters } from '../../hooks/useAttributeFilters'
+import { PAGE_SIZE, usePagination } from '../../hooks/usePagination'
+import { useFavorites } from '../../hooks/useFavorites'
+import { composeStoreShortBio } from '../../lib/categoryBio'
+import { FavoriteButton } from '../../components/FavoriteButton'
+import { LoadMoreButton } from '../../components/LoadMoreButton'
+import { FilterPanel } from '../../components/FilterPanel'
+import { CategorySkeleton } from '../../components/CategorySkeleton'
+import { ErrorState } from '../../components/ErrorState'
+import { OfflineBanner } from '../../components/OfflineBanner'
+import { useTheme } from '../../hooks/useTheme'
 
 const getSearchableText = (store: Store) =>
-	`${store.name} ${composeStoreShortBio(store)}`;
+	`${store.name} ${composeStoreShortBio(store)}`
 
 export default function Stores() {
-	const router = useRouter();
-	const { isDark, colors } = useTheme();
-	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
+	const router = useRouter()
+	const { isDark, colors } = useTheme()
+	const { isFavorited, addFavorite, removeFavorite } = useFavorites()
 	const {
 		data: stores,
 		loading,
 		error,
 		retry,
 		cachedAt,
-	} = useCategoryData<Store>(getStoresNextDoor, 'stores');
+	} = useCategoryData<Store>(getStoresNextDoor, 'stores')
 	const {
 		query,
 		setQuery,
 		filteredItems: searchedStores,
-	} = useCategorySearch(stores, getSearchableText);
-	const attributeFilters = useAttributeFilters<Store>();
+	} = useCategorySearch(stores, getSearchableText)
+	const attributeFilters = useAttributeFilters<Store>()
 
-	// Same reasoning as app/index.tsx: this is a Drawer.Screen that stays
-	// mounted when you navigate away, so a typed-in query/sort would
-	// otherwise still be sitting here the next time you land back here.
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
-				setQuery('');
-				attributeFilters.reset();
-			};
+				setQuery('')
+				attributeFilters.reset()
+			}
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, []),
-	);
+	)
 
 	const visibleStores = attributeFilters.sortItems(
 		searchedStores,
 		(store) => store.name,
-	);
-	const { visibleItems, loadMore, hasMore } = usePagination(visibleStores);
+	)
+	const { visibleItems, loadMore, hasMore } = usePagination(visibleStores)
 
 	const handlePress = useCallback(
 		(store: Store) => {
 			router.push({
 				pathname: '/detail/[category]/[id]',
 				params: { category: 'stores', id: String(store.id) },
-			});
+			})
 		},
 		[router],
-	);
+	)
 
 	const renderItem = useCallback(
 		({ item: store }: { item: Store }) => (
@@ -89,14 +79,7 @@ export default function Stores() {
 							width={100}
 							height={100}
 							resizeMode='contain'
-							// iOS's Smart Invert Colors accessibility setting
-							// would otherwise flip this photo's colors along
-							// with the rest of the UI, which looks wrong for
-							// real photographic content.
 							accessibilityIgnoresInvertColors
-							// Decorative — the name is shown as its own text
-							// right beside it, so a screen reader announcing
-							// the image too would just repeat that.
 							accessible={false}
 							accessibilityElementsHidden
 							importantForAccessibility='no-hide-descendants'
@@ -127,14 +110,14 @@ export default function Stores() {
 			</View>
 		),
 		[isFavorited, addFavorite, removeFavorite, handlePress],
-	);
+	)
 
 	if (loading) {
-		return <CategorySkeleton />;
+		return <CategorySkeleton />
 	}
 
 	if (error) {
-		return <ErrorState message={error} onRetry={retry} />;
+		return <ErrorState message={error} onRetry={retry} />
 	}
 
 	return (
@@ -185,5 +168,5 @@ export default function Stores() {
 				hasMore ? <LoadMoreButton onPress={loadMore} /> : null
 			}
 		/>
-	);
+	)
 }

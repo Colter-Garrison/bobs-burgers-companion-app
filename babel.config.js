@@ -1,5 +1,5 @@
 module.exports = function (api) {
-	api.cache(true);
+	api.cache(true)
 	return {
 		presets: [
 			['babel-preset-expo', { jsxImportSource: 'nativewind' }],
@@ -7,5 +7,5 @@ module.exports = function (api) {
 		],
 		// react-native-reanimated's plugin must always be listed last.
 		plugins: ['react-native-reanimated/plugin'],
-	};
-};
+	}
+}

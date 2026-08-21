@@ -8,11 +8,11 @@ export const LIGHT_THEME_COLORS = {
 	surface: '#C9D9E4',
 	accent: '#2C4A63',
 	onAccent: '#C9D9E4',
-};
+}
 
 export const DARK_THEME_COLORS = {
 	bg: '#222222',
 	surface: '#323233',
 	accent: '#66D9EF',
 	onAccent: '#222222',
-};
+}
