@@ -1,10 +1,10 @@
-import React, { useEffect, useRef } from 'react';
-import { Animated, View } from 'react-native';
-import { useTheme } from '../hooks/useTheme';
+import React, { useEffect, useRef } from 'react'
+import { Animated, View } from 'react-native'
+import { useTheme } from '../hooks/useTheme'
 
 interface CategorySkeletonProps {
-	count?: number;
-	fullScreen?: boolean;
+	count?: number
+	fullScreen?: boolean
 }
 
 function getCardStyle(colors: { accent: string; surface: string }) {
@@ -14,16 +14,16 @@ function getCardStyle(colors: { accent: string; surface: string }) {
 		borderWidth: 4,
 		borderColor: colors.accent,
 		backgroundColor: colors.surface,
-	};
+	}
 }
 
 export function CategorySkeleton({
 	count = 4,
 	fullScreen = true,
 }: CategorySkeletonProps) {
-	const opacity = useRef(new Animated.Value(0.4)).current;
-	const { colors } = useTheme();
-	const cardStyle = getCardStyle(colors);
+	const opacity = useRef(new Animated.Value(0.4)).current
+	const { colors } = useTheme()
+	const cardStyle = getCardStyle(colors)
 
 	useEffect(() => {
 		const pulse = Animated.loop(
@@ -39,10 +39,10 @@ export function CategorySkeleton({
 					useNativeDriver: true,
 				}),
 			]),
-		);
-		pulse.start();
-		return () => pulse.stop();
-	}, [opacity]);
+		)
+		pulse.start()
+		return () => pulse.stop()
+	}, [opacity])
 
 	return (
 		<View
@@ -58,5 +58,5 @@ export function CategorySkeleton({
 				<Animated.View key={index} style={{ ...cardStyle, opacity }} />
 			))}
 		</View>
-	);
+	)
 }

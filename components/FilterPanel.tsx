@@ -1,38 +1,38 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Platform, Pressable, Text, View } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useEffect, useRef, useState } from 'react'
+import { Platform, Pressable, Text, View } from 'react-native'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 import {
 	GENDER_OPTIONS,
 	GenderOption,
 	HAIR_OPTIONS,
 	HairOption,
 	SortDirection,
-} from '../hooks/useAttributeFilters';
-import { useTheme } from '../hooks/useTheme';
-import { CategoryFilterPills, CategoryFilter } from './CategoryFilterPills';
+} from '../hooks/useAttributeFilters'
+import { useTheme } from '../hooks/useTheme'
+import { CategoryFilterPills, CategoryFilter } from './CategoryFilterPills'
 
 interface FilterPanelProps {
-	categoryFilter?: CategoryFilter;
-	onSelectCategory?: (category: CategoryFilter) => void;
-	showGenderHairFilters?: boolean;
-	genders: Set<GenderOption>;
-	hairColors: Set<HairOption>;
-	sortDirection: SortDirection | null;
-	onToggleGender: (option: GenderOption) => void;
-	onToggleHair: (option: HairOption) => void;
-	onToggleSort: () => void;
-	activeCount: number;
+	categoryFilter?: CategoryFilter
+	onSelectCategory?: (category: CategoryFilter) => void
+	showGenderHairFilters?: boolean
+	genders: Set<GenderOption>
+	hairColors: Set<HairOption>
+	sortDirection: SortDirection | null
+	onToggleGender: (option: GenderOption) => void
+	onToggleHair: (option: HairOption) => void
+	onToggleSort: () => void
+	activeCount: number
 }
 
 const pillClassName = (isSelected: boolean) =>
 	isSelected
 		? 'items-center justify-center rounded-full border-4 border-lightAccent dark:border-darkAccent bg-lightAccent dark:bg-darkAccent px-4 py-2'
-		: 'items-center justify-center rounded-full border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface px-4 py-2';
+		: 'items-center justify-center rounded-full border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface px-4 py-2'
 
 const pillTextClassName = (isSelected: boolean) =>
 	isSelected
 		? 'font-chewy text-[14px] text-lightSurface dark:text-darkOnAccent'
-		: 'font-chewy text-[14px] text-lightAccent dark:text-darkAccent';
+		: 'font-chewy text-[14px] text-lightAccent dark:text-darkAccent'
 
 export function FilterPanel({
 	categoryFilter,
@@ -46,30 +46,30 @@ export function FilterPanel({
 	onToggleSort,
 	activeCount,
 }: FilterPanelProps) {
-	const [isExpanded, setIsExpanded] = useState(false);
-	const { colors } = useTheme();
+	const [isExpanded, setIsExpanded] = useState(false)
+	const { colors } = useTheme()
 	const displayCount =
-		activeCount + (categoryFilter && categoryFilter !== 'All' ? 1 : 0);
-	const optionsRef = useRef<View>(null);
+		activeCount + (categoryFilter && categoryFilter !== 'All' ? 1 : 0)
+	const optionsRef = useRef<View>(null)
 
 	useEffect(() => {
 		if (Platform.OS !== 'web' || !isExpanded) {
-			return;
+			return
 		}
-		const node = optionsRef.current as unknown as HTMLElement | null;
+		const node = optionsRef.current as unknown as HTMLElement | null
 		if (node) {
-			node.setAttribute('tabindex', '-1');
-			node.focus();
+			node.setAttribute('tabindex', '-1')
+			node.focus()
 		}
 
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
-				setIsExpanded(false);
+				setIsExpanded(false)
 			}
-		};
-		document.addEventListener('keydown', handleKeyDown);
-		return () => document.removeEventListener('keydown', handleKeyDown);
-	}, [isExpanded]);
+		}
+		document.addEventListener('keydown', handleKeyDown)
+		return () => document.removeEventListener('keydown', handleKeyDown)
+	}, [isExpanded])
 
 	return (
 		<View className='gap-2 p-2'>
@@ -119,7 +119,7 @@ export function FilterPanel({
 									style={{ flexDirection: 'row', flexWrap: 'wrap' }}
 								>
 									{GENDER_OPTIONS.map((option) => {
-										const isSelected = genders.has(option);
+										const isSelected = genders.has(option)
 										return (
 											<Pressable
 												key={option}
@@ -134,7 +134,7 @@ export function FilterPanel({
 													{option}
 												</Text>
 											</Pressable>
-										);
+										)
 									})}
 								</View>
 							</View>
@@ -148,7 +148,7 @@ export function FilterPanel({
 									style={{ flexDirection: 'row', flexWrap: 'wrap' }}
 								>
 									{HAIR_OPTIONS.map((option) => {
-										const isSelected = hairColors.has(option);
+										const isSelected = hairColors.has(option)
 										return (
 											<Pressable
 												key={option}
@@ -163,7 +163,7 @@ export function FilterPanel({
 													{option}
 												</Text>
 											</Pressable>
-										);
+										)
 									})}
 								</View>
 							</View>
@@ -207,5 +207,5 @@ export function FilterPanel({
 				</View>
 			) : null}
 		</View>
-	);
+	)
 }

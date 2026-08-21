@@ -1,8 +1,8 @@
-import React from 'react';
-import { Pressable, Text } from 'react-native';
+import React from 'react'
+import { Pressable, Text } from 'react-native'
 
 interface LoadMoreButtonProps {
-	onPress: () => void;
+	onPress: () => void
 }
 
 export function LoadMoreButton({ onPress }: LoadMoreButtonProps) {
@@ -17,5 +17,5 @@ export function LoadMoreButton({ onPress }: LoadMoreButtonProps) {
 				Load More
 			</Text>
 		</Pressable>
-	);
+	)
 }

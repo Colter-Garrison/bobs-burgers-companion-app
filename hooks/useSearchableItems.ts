@@ -1,15 +1,15 @@
-import { useCallback, useEffect, useState } from 'react';
-import { FavoriteCategory } from '../lib/apiClient';
-import { loadFromCache, saveToCache } from '../lib/dataCache';
-import { getBurgersOfTheDay } from './fetchBurgersOfTheDay';
-import { getCharacters } from './fetchCharacters';
-import { getEndCreditsSequences } from './fetchEndCreditsSequences';
-import { getEpisodes } from './fetchEpisodes';
-import { getPestControlTrucks } from './fetchPestControlTrucks';
-import { getStoresNextDoor } from './fetchStoresNextDoor';
-import { useNetworkStatus } from './useNetworkStatus';
+import { useCallback, useEffect, useState } from 'react'
+import { FavoriteCategory } from '../lib/apiClient'
+import { loadFromCache, saveToCache } from '../lib/dataCache'
+import { getBurgersOfTheDay } from './fetchBurgersOfTheDay'
+import { getCharacters } from './fetchCharacters'
+import { getEndCreditsSequences } from './fetchEndCreditsSequences'
+import { getEpisodes } from './fetchEpisodes'
+import { getPestControlTrucks } from './fetchPestControlTrucks'
+import { getStoresNextDoor } from './fetchStoresNextDoor'
+import { useNetworkStatus } from './useNetworkStatus'
 
-const CACHE_KEY = 'searchableItems';
+const CACHE_KEY = 'searchableItems'
 
 export type SearchCategory =
 	| 'Burgers of the Day'
@@ -17,43 +17,43 @@ export type SearchCategory =
 	| 'End Credits'
 	| 'Episodes'
 	| 'Pest Control Trucks'
-	| 'Stores Next Door';
+	| 'Stores Next Door'
 
 export interface SearchItem {
-	id: string;
-	category: SearchCategory;
-	label: string;
-	image?: string;
-	itemId: number;
-	favoriteCategory: FavoriteCategory;
-	gender?: string;
-	hair?: string;
+	id: string
+	category: SearchCategory
+	label: string
+	image?: string
+	itemId: number
+	favoriteCategory: FavoriteCategory
+	gender?: string
+	hair?: string
 }
 
 export function useSearchableItems() {
-	const [items, setItems] = useState<SearchItem[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
-	const [cachedAt, setCachedAt] = useState<number | null>(null);
-	const { isOffline } = useNetworkStatus();
+	const [items, setItems] = useState<SearchItem[]>([])
+	const [loading, setLoading] = useState(true)
+	const [error, setError] = useState<string | null>(null)
+	const [cachedAt, setCachedAt] = useState<number | null>(null)
+	const { isOffline } = useNetworkStatus()
 
 	const fetchData = useCallback(
 		async (options?: { skipIfOffline?: boolean }) => {
-			setLoading(true);
-			setError(null);
-			setCachedAt(null);
+			setLoading(true)
+			setError(null)
+			setCachedAt(null)
 
 			if (options?.skipIfOffline && isOffline) {
-				const cached = await loadFromCache<SearchItem[]>(CACHE_KEY);
+				const cached = await loadFromCache<SearchItem[]>(CACHE_KEY)
 				if (cached) {
-					setItems(cached.data);
-					setCachedAt(cached.cachedAt);
+					setItems(cached.data)
+					setCachedAt(cached.cachedAt)
 				} else {
-					setItems([]);
-					setError('You’re offline, and there’s no saved data yet.');
+					setItems([])
+					setError('You’re offline, and there’s no saved data yet.')
 				}
-				setLoading(false);
-				return;
+				setLoading(false)
+				return
 			}
 
 			const [burgers, characters, endCredits, episodes, trucks, stores] =
@@ -64,7 +64,7 @@ export function useSearchableItems() {
 					getEpisodes(),
 					getPestControlTrucks(),
 					getStoresNextDoor(),
-				]);
+				])
 
 			const results = [
 				burgers,
@@ -73,31 +73,29 @@ export function useSearchableItems() {
 				episodes,
 				trucks,
 				stores,
-			];
+			]
 			results.forEach((result) => {
 				if (result.status === 'rejected') {
-					console.error('Error fetching searchable data:', result.reason);
+					console.error('Error fetching searchable data:', result.reason)
 				}
-			});
-			const anyRejected = results.some(
-				(result) => result.status === 'rejected',
-			);
+			})
+			const anyRejected = results.some((result) => result.status === 'rejected')
 			const allRejected = results.every(
 				(result) => result.status === 'rejected',
-			);
+			)
 
 			if (allRejected) {
-				const cached = await loadFromCache<SearchItem[]>(CACHE_KEY);
+				const cached = await loadFromCache<SearchItem[]>(CACHE_KEY)
 				if (cached) {
-					setItems(cached.data);
-					setCachedAt(cached.cachedAt);
-					setError(null);
-					setLoading(false);
-					return;
+					setItems(cached.data)
+					setCachedAt(cached.cachedAt)
+					setError(null)
+					setLoading(false)
+					return
 				}
 			}
 
-			setError(anyRejected ? 'Some results may be missing.' : null);
+			setError(anyRejected ? 'Some results may be missing.' : null)
 
 			const normalized: SearchItem[] = [
 				...(burgers.status === 'fulfilled' ? burgers.value : []).map(
@@ -156,22 +154,22 @@ export function useSearchableItems() {
 					itemId: store.id,
 					favoriteCategory: 'store' as const,
 				})),
-			];
+			]
 
-			setItems(normalized);
+			setItems(normalized)
 			if (!anyRejected) {
-				saveToCache(CACHE_KEY, normalized);
+				saveToCache(CACHE_KEY, normalized)
 			}
-			setLoading(false);
+			setLoading(false)
 		},
 		[isOffline],
-	);
+	)
 
 	useEffect(() => {
-		fetchData({ skipIfOffline: true });
-	}, [fetchData]);
+		fetchData({ skipIfOffline: true })
+	}, [fetchData])
 
-	const retry = useCallback(() => fetchData(), [fetchData]);
+	const retry = useCallback(() => fetchData(), [fetchData])
 
-	return { items, loading, error, retry, cachedAt };
+	return { items, loading, error, retry, cachedAt }
 }

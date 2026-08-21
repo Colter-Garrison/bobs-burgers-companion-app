@@ -1,78 +1,68 @@
-import React, { useCallback } from 'react';
-import {
-	FlatList,
-	Image,
-	Pressable,
-	Text,
-	TextInput,
-	View,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
-import {
-	Truck,
-	getPestControlTrucks,
-} from '../../hooks/fetchPestControlTrucks';
-import { useCategoryData } from '../../hooks/useCategoryData';
-import { useCategorySearch } from '../../hooks/useCategorySearch';
-import { useAttributeFilters } from '../../hooks/useAttributeFilters';
-import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
-import { useFavorites } from '../../hooks/useFavorites';
-import { composeTruckShortBio } from '../../lib/categoryBio';
-import { FavoriteButton } from '../../components/FavoriteButton';
-import { LoadMoreButton } from '../../components/LoadMoreButton';
-import { FilterPanel } from '../../components/FilterPanel';
-import { CategorySkeleton } from '../../components/CategorySkeleton';
-import { ErrorState } from '../../components/ErrorState';
-import { OfflineBanner } from '../../components/OfflineBanner';
-import { useTheme } from '../../hooks/useTheme';
+import React, { useCallback } from 'react'
+import { FlatList, Image, Pressable, Text, TextInput, View } from 'react-native'
+import { useRouter } from 'expo-router'
+import { useFocusEffect } from '@react-navigation/native'
+import { Truck, getPestControlTrucks } from '../../hooks/fetchPestControlTrucks'
+import { useCategoryData } from '../../hooks/useCategoryData'
+import { useCategorySearch } from '../../hooks/useCategorySearch'
+import { useAttributeFilters } from '../../hooks/useAttributeFilters'
+import { PAGE_SIZE, usePagination } from '../../hooks/usePagination'
+import { useFavorites } from '../../hooks/useFavorites'
+import { composeTruckShortBio } from '../../lib/categoryBio'
+import { FavoriteButton } from '../../components/FavoriteButton'
+import { LoadMoreButton } from '../../components/LoadMoreButton'
+import { FilterPanel } from '../../components/FilterPanel'
+import { CategorySkeleton } from '../../components/CategorySkeleton'
+import { ErrorState } from '../../components/ErrorState'
+import { OfflineBanner } from '../../components/OfflineBanner'
+import { useTheme } from '../../hooks/useTheme'
 
 const getSearchableText = (truck: Truck) =>
-	`${truck.name} ${composeTruckShortBio(truck)}`;
+	`${truck.name} ${composeTruckShortBio(truck)}`
 
 export default function PestControl() {
-	const router = useRouter();
-	const { isDark, colors } = useTheme();
-	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
+	const router = useRouter()
+	const { isDark, colors } = useTheme()
+	const { isFavorited, addFavorite, removeFavorite } = useFavorites()
 	const {
 		data: trucks,
 		loading,
 		error,
 		retry,
 		cachedAt,
-	} = useCategoryData<Truck>(getPestControlTrucks, 'pestControlTrucks');
+	} = useCategoryData<Truck>(getPestControlTrucks, 'pestControlTrucks')
 	const {
 		query,
 		setQuery,
 		filteredItems: searchedTrucks,
-	} = useCategorySearch(trucks, getSearchableText);
-	const attributeFilters = useAttributeFilters<Truck>();
+	} = useCategorySearch(trucks, getSearchableText)
+	const attributeFilters = useAttributeFilters<Truck>()
 
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
-				setQuery('');
-				attributeFilters.reset();
-			};
+				setQuery('')
+				attributeFilters.reset()
+			}
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, []),
-	);
+	)
 
 	const visibleTrucks = attributeFilters.sortItems(
 		searchedTrucks,
 		(truck) => truck.name,
-	);
-	const { visibleItems, loadMore, hasMore } = usePagination(visibleTrucks);
+	)
+	const { visibleItems, loadMore, hasMore } = usePagination(visibleTrucks)
 
 	const handlePress = useCallback(
 		(truck: Truck) => {
 			router.push({
 				pathname: '/detail/[category]/[id]',
 				params: { category: 'pestControl', id: String(truck.id) },
-			});
+			})
 		},
 		[router],
-	);
+	)
 
 	const renderItem = useCallback(
 		({ item: truck }: { item: Truck }) => (
@@ -120,14 +110,14 @@ export default function PestControl() {
 			</View>
 		),
 		[isFavorited, addFavorite, removeFavorite, handlePress],
-	);
+	)
 
 	if (loading) {
-		return <CategorySkeleton />;
+		return <CategorySkeleton />
 	}
 
 	if (error) {
-		return <ErrorState message={error} onRetry={retry} />;
+		return <ErrorState message={error} onRetry={retry} />
 	}
 
 	return (
@@ -178,5 +168,5 @@ export default function PestControl() {
 				hasMore ? <LoadMoreButton onPress={loadMore} /> : null
 			}
 		/>
-	);
+	)
 }

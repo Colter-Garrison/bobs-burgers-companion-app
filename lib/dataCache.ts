@@ -1,16 +1,16 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const KEY_PREFIX = 'bbca_cache_';
+const KEY_PREFIX = 'bbca_cache_'
 
 interface CacheEntry<T> {
-	data: T;
-	cachedAt: number;
+	data: T
+	cachedAt: number
 }
 
 export async function saveToCache<T>(key: string, data: T): Promise<void> {
-	const entry: CacheEntry<T> = { data, cachedAt: Date.now() };
+	const entry: CacheEntry<T> = { data, cachedAt: Date.now() }
 	try {
-		await AsyncStorage.setItem(`${KEY_PREFIX}${key}`, JSON.stringify(entry));
+		await AsyncStorage.setItem(`${KEY_PREFIX}${key}`, JSON.stringify(entry))
 	} catch {
 		// Caching is a nice-to-have, not a requirement for the app to
 		// function — a full disk or a disabled storage API shouldn't
@@ -23,10 +23,10 @@ export async function loadFromCache<T>(
 	key: string,
 ): Promise<CacheEntry<T> | null> {
 	try {
-		const raw = await AsyncStorage.getItem(`${KEY_PREFIX}${key}`);
-		if (!raw) return null;
-		return JSON.parse(raw) as CacheEntry<T>;
+		const raw = await AsyncStorage.getItem(`${KEY_PREFIX}${key}`)
+		if (!raw) return null
+		return JSON.parse(raw) as CacheEntry<T>
 	} catch {
-		return null;
+		return null
 	}
 }

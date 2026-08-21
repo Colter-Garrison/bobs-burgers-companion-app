@@ -1,9 +1,9 @@
-import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import React from 'react'
+import { Pressable, Text, View } from 'react-native'
 
 interface OfflineBannerProps {
-	cachedAt: number | null;
-	onRetry: () => void;
+	cachedAt: number | null
+	onRetry: () => void
 }
 
 export function OfflineBanner({ cachedAt, onRetry }: OfflineBannerProps) {
@@ -12,7 +12,7 @@ export function OfflineBanner({ cachedAt, onRetry }: OfflineBannerProps) {
 				hour: 'numeric',
 				minute: '2-digit',
 			})
-		: null;
+		: null
 
 	return (
 		<View className='flex-row items-center justify-between gap-[10px] rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-[10px]'>
@@ -34,5 +34,5 @@ export function OfflineBanner({ cachedAt, onRetry }: OfflineBannerProps) {
 				</Text>
 			</Pressable>
 		</View>
-	);
+	)
 }

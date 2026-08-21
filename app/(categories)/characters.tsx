@@ -1,58 +1,51 @@
-import React, { useCallback, useMemo } from 'react';
-import {
-	FlatList,
-	Image,
-	Pressable,
-	Text,
-	TextInput,
-	View,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
-import { Character, getCharacters } from '../../hooks/fetchCharacters';
-import { useCategoryData } from '../../hooks/useCategoryData';
-import { useCategorySearch } from '../../hooks/useCategorySearch';
-import { useAttributeFilters } from '../../hooks/useAttributeFilters';
-import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
-import { useFavorites } from '../../hooks/useFavorites';
-import { composeCharacterShortBio } from '../../lib/categoryBio';
-import { FavoriteButton } from '../../components/FavoriteButton';
-import { LoadMoreButton } from '../../components/LoadMoreButton';
-import { FilterPanel } from '../../components/FilterPanel';
-import { CategorySkeleton } from '../../components/CategorySkeleton';
-import { ErrorState } from '../../components/ErrorState';
-import { OfflineBanner } from '../../components/OfflineBanner';
-import { useTheme } from '../../hooks/useTheme';
+import React, { useCallback, useMemo } from 'react'
+import { FlatList, Image, Pressable, Text, TextInput, View } from 'react-native'
+import { useRouter } from 'expo-router'
+import { useFocusEffect } from '@react-navigation/native'
+import { Character, getCharacters } from '../../hooks/fetchCharacters'
+import { useCategoryData } from '../../hooks/useCategoryData'
+import { useCategorySearch } from '../../hooks/useCategorySearch'
+import { useAttributeFilters } from '../../hooks/useAttributeFilters'
+import { PAGE_SIZE, usePagination } from '../../hooks/usePagination'
+import { useFavorites } from '../../hooks/useFavorites'
+import { composeCharacterShortBio } from '../../lib/categoryBio'
+import { FavoriteButton } from '../../components/FavoriteButton'
+import { LoadMoreButton } from '../../components/LoadMoreButton'
+import { FilterPanel } from '../../components/FilterPanel'
+import { CategorySkeleton } from '../../components/CategorySkeleton'
+import { ErrorState } from '../../components/ErrorState'
+import { OfflineBanner } from '../../components/OfflineBanner'
+import { useTheme } from '../../hooks/useTheme'
 
-const getSearchableText = (character: Character) => character.name;
+const getSearchableText = (character: Character) => character.name
 
 export default function Characters() {
-	const router = useRouter();
-	const { isDark, colors } = useTheme();
-	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
+	const router = useRouter()
+	const { isDark, colors } = useTheme()
+	const { isFavorited, addFavorite, removeFavorite } = useFavorites()
 	const {
 		data: characters,
 		loading,
 		error,
 		retry,
 		cachedAt,
-	} = useCategoryData<Character>(getCharacters, 'characters');
+	} = useCategoryData<Character>(getCharacters, 'characters')
 	const {
 		query,
 		setQuery,
 		filteredItems: searchedCharacters,
-	} = useCategorySearch(characters, getSearchableText);
-	const attributeFilters = useAttributeFilters<Character>();
+	} = useCategorySearch(characters, getSearchableText)
+	const attributeFilters = useAttributeFilters<Character>()
 
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
-				setQuery('');
-				attributeFilters.reset();
-			};
+				setQuery('')
+				attributeFilters.reset()
+			}
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, []),
-	);
+	)
 
 	const visibleCharacters = useMemo(
 		() =>
@@ -62,18 +55,18 @@ export default function Characters() {
 			),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[searchedCharacters, attributeFilters.matches, attributeFilters.sortItems],
-	);
-	const { visibleItems, loadMore, hasMore } = usePagination(visibleCharacters);
+	)
+	const { visibleItems, loadMore, hasMore } = usePagination(visibleCharacters)
 
 	const handlePress = useCallback(
 		(character: Character) => {
 			router.push({
 				pathname: '/detail/[category]/[id]',
 				params: { category: 'characters', id: String(character.id) },
-			});
+			})
 		},
 		[router],
-	);
+	)
 
 	const renderItem = useCallback(
 		({ item: character }: { item: Character }) => (
@@ -121,14 +114,14 @@ export default function Characters() {
 			</View>
 		),
 		[isFavorited, addFavorite, removeFavorite, handlePress],
-	);
+	)
 
 	if (loading) {
-		return <CategorySkeleton />;
+		return <CategorySkeleton />
 	}
 
 	if (error) {
-		return <ErrorState message={error} onRetry={retry} />;
+		return <ErrorState message={error} onRetry={retry} />
 	}
 
 	return (
@@ -180,5 +173,5 @@ export default function Characters() {
 				hasMore ? <LoadMoreButton onPress={loadMore} /> : null
 			}
 		/>
-	);
+	)
 }

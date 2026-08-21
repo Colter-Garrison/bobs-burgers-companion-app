@@ -1,35 +1,35 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Modal, Platform, Pressable, Text, View } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useTheme } from '../hooks/useTheme';
+import React, { useEffect, useRef, useState } from 'react'
+import { Modal, Platform, Pressable, Text, View } from 'react-native'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { useTheme } from '../hooks/useTheme'
 import {
 	COLORBLIND_MODES,
 	COLORBLIND_MODE_LABELS,
-} from '../lib/colorblindPalettes';
+} from '../lib/colorblindPalettes'
 
 export function ColorblindModeButton() {
-	const { isDark, colors, colorblindMode, setColorblindMode } = useTheme();
-	const [isOpen, setIsOpen] = useState(false);
-	const panelRef = useRef<View>(null);
-	const isActive = colorblindMode !== 'none';
+	const { isDark, colors, colorblindMode, setColorblindMode } = useTheme()
+	const [isOpen, setIsOpen] = useState(false)
+	const panelRef = useRef<View>(null)
+	const isActive = colorblindMode !== 'none'
 
 	useEffect(() => {
 		if (Platform.OS !== 'web' || !isOpen) {
-			return;
+			return
 		}
-		const node = panelRef.current as unknown as HTMLElement | null;
+		const node = panelRef.current as unknown as HTMLElement | null
 		if (node) {
-			node.setAttribute('tabindex', '-1');
-			node.focus();
+			node.setAttribute('tabindex', '-1')
+			node.focus()
 		}
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
-				setIsOpen(false);
+				setIsOpen(false)
 			}
-		};
-		document.addEventListener('keydown', handleKeyDown);
-		return () => document.removeEventListener('keydown', handleKeyDown);
-	}, [isOpen]);
+		}
+		document.addEventListener('keydown', handleKeyDown)
+		return () => document.removeEventListener('keydown', handleKeyDown)
+	}, [isOpen])
 
 	return (
 		<>
@@ -76,13 +76,13 @@ export function ColorblindModeButton() {
 							Colorblind Mode
 						</Text>
 						{COLORBLIND_MODES.map((mode) => {
-							const isSelected = mode === colorblindMode;
+							const isSelected = mode === colorblindMode
 							return (
 								<Pressable
 									key={mode}
 									onPress={() => {
-										setColorblindMode(mode);
-										setIsOpen(false);
+										setColorblindMode(mode)
+										setIsOpen(false)
 									}}
 									hitSlop={4}
 									accessibilityRole='button'
@@ -108,11 +108,11 @@ export function ColorblindModeButton() {
 										{COLORBLIND_MODE_LABELS[mode]}
 									</Text>
 								</Pressable>
-							);
+							)
 						})}
 					</Pressable>
 				</Pressable>
 			</Modal>
 		</>
-	);
+	)
 }

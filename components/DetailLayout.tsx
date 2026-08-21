@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import {
 	Image,
 	ImageStyle,
@@ -8,21 +8,21 @@ import {
 	StyleProp,
 	Text,
 	View,
-} from 'react-native';
-import { Drawer } from 'expo-router/drawer';
-import { CategorySkeleton } from './CategorySkeleton';
-import { ErrorState } from './ErrorState';
-import { OfflineBanner } from './OfflineBanner';
+} from 'react-native'
+import { Drawer } from 'expo-router/drawer'
+import { CategorySkeleton } from './CategorySkeleton'
+import { ErrorState } from './ErrorState'
+import { OfflineBanner } from './OfflineBanner'
 
 interface DetailLayoutProps {
-	loading: boolean;
-	error: string | null;
-	onRetry: () => void;
-	cachedAt: number | null;
-	name: string;
-	image?: string;
-	bio: string;
-	fandomUrl?: string;
+	loading: boolean
+	error: string | null
+	onRetry: () => void
+	cachedAt: number | null
+	name: string
+	image?: string
+	bio: string
+	fandomUrl?: string
 }
 
 export function DetailLayout({
@@ -36,11 +36,11 @@ export function DetailLayout({
 	fandomUrl,
 }: DetailLayoutProps) {
 	if (loading) {
-		return <CategorySkeleton />;
+		return <CategorySkeleton />
 	}
 
 	if (error) {
-		return <ErrorState message={error} onRetry={onRetry} />;
+		return <ErrorState message={error} onRetry={onRetry} />
 	}
 
 	return (
@@ -95,5 +95,5 @@ export function DetailLayout({
 				</View>
 			</ScrollView>
 		</>
-	);
+	)
 }

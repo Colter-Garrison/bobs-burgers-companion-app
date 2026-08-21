@@ -1,16 +1,16 @@
-import { fetchBobsBurgersApi } from '../lib/bobsBurgersApi';
+import { fetchBobsBurgersApi } from '../lib/bobsBurgersApi'
 
 export interface EndCredit {
-	id: number;
-	image: string;
-	season: number;
-	episode: number;
-	episodeUrl: string;
-	url: string;
+	id: number
+	image: string
+	season: number
+	episode: number
+	episodeUrl: string
+	url: string
 }
 
 export const getEndCreditsSequences = () =>
-	fetchBobsBurgersApi<EndCredit[]>('/endCreditsSequence/');
+	fetchBobsBurgersApi<EndCredit[]>('/endCreditsSequence/')
 
 export const getEndCreditsSequenceById = (id: number) =>
-	fetchBobsBurgersApi<EndCredit>(`/endCreditsSequence/${id}`);
+	fetchBobsBurgersApi<EndCredit>(`/endCreditsSequence/${id}`)

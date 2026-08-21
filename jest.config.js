@@ -44,4 +44,4 @@ module.exports = {
 	// has been seen to exceed the 5000ms default. 10s gives real headroom
 	// without hiding an actual hang (which would still exceed this too).
 	testTimeout: 10000,
-};
+}

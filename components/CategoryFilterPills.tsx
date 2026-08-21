@@ -1,8 +1,8 @@
-import React from 'react';
-import { Pressable, Text, View } from 'react-native';
-import { SearchCategory } from '../hooks/useSearchableItems';
+import React from 'react'
+import { Pressable, Text, View } from 'react-native'
+import { SearchCategory } from '../hooks/useSearchableItems'
 
-export type CategoryFilter = SearchCategory | 'All';
+export type CategoryFilter = SearchCategory | 'All'
 
 const CATEGORIES: SearchCategory[] = [
 	'Burgers of the Day',
@@ -11,13 +11,13 @@ const CATEGORIES: SearchCategory[] = [
 	'Episodes',
 	'Pest Control Trucks',
 	'Stores Next Door',
-];
+]
 
-const OPTIONS: CategoryFilter[] = ['All', ...CATEGORIES];
+const OPTIONS: CategoryFilter[] = ['All', ...CATEGORIES]
 
 interface CategoryFilterPillsProps {
-	selected: CategoryFilter;
-	onSelect: (category: CategoryFilter) => void;
+	selected: CategoryFilter
+	onSelect: (category: CategoryFilter) => void
 }
 
 export function CategoryFilterPills({
@@ -31,7 +31,7 @@ export function CategoryFilterPills({
 			testID='category-filter-pills'
 		>
 			{OPTIONS.map((option) => {
-				const isSelected = option === selected;
+				const isSelected = option === selected
 				return (
 					<Pressable
 						key={option}
@@ -56,8 +56,8 @@ export function CategoryFilterPills({
 							{option}
 						</Text>
 					</Pressable>
-				);
+				)
 			})}
 		</View>
-	);
+	)
 }

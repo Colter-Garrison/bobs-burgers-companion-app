@@ -1,9 +1,9 @@
-import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import React from 'react'
+import { Pressable, Text, View } from 'react-native'
 
 interface ErrorStateProps {
-	message?: string;
-	onRetry: () => void;
+	message?: string
+	onRetry: () => void
 }
 
 export function ErrorState({ message, onRetry }: ErrorStateProps) {
@@ -28,5 +28,5 @@ export function ErrorState({ message, onRetry }: ErrorStateProps) {
 				</Text>
 			</Pressable>
 		</View>
-	);
+	)
 }

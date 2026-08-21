@@ -1,34 +1,34 @@
-import { render, screen } from '@testing-library/react-native';
-import { CategorySkeleton } from './CategorySkeleton';
-import { useTheme } from '../hooks/useTheme';
-import { LIGHT_THEME_COLORS } from '../jest/themeColorsFixture';
+import { render, screen } from '@testing-library/react-native'
+import { CategorySkeleton } from './CategorySkeleton'
+import { useTheme } from '../hooks/useTheme'
+import { LIGHT_THEME_COLORS } from '../jest/themeColorsFixture'
 
-jest.mock('../hooks/useTheme');
+jest.mock('../hooks/useTheme')
 
 describe('CategorySkeleton', () => {
 	beforeEach(() => {
-		(useTheme as jest.Mock).mockReturnValue({
+		;(useTheme as jest.Mock).mockReturnValue({
 			isDark: false,
 			toggleTheme: jest.fn(),
 			colors: LIGHT_THEME_COLORS,
-		});
-	});
+		})
+	})
 
 	it('renders the default number of placeholder cards', () => {
-		render(<CategorySkeleton />);
+		render(<CategorySkeleton />)
 
-		expect(screen.getByTestId('category-skeleton').children).toHaveLength(4);
-	});
+		expect(screen.getByTestId('category-skeleton').children).toHaveLength(4)
+	})
 
 	it('renders a custom number of placeholder cards', () => {
-		render(<CategorySkeleton count={2} />);
+		render(<CategorySkeleton count={2} />)
 
-		expect(screen.getByTestId('category-skeleton').children).toHaveLength(2);
-	});
+		expect(screen.getByTestId('category-skeleton').children).toHaveLength(2)
+	})
 
 	it('still renders its placeholder cards in the non-full-screen variant', () => {
-		render(<CategorySkeleton count={3} fullScreen={false} />);
+		render(<CategorySkeleton count={3} fullScreen={false} />)
 
-		expect(screen.getByTestId('category-skeleton').children).toHaveLength(3);
-	});
-});
+		expect(screen.getByTestId('category-skeleton').children).toHaveLength(3)
+	})
+})

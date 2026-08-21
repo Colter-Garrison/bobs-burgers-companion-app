@@ -1,78 +1,73 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
-import { FlatList, Text, TextInput, View } from 'react-native';
-import { SearchItem, useSearchableItems } from '../../hooks/useSearchableItems';
-import { detailHref } from '../../lib/detailRoute';
-import { useFavorites } from '../../hooks/useFavorites';
-import { useAuth } from '../../hooks/useAuth';
-import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
-import { useAttributeFilters } from '../../hooks/useAttributeFilters';
-import { SearchResultCard } from '../../components/SearchResultCard';
-import { LoadMoreButton } from '../../components/LoadMoreButton';
-import { CategoryFilter } from '../../components/CategoryFilterPills';
-import { FilterPanel } from '../../components/FilterPanel';
-import { CategorySkeleton } from '../../components/CategorySkeleton';
-import { OfflineBanner } from '../../components/OfflineBanner';
-import { useTheme } from '../../hooks/useTheme';
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'expo-router'
+import { useFocusEffect } from '@react-navigation/native'
+import { FlatList, Text, TextInput, View } from 'react-native'
+import { SearchItem, useSearchableItems } from '../../hooks/useSearchableItems'
+import { detailHref } from '../../lib/detailRoute'
+import { useFavorites } from '../../hooks/useFavorites'
+import { useAuth } from '../../hooks/useAuth'
+import { PAGE_SIZE, usePagination } from '../../hooks/usePagination'
+import { useAttributeFilters } from '../../hooks/useAttributeFilters'
+import { SearchResultCard } from '../../components/SearchResultCard'
+import { LoadMoreButton } from '../../components/LoadMoreButton'
+import { CategoryFilter } from '../../components/CategoryFilterPills'
+import { FilterPanel } from '../../components/FilterPanel'
+import { CategorySkeleton } from '../../components/CategorySkeleton'
+import { OfflineBanner } from '../../components/OfflineBanner'
+import { useTheme } from '../../hooks/useTheme'
 
 export default function Favorites() {
-	const router = useRouter();
-	const { isDark, colors } = useTheme();
-	const { token, loading: authLoading } = useAuth();
-	const {
-		items,
-		loading: itemsLoading,
-		cachedAt,
-		retry,
-	} = useSearchableItems();
+	const router = useRouter()
+	const { isDark, colors } = useTheme()
+	const { token, loading: authLoading } = useAuth()
+	const { items, loading: itemsLoading, cachedAt, retry } = useSearchableItems()
 	const {
 		isFavorited,
 		removeFavorite,
 		loading: favoritesLoading,
-	} = useFavorites();
-	const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('All');
-	const [query, setQuery] = useState('');
-	const attributeFilters = useAttributeFilters<SearchItem>();
+	} = useFavorites()
+	const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('All')
+	const [query, setQuery] = useState('')
+	const attributeFilters = useAttributeFilters<SearchItem>()
 
 	useEffect(() => {
 		if (!authLoading && !token) {
-			router.push('/login');
+			router.push('/login')
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [authLoading]);
+	}, [authLoading])
 
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
-				setCategoryFilter('All');
-				setQuery('');
-				attributeFilters.reset();
-			};
+				setCategoryFilter('All')
+				setQuery('')
+				attributeFilters.reset()
+			}
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, []),
-	);
+	)
 
 	const handleResultPress = useCallback(
 		(item: SearchItem) => {
-			router.push(detailHref(item.category, item.itemId));
+			router.push(detailHref(item.category, item.itemId))
 		},
 		[router],
-	);
+	)
 
 	const handleSelectCategory = useCallback(
 		(category: CategoryFilter) => {
-			setCategoryFilter(category);
+			setCategoryFilter(category)
 			if (category !== 'Characters') {
-				attributeFilters.clearGenderHair();
+				attributeFilters.clearGenderHair()
 			}
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[],
-	);
+	)
 
 	const favoritedItems = useMemo(() => {
-		const trimmedQuery = query.trim().toLowerCase();
+		const trimmedQuery = query.trim().toLowerCase()
 		return attributeFilters.sortItems(
 			items
 				.filter((item) => isFavorited(item.favoriteCategory, item.itemId))
@@ -86,7 +81,7 @@ export default function Favorites() {
 				)
 				.filter(attributeFilters.matches),
 			(item) => item.label,
-		);
+		)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		items,
@@ -95,9 +90,9 @@ export default function Favorites() {
 		query,
 		attributeFilters.matches,
 		attributeFilters.sortItems,
-	]);
-	const { visibleItems, loadMore, hasMore } = usePagination(favoritedItems);
-	const loading = itemsLoading || favoritesLoading;
+	])
+	const { visibleItems, loadMore, hasMore } = usePagination(favoritedItems)
+	const loading = itemsLoading || favoritesLoading
 
 	const renderItem = useCallback(
 		({ item }: { item: SearchItem }) => (
@@ -111,14 +106,14 @@ export default function Favorites() {
 			/>
 		),
 		[removeFavorite, handleResultPress],
-	);
+	)
 
 	if (!token) {
-		return null;
+		return null
 	}
 
 	if (loading) {
-		return <CategorySkeleton />;
+		return <CategorySkeleton />
 	}
 
 	return (
@@ -167,5 +162,5 @@ export default function Favorites() {
 				hasMore ? <LoadMoreButton onPress={loadMore} /> : null
 			}
 		/>
-	);
+	)
 }

@@ -1,27 +1,27 @@
-import { act, fireEvent, render, screen } from '@testing-library/react-native';
-import { useRouter } from 'expo-router';
-import { FlatList } from 'react-native';
-import Favorites from './favorites';
-import { useSearchableItems } from '../../hooks/useSearchableItems';
-import { useFavorites } from '../../hooks/useFavorites';
-import { useAuth } from '../../hooks/useAuth';
-import { useTheme } from '../../hooks/useTheme';
-import { LIGHT_THEME_COLORS } from '../../jest/themeColorsFixture';
+import { act, fireEvent, render, screen } from '@testing-library/react-native'
+import { useRouter } from 'expo-router'
+import { FlatList } from 'react-native'
+import Favorites from './favorites'
+import { useSearchableItems } from '../../hooks/useSearchableItems'
+import { useFavorites } from '../../hooks/useFavorites'
+import { useAuth } from '../../hooks/useAuth'
+import { useTheme } from '../../hooks/useTheme'
+import { LIGHT_THEME_COLORS } from '../../jest/themeColorsFixture'
 
-jest.mock('../../hooks/useSearchableItems');
-jest.mock('../../hooks/useFavorites');
-jest.mock('../../hooks/useAuth');
-jest.mock('../../hooks/useTheme');
+jest.mock('../../hooks/useSearchableItems')
+jest.mock('../../hooks/useFavorites')
+jest.mock('../../hooks/useAuth')
+jest.mock('../../hooks/useTheme')
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
-}));
+}))
 
-let focusEffectCleanup: (() => void) | undefined;
+let focusEffectCleanup: (() => void) | undefined
 jest.mock('@react-navigation/native', () => ({
 	useFocusEffect: (callback: () => void | (() => void)) => {
-		focusEffectCleanup = callback() ?? undefined;
+		focusEffectCleanup = callback() ?? undefined
 	},
-}));
+}))
 
 const items = [
 	{
@@ -38,126 +38,126 @@ const items = [
 		itemId: 2,
 		favoriteCategory: 'character',
 	},
-];
+]
 
 describe('Favorites screen', () => {
-	const mockPush = jest.fn();
-	const mockRemoveFavorite = jest.fn();
+	const mockPush = jest.fn()
+	const mockRemoveFavorite = jest.fn()
 
 	beforeEach(() => {
-		(useTheme as jest.Mock).mockReturnValue({
+		;(useTheme as jest.Mock).mockReturnValue({
 			isDark: false,
 			toggleTheme: jest.fn(),
 			colors: LIGHT_THEME_COLORS,
-		});
-		(useRouter as jest.Mock).mockReturnValue({ push: mockPush });
-		(useAuth as jest.Mock).mockReturnValue({
+		})
+		;(useRouter as jest.Mock).mockReturnValue({ push: mockPush })
+		;(useAuth as jest.Mock).mockReturnValue({
 			token: 'token-abc',
 			loading: false,
-		});
-		(useSearchableItems as jest.Mock).mockReturnValue({
+		})
+		;(useSearchableItems as jest.Mock).mockReturnValue({
 			items,
 			loading: false,
-		});
-		(useFavorites as jest.Mock).mockReturnValue({
+		})
+		;(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: (category: string, itemId: number) =>
 				category === 'burger' && itemId === 1,
 			removeFavorite: mockRemoveFavorite,
 			loading: false,
-		});
-	});
+		})
+	})
 
 	afterEach(() => {
-		jest.clearAllMocks();
-	});
+		jest.clearAllMocks()
+	})
 
 	it('redirects to /login when there is no token and loading has settled', () => {
-		(useAuth as jest.Mock).mockReturnValue({ token: null, loading: false });
+		;(useAuth as jest.Mock).mockReturnValue({ token: null, loading: false })
 
-		render(<Favorites />);
+		render(<Favorites />)
 
-		expect(mockPush).toHaveBeenCalledWith('/login');
-	});
+		expect(mockPush).toHaveBeenCalledWith('/login')
+	})
 
 	it('does not redirect while the session is still being restored', () => {
-		(useAuth as jest.Mock).mockReturnValue({ token: null, loading: true });
+		;(useAuth as jest.Mock).mockReturnValue({ token: null, loading: true })
 
-		render(<Favorites />);
+		render(<Favorites />)
 
-		expect(mockPush).not.toHaveBeenCalled();
-	});
+		expect(mockPush).not.toHaveBeenCalled()
+	})
 
 	it('shows only the favorited items, not everything from useSearchableItems', () => {
-		render(<Favorites />);
+		render(<Favorites />)
 
-		expect(screen.getByText('Favorited Burger')).toBeVisible();
-		expect(screen.queryByText('Unfavorited Character')).toBeNull();
-	});
+		expect(screen.getByText('Favorited Burger')).toBeVisible()
+		expect(screen.queryByText('Unfavorited Character')).toBeNull()
+	})
 
 	it('tapping a favorited card navigates to its detail page instead of opening an external link', () => {
-		render(<Favorites />);
+		render(<Favorites />)
 
-		fireEvent.press(screen.getByText('Favorited Burger'));
+		fireEvent.press(screen.getByText('Favorited Burger'))
 
 		expect(mockPush).toHaveBeenCalledWith({
 			pathname: '/detail/[category]/[id]',
 			params: { category: 'burgers', id: '1' },
-		});
-	});
+		})
+	})
 
 	it('shows "No favorites yet." when nothing is favorited', () => {
-		(useFavorites as jest.Mock).mockReturnValue({
+		;(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => false,
 			removeFavorite: mockRemoveFavorite,
 			loading: false,
-		});
+		})
 
-		render(<Favorites />);
+		render(<Favorites />)
 
-		expect(screen.getByText('No favorites yet.')).toBeVisible();
-	});
+		expect(screen.getByText('No favorites yet.')).toBeVisible()
+	})
 
 	it('shows a skeleton while items or favorites are still loading', () => {
-		(useSearchableItems as jest.Mock).mockReturnValue({
+		;(useSearchableItems as jest.Mock).mockReturnValue({
 			items: [],
 			loading: true,
-		});
+		})
 
-		render(<Favorites />);
+		render(<Favorites />)
 
-		expect(screen.getByTestId('category-skeleton')).toBeVisible();
-	});
+		expect(screen.getByTestId('category-skeleton')).toBeVisible()
+	})
 
 	it('tapping the star on a favorited row calls removeFavorite with its category and id', () => {
-		render(<Favorites />);
+		render(<Favorites />)
 
 		fireEvent.press(
 			screen.getByLabelText('Remove Favorited Burger from favorites'),
-		);
+		)
 
-		expect(mockRemoveFavorite).toHaveBeenCalledWith('burger', 1);
-	});
+		expect(mockRemoveFavorite).toHaveBeenCalledWith('burger', 1)
+	})
 
 	it('filters the favorited items by category when a pill is selected', () => {
-		(useFavorites as jest.Mock).mockReturnValue({
+		;(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => true,
 			removeFavorite: mockRemoveFavorite,
 			loading: false,
-		});
-		render(<Favorites />);
+		})
+		render(<Favorites />)
 
-		expect(screen.getByText('Favorited Burger')).toBeVisible();
-		expect(screen.getByText('Unfavorited Character')).toBeVisible();
+		expect(screen.getByText('Favorited Burger')).toBeVisible()
+		expect(screen.getByText('Unfavorited Character')).toBeVisible()
 
-		fireEvent.press(screen.getByLabelText('Show filter options'));
-		fireEvent.press(screen.getByLabelText('Filter by Characters'));
+		fireEvent.press(screen.getByLabelText('Show filter options'))
+		fireEvent.press(screen.getByLabelText('Filter by Characters'))
 
-		expect(screen.queryByText('Favorited Burger')).toBeNull();
-		expect(screen.getByText('Unfavorited Character')).toBeVisible();
-	});
+		expect(screen.queryByText('Favorited Burger')).toBeNull()
+		expect(screen.getByText('Unfavorited Character')).toBeVisible()
+	})
 
 	it('filters favorited items by gender/hair color, and sorts alphabetically', () => {
-		(useSearchableItems as jest.Mock).mockReturnValue({
+		;(useSearchableItems as jest.Mock).mockReturnValue({
 			items: [
 				{
 					id: 'character-1',
@@ -179,37 +179,37 @@ describe('Favorites screen', () => {
 				},
 			],
 			loading: false,
-		});
-		(useFavorites as jest.Mock).mockReturnValue({
+		})
+		;(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => true,
 			removeFavorite: mockRemoveFavorite,
 			loading: false,
-		});
-		render(<Favorites />);
+		})
+		render(<Favorites />)
 
-		expect(screen.getByText('Bob Belcher')).toBeVisible();
-		expect(screen.getByText('Linda Belcher')).toBeVisible();
+		expect(screen.getByText('Bob Belcher')).toBeVisible()
+		expect(screen.getByText('Linda Belcher')).toBeVisible()
 
-		fireEvent.press(screen.getByLabelText('Show filter options'));
+		fireEvent.press(screen.getByLabelText('Show filter options'))
 		// Gender/hair filters only appear once narrowed to Characters.
-		fireEvent.press(screen.getByLabelText('Filter by Characters'));
-		fireEvent.press(screen.getByLabelText('Filter by gender: Female'));
+		fireEvent.press(screen.getByLabelText('Filter by Characters'))
+		fireEvent.press(screen.getByLabelText('Filter by gender: Female'))
 
-		expect(screen.queryByText('Bob Belcher')).toBeNull();
-		expect(screen.getByText('Linda Belcher')).toBeVisible();
+		expect(screen.queryByText('Bob Belcher')).toBeNull()
+		expect(screen.getByText('Linda Belcher')).toBeVisible()
 
-		fireEvent.press(screen.getByLabelText('Filter by gender: Female'));
-		fireEvent.press(screen.getByLabelText('Tap to sort A to Z'));
+		fireEvent.press(screen.getByLabelText('Filter by gender: Female'))
+		fireEvent.press(screen.getByLabelText('Tap to sort A to Z'))
 
 		expect(
 			screen
 				.UNSAFE_getByType(FlatList)
 				.props.data.map((item: { label: string }) => item.label),
-		).toEqual(['Bob Belcher', 'Linda Belcher']);
-	});
+		).toEqual(['Bob Belcher', 'Linda Belcher'])
+	})
 
 	it('resets attribute filters when the screen loses focus', () => {
-		(useSearchableItems as jest.Mock).mockReturnValue({
+		;(useSearchableItems as jest.Mock).mockReturnValue({
 			items: [
 				{
 					id: 'character-1',
@@ -229,48 +229,48 @@ describe('Favorites screen', () => {
 				},
 			],
 			loading: false,
-		});
-		(useFavorites as jest.Mock).mockReturnValue({
+		})
+		;(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => true,
 			removeFavorite: mockRemoveFavorite,
 			loading: false,
-		});
-		render(<Favorites />);
+		})
+		render(<Favorites />)
 
-		fireEvent.press(screen.getByLabelText('Show filter options'));
-		fireEvent.press(screen.getByLabelText('Filter by Characters'));
-		fireEvent.press(screen.getByLabelText('Filter by gender: Female'));
-		expect(screen.queryByText('Bob Belcher')).toBeNull();
+		fireEvent.press(screen.getByLabelText('Show filter options'))
+		fireEvent.press(screen.getByLabelText('Filter by Characters'))
+		fireEvent.press(screen.getByLabelText('Filter by gender: Female'))
+		expect(screen.queryByText('Bob Belcher')).toBeNull()
 
 		act(() => {
-			focusEffectCleanup?.();
-		});
+			focusEffectCleanup?.()
+		})
 
-		expect(screen.getByText('Bob Belcher')).toBeVisible();
-		expect(screen.getByText('Linda Belcher')).toBeVisible();
-	});
+		expect(screen.getByText('Bob Belcher')).toBeVisible()
+		expect(screen.getByText('Linda Belcher')).toBeVisible()
+	})
 
 	it('resets the category filter when the screen loses focus', () => {
-		(useFavorites as jest.Mock).mockReturnValue({
+		;(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => true,
 			removeFavorite: mockRemoveFavorite,
 			loading: false,
-		});
-		render(<Favorites />);
+		})
+		render(<Favorites />)
 
-		fireEvent.press(screen.getByLabelText('Show filter options'));
-		fireEvent.press(screen.getByLabelText('Filter by Characters'));
-		expect(screen.queryByText('Favorited Burger')).toBeNull();
+		fireEvent.press(screen.getByLabelText('Show filter options'))
+		fireEvent.press(screen.getByLabelText('Filter by Characters'))
+		expect(screen.queryByText('Favorited Burger')).toBeNull()
 
 		act(() => {
-			focusEffectCleanup?.();
-		});
+			focusEffectCleanup?.()
+		})
 
-		expect(screen.getByText('Favorited Burger')).toBeVisible();
-	});
+		expect(screen.getByText('Favorited Burger')).toBeVisible()
+	})
 
 	it('clears gender/hair filters when switching the category away from Characters, instead of silently still applying them', () => {
-		(useSearchableItems as jest.Mock).mockReturnValue({
+		;(useSearchableItems as jest.Mock).mockReturnValue({
 			items: [
 				{
 					id: 'character-1',
@@ -289,25 +289,25 @@ describe('Favorites screen', () => {
 				},
 			],
 			loading: false,
-		});
-		(useFavorites as jest.Mock).mockReturnValue({
+		})
+		;(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => true,
 			removeFavorite: mockRemoveFavorite,
 			loading: false,
-		});
-		render(<Favorites />);
+		})
+		render(<Favorites />)
 
-		fireEvent.press(screen.getByLabelText('Show filter options'));
-		fireEvent.press(screen.getByLabelText('Filter by Characters'));
-		fireEvent.press(screen.getByLabelText('Filter by gender: Male'));
+		fireEvent.press(screen.getByLabelText('Show filter options'))
+		fireEvent.press(screen.getByLabelText('Filter by Characters'))
+		fireEvent.press(screen.getByLabelText('Filter by gender: Male'))
 
-		expect(screen.getByText('Bob Belcher')).toBeVisible();
-		expect(screen.queryByText('Favorited Burger')).toBeNull();
+		expect(screen.getByText('Bob Belcher')).toBeVisible()
+		expect(screen.queryByText('Favorited Burger')).toBeNull()
 
-		fireEvent.press(screen.getByLabelText('Filter by Burgers of the Day'));
+		fireEvent.press(screen.getByLabelText('Filter by Burgers of the Day'))
 
-		expect(screen.getByText('Favorited Burger')).toBeVisible();
-	});
+		expect(screen.getByText('Favorited Burger')).toBeVisible()
+	})
 
 	it('shows only the first page of favorites, revealing more as the list is scrolled', () => {
 		const manyFavorites = Array.from({ length: 25 }, (_, i) => ({
@@ -316,66 +316,66 @@ describe('Favorites screen', () => {
 			label: `Favorite Number ${i}`,
 			itemId: i,
 			favoriteCategory: 'character',
-		}));
-		(useSearchableItems as jest.Mock).mockReturnValue({
+		}))
+		;(useSearchableItems as jest.Mock).mockReturnValue({
 			items: manyFavorites,
 			loading: false,
-		});
-		(useFavorites as jest.Mock).mockReturnValue({
+		})
+		;(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => true,
 			removeFavorite: mockRemoveFavorite,
 			loading: false,
-		});
-		render(<Favorites />);
+		})
+		render(<Favorites />)
 
-		expect(screen.getByText('Favorite Number 0')).toBeVisible();
-		expect(screen.getByText('Favorite Number 19')).toBeVisible();
-		expect(screen.queryByText('Favorite Number 20')).toBeNull();
-		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(20);
+		expect(screen.getByText('Favorite Number 0')).toBeVisible()
+		expect(screen.getByText('Favorite Number 19')).toBeVisible()
+		expect(screen.queryByText('Favorite Number 20')).toBeNull()
+		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(20)
 
 		// See app/index.test.tsx's equivalent test for why this asserts
 		// on `data` growing rather than on newly revealed text actually
 		// rendering — that part is FlatList's own virtualization, not
 		// this app's logic, and RNTL can't simulate a real scroll.
 		act(() => {
-			screen.UNSAFE_getByType(FlatList).props.onEndReached();
-		});
+			screen.UNSAFE_getByType(FlatList).props.onEndReached()
+		})
 
-		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(25);
-	});
+		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(25)
+	})
 
 	it('search bar only narrows among favorited items, not the full item list', () => {
-		(useFavorites as jest.Mock).mockReturnValue({
+		;(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => true,
 			removeFavorite: mockRemoveFavorite,
 			loading: false,
-		});
-		render(<Favorites />);
+		})
+		render(<Favorites />)
 
-		expect(screen.getByText('Favorited Burger')).toBeVisible();
-		expect(screen.getByText('Unfavorited Character')).toBeVisible();
+		expect(screen.getByText('Favorited Burger')).toBeVisible()
+		expect(screen.getByText('Unfavorited Character')).toBeVisible()
 
 		fireEvent.changeText(
 			screen.getByPlaceholderText('Search your favorites...'),
 			'favorited burger',
-		);
+		)
 
-		expect(screen.getByText('Favorited Burger')).toBeVisible();
-		expect(screen.queryByText('Unfavorited Character')).toBeNull();
-	});
+		expect(screen.getByText('Favorited Burger')).toBeVisible()
+		expect(screen.queryByText('Unfavorited Character')).toBeNull()
+	})
 
 	it('hides Gender/Hair Color filters until the Characters category pill is selected', () => {
-		(useFavorites as jest.Mock).mockReturnValue({
+		;(useFavorites as jest.Mock).mockReturnValue({
 			isFavorited: () => true,
 			removeFavorite: mockRemoveFavorite,
 			loading: false,
-		});
-		render(<Favorites />);
+		})
+		render(<Favorites />)
 
-		fireEvent.press(screen.getByLabelText('Show filter options'));
-		expect(screen.queryByLabelText('Filter by gender: Male')).toBeNull();
+		fireEvent.press(screen.getByLabelText('Show filter options'))
+		expect(screen.queryByLabelText('Filter by gender: Male')).toBeNull()
 
-		fireEvent.press(screen.getByLabelText('Filter by Characters'));
-		expect(screen.getByLabelText('Filter by gender: Male')).toBeVisible();
-	});
-});
+		fireEvent.press(screen.getByLabelText('Filter by Characters'))
+		expect(screen.getByLabelText('Filter by gender: Male')).toBeVisible()
+	})
+})

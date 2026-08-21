@@ -1,68 +1,68 @@
-import React, { useCallback } from 'react';
-import { FlatList, Pressable, Text, TextInput, View } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
-import { Episode, getEpisodes } from '../../hooks/fetchEpisodes';
-import { useCategoryData } from '../../hooks/useCategoryData';
-import { useCategorySearch } from '../../hooks/useCategorySearch';
-import { useAttributeFilters } from '../../hooks/useAttributeFilters';
-import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
-import { useFavorites } from '../../hooks/useFavorites';
-import { composeEpisodeShortBio } from '../../lib/categoryBio';
-import { FavoriteButton } from '../../components/FavoriteButton';
-import { LoadMoreButton } from '../../components/LoadMoreButton';
-import { FilterPanel } from '../../components/FilterPanel';
-import { CategorySkeleton } from '../../components/CategorySkeleton';
-import { ErrorState } from '../../components/ErrorState';
-import { OfflineBanner } from '../../components/OfflineBanner';
-import { useTheme } from '../../hooks/useTheme';
+import React, { useCallback } from 'react'
+import { FlatList, Pressable, Text, TextInput, View } from 'react-native'
+import { useRouter } from 'expo-router'
+import { useFocusEffect } from '@react-navigation/native'
+import { Episode, getEpisodes } from '../../hooks/fetchEpisodes'
+import { useCategoryData } from '../../hooks/useCategoryData'
+import { useCategorySearch } from '../../hooks/useCategorySearch'
+import { useAttributeFilters } from '../../hooks/useAttributeFilters'
+import { PAGE_SIZE, usePagination } from '../../hooks/usePagination'
+import { useFavorites } from '../../hooks/useFavorites'
+import { composeEpisodeShortBio } from '../../lib/categoryBio'
+import { FavoriteButton } from '../../components/FavoriteButton'
+import { LoadMoreButton } from '../../components/LoadMoreButton'
+import { FilterPanel } from '../../components/FilterPanel'
+import { CategorySkeleton } from '../../components/CategorySkeleton'
+import { ErrorState } from '../../components/ErrorState'
+import { OfflineBanner } from '../../components/OfflineBanner'
+import { useTheme } from '../../hooks/useTheme'
 
 const getSearchableText = (episode: Episode) =>
-	`${episode.name} ${composeEpisodeShortBio(episode)}`;
+	`${episode.name} ${composeEpisodeShortBio(episode)}`
 
 export default function Episodes() {
-	const router = useRouter();
-	const { isDark, colors } = useTheme();
-	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
+	const router = useRouter()
+	const { isDark, colors } = useTheme()
+	const { isFavorited, addFavorite, removeFavorite } = useFavorites()
 	const {
 		data: episodes,
 		loading,
 		error,
 		retry,
 		cachedAt,
-	} = useCategoryData<Episode>(getEpisodes, 'episodes');
+	} = useCategoryData<Episode>(getEpisodes, 'episodes')
 	const {
 		query,
 		setQuery,
 		filteredItems: searchedEpisodes,
-	} = useCategorySearch(episodes, getSearchableText);
-	const attributeFilters = useAttributeFilters<Episode>();
+	} = useCategorySearch(episodes, getSearchableText)
+	const attributeFilters = useAttributeFilters<Episode>()
 
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
-				setQuery('');
-				attributeFilters.reset();
-			};
+				setQuery('')
+				attributeFilters.reset()
+			}
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, []),
-	);
+	)
 
 	const visibleEpisodes = attributeFilters.sortItems(
 		searchedEpisodes,
 		(episode) => episode.name,
-	);
-	const { visibleItems, loadMore, hasMore } = usePagination(visibleEpisodes);
+	)
+	const { visibleItems, loadMore, hasMore } = usePagination(visibleEpisodes)
 
 	const handlePress = useCallback(
 		(episode: Episode) => {
 			router.push({
 				pathname: '/detail/[category]/[id]',
 				params: { category: 'episodes', id: String(episode.id) },
-			});
+			})
 		},
 		[router],
-	);
+	)
 
 	const renderItem = useCallback(
 		({ item: episode }: { item: Episode }) => (
@@ -96,14 +96,14 @@ export default function Episodes() {
 			</View>
 		),
 		[isFavorited, addFavorite, removeFavorite, handlePress],
-	);
+	)
 
 	if (loading) {
-		return <CategorySkeleton />;
+		return <CategorySkeleton />
 	}
 
 	if (error) {
-		return <ErrorState message={error} onRetry={retry} />;
+		return <ErrorState message={error} onRetry={retry} />
 	}
 
 	return (
@@ -154,5 +154,5 @@ export default function Episodes() {
 				hasMore ? <LoadMoreButton onPress={loadMore} /> : null
 			}
 		/>
-	);
+	)
 }

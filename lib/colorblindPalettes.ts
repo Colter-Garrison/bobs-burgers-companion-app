@@ -1,30 +1,30 @@
 export type ColorblindMode =
-	'none' | 'redGreen' | 'blueYellow' | 'achromatopsia';
+	'none' | 'redGreen' | 'blueYellow' | 'achromatopsia'
 
 export const COLORBLIND_MODES: ColorblindMode[] = [
 	'none',
 	'redGreen',
 	'blueYellow',
 	'achromatopsia',
-];
+]
 
 export const COLORBLIND_MODE_LABELS: Record<ColorblindMode, string> = {
 	none: 'Off',
 	redGreen: 'Red-Green Color Blindness',
 	blueYellow: 'Blue-Yellow Color Blindness',
 	achromatopsia: 'Achromatopsia',
-};
+}
 
 interface PaletteVariant {
-	bg: string;
-	surface: string;
-	accent: string;
-	onAccent: string;
+	bg: string
+	surface: string
+	accent: string
+	onAccent: string
 }
 
 interface Palette {
-	light: PaletteVariant;
-	dark: PaletteVariant;
+	light: PaletteVariant
+	dark: PaletteVariant
 }
 
 const RED_GREEN_SAFE: Palette = {
@@ -40,7 +40,7 @@ const RED_GREEN_SAFE: Palette = {
 		accent: '#66D9EF',
 		onAccent: '#222222',
 	},
-};
+}
 
 const BLUE_YELLOW_SAFE: Palette = {
 	light: {
@@ -55,7 +55,7 @@ const BLUE_YELLOW_SAFE: Palette = {
 		accent: '#FF66CC',
 		onAccent: '#222222',
 	},
-};
+}
 
 const ACHROMATOPSIA: Palette = {
 	light: {
@@ -70,11 +70,11 @@ const ACHROMATOPSIA: Palette = {
 		accent: '#F0F0F0',
 		onAccent: '#222222',
 	},
-};
+}
 
 export const COLORBLIND_PALETTES: Record<ColorblindMode, Palette> = {
 	none: RED_GREEN_SAFE,
 	redGreen: RED_GREEN_SAFE,
 	blueYellow: BLUE_YELLOW_SAFE,
 	achromatopsia: ACHROMATOPSIA,
-};
+}

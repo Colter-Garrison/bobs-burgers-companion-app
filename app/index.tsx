@@ -1,54 +1,54 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { FlatList, Pressable, Text, TextInput, View } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
-import { SearchItem, useSearchableItems } from '../hooks/useSearchableItems';
-import { detailHref } from '../lib/detailRoute';
-import { useFavorites } from '../hooks/useFavorites';
-import { PAGE_SIZE, usePagination } from '../hooks/usePagination';
-import { useAttributeFilters } from '../hooks/useAttributeFilters';
-import { SearchResultCard } from '../components/SearchResultCard';
-import { LoadMoreButton } from '../components/LoadMoreButton';
-import { CategoryFilter } from '../components/CategoryFilterPills';
-import { FilterPanel } from '../components/FilterPanel';
-import { CategorySkeleton } from '../components/CategorySkeleton';
-import { OfflineBanner } from '../components/OfflineBanner';
-import { CharacterOfTheDayCard } from '../components/CharacterOfTheDayCard';
-import { useCharacterOfTheDay } from '../hooks/useCharacterOfTheDay';
-import { useTheme } from '../hooks/useTheme';
+import React, { useCallback, useMemo, useRef, useState } from 'react'
+import { FlatList, Pressable, Text, TextInput, View } from 'react-native'
+import { useRouter } from 'expo-router'
+import { useFocusEffect } from '@react-navigation/native'
+import { SearchItem, useSearchableItems } from '../hooks/useSearchableItems'
+import { detailHref } from '../lib/detailRoute'
+import { useFavorites } from '../hooks/useFavorites'
+import { PAGE_SIZE, usePagination } from '../hooks/usePagination'
+import { useAttributeFilters } from '../hooks/useAttributeFilters'
+import { SearchResultCard } from '../components/SearchResultCard'
+import { LoadMoreButton } from '../components/LoadMoreButton'
+import { CategoryFilter } from '../components/CategoryFilterPills'
+import { FilterPanel } from '../components/FilterPanel'
+import { CategorySkeleton } from '../components/CategorySkeleton'
+import { OfflineBanner } from '../components/OfflineBanner'
+import { CharacterOfTheDayCard } from '../components/CharacterOfTheDayCard'
+import { useCharacterOfTheDay } from '../hooks/useCharacterOfTheDay'
+import { useTheme } from '../hooks/useTheme'
 
 export default function Index() {
-	const router = useRouter();
-	const { isDark, colors } = useTheme();
-	const { items, error, retry, cachedAt } = useSearchableItems();
-	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
+	const router = useRouter()
+	const { isDark, colors } = useTheme()
+	const { items, error, retry, cachedAt } = useSearchableItems()
+	const { isFavorited, addFavorite, removeFavorite } = useFavorites()
 	const { character: characterOfTheDay, blurb: characterOfTheDayBlurb } =
-		useCharacterOfTheDay();
-	const [query, setQuery] = useState('');
-	const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('All');
-	const attributeFilters = useAttributeFilters<SearchItem>();
+		useCharacterOfTheDay()
+	const [query, setQuery] = useState('')
+	const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('All')
+	const attributeFilters = useAttributeFilters<SearchItem>()
 
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
-				setQuery('');
-				setCategoryFilter('All');
-				attributeFilters.reset();
-			};
+				setQuery('')
+				setCategoryFilter('All')
+				attributeFilters.reset()
+			}
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, []),
-	);
+	)
 
 	const filteredItems = useMemo(() => {
-		const trimmed = query.trim().toLowerCase();
-		if (!trimmed) return [];
+		const trimmed = query.trim().toLowerCase()
+		if (!trimmed) return []
 		const matching = items
 			.filter((item) => item.label.toLowerCase().includes(trimmed))
 			.filter(
 				(item) => categoryFilter === 'All' || item.category === categoryFilter,
 			)
-			.filter(attributeFilters.matches);
-		return attributeFilters.sortItems(matching, (item) => item.label);
+			.filter(attributeFilters.matches)
+		return attributeFilters.sortItems(matching, (item) => item.label)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		items,
@@ -56,55 +56,55 @@ export default function Index() {
 		categoryFilter,
 		attributeFilters.matches,
 		attributeFilters.sortItems,
-	]);
+	])
 
-	const { visibleItems, loadMore, hasMore } = usePagination(filteredItems);
+	const { visibleItems, loadMore, hasMore } = usePagination(filteredItems)
 
 	const handleSelectCategory = useCallback(
 		(category: CategoryFilter) => {
-			setCategoryFilter(category);
+			setCategoryFilter(category)
 			if (category !== 'Characters') {
-				attributeFilters.clearGenderHair();
+				attributeFilters.clearGenderHair()
 			}
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[],
-	);
+	)
 
 	const handleResultPress = useCallback(
 		(item: SearchItem) => {
-			router.push(detailHref(item.category, item.itemId));
+			router.push(detailHref(item.category, item.itemId))
 		},
 		[router],
-	);
+	)
 
-	const isSearching = query.trim().length > 0;
+	const isSearching = query.trim().length > 0
 
-	const [searchLoading, setSearchLoading] = useState(false);
-	const isNewSearchRef = useRef(true);
-	const searchRequestIdRef = useRef(0);
+	const [searchLoading, setSearchLoading] = useState(false)
+	const isNewSearchRef = useRef(true)
+	const searchRequestIdRef = useRef(0)
 	const handleQueryChange = (text: string) => {
-		setQuery(text);
-		const willBeSearching = text.trim().length > 0;
+		setQuery(text)
+		const willBeSearching = text.trim().length > 0
 
 		if (!willBeSearching) {
-			isNewSearchRef.current = true;
-			searchRequestIdRef.current += 1;
-			setSearchLoading(false);
-			return;
+			isNewSearchRef.current = true
+			searchRequestIdRef.current += 1
+			setSearchLoading(false)
+			return
 		}
 
 		if (isNewSearchRef.current) {
-			isNewSearchRef.current = false;
-			setSearchLoading(true);
-			const requestId = ++searchRequestIdRef.current;
+			isNewSearchRef.current = false
+			setSearchLoading(true)
+			const requestId = ++searchRequestIdRef.current
 			retry().finally(() => {
 				if (searchRequestIdRef.current === requestId) {
-					setSearchLoading(false);
+					setSearchLoading(false)
 				}
-			});
+			})
 		}
-	};
+	}
 
 	const renderItem = useCallback(
 		({ item }: { item: SearchItem }) => (
@@ -120,7 +120,7 @@ export default function Index() {
 			/>
 		),
 		[isFavorited, addFavorite, removeFavorite, handleResultPress],
-	);
+	)
 
 	return (
 		<FlatList
@@ -200,5 +200,5 @@ export default function Index() {
 				) : null
 			}
 		/>
-	);
+	)
 }

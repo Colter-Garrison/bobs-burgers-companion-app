@@ -1,21 +1,21 @@
-import '../global.css';
+import '../global.css'
 
-import { useEffect } from 'react';
-import { useFonts } from 'expo-font';
-import { SplashScreen } from 'expo-router';
-import { Drawer } from 'expo-router/drawer';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { DrawerToggleButton } from '@react-navigation/drawer';
-import { AuthProvider } from '../hooks/useAuth';
-import { FavoritesProvider } from '../hooks/useFavorites';
-import { ThemeProvider, useTheme } from '../hooks/useTheme';
-import { DrawerContent } from '../components/DrawerContent';
-import { SplashOverlay } from '../components/SplashOverlay';
+import { useEffect } from 'react'
+import { useFonts } from 'expo-font'
+import { SplashScreen } from 'expo-router'
+import { Drawer } from 'expo-router/drawer'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { DrawerToggleButton } from '@react-navigation/drawer'
+import { AuthProvider } from '../hooks/useAuth'
+import { FavoritesProvider } from '../hooks/useFavorites'
+import { ThemeProvider, useTheme } from '../hooks/useTheme'
+import { DrawerContent } from '../components/DrawerContent'
+import { SplashOverlay } from '../components/SplashOverlay'
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync()
 
 function ThemedDrawer() {
-	const { isDark, colors } = useTheme();
+	const { isDark, colors } = useTheme()
 
 	return (
 		<Drawer
@@ -116,7 +116,7 @@ function ThemedDrawer() {
 				}}
 			/>
 		</Drawer>
-	);
+	)
 }
 
 export default function RootLayout() {
@@ -124,16 +124,16 @@ export default function RootLayout() {
 		BobsBurgers: require('../assets/fonts/BobsBurgers.ttf'),
 		BobsBurgers2: require('../assets/fonts/BobsBurgers2.ttf'),
 		Chewy: require('../assets/fonts/Chewy.ttf'),
-	});
+	})
 
 	useEffect(() => {
 		if (fontLoaded) {
-			SplashScreen.hideAsync();
+			SplashScreen.hideAsync()
 		}
-	}, [fontLoaded]);
+	}, [fontLoaded])
 
 	if (!fontLoaded) {
-		return null;
+		return null
 	}
 
 	return (
@@ -147,5 +147,5 @@ export default function RootLayout() {
 			</AuthProvider>
 			<SplashOverlay />
 		</ThemeProvider>
-	);
+	)
 }

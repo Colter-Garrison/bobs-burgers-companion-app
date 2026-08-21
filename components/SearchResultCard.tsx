@@ -1,13 +1,13 @@
-import React from 'react';
-import { Image, Pressable, Text, View } from 'react-native';
-import { SearchItem } from '../hooks/useSearchableItems';
-import { FavoriteButton } from './FavoriteButton';
+import React from 'react'
+import { Image, Pressable, Text, View } from 'react-native'
+import { SearchItem } from '../hooks/useSearchableItems'
+import { FavoriteButton } from './FavoriteButton'
 
 interface SearchResultCardProps {
-	item: SearchItem;
-	favorited: boolean;
-	onToggleFavorite: () => void;
-	onPress: () => void;
+	item: SearchItem
+	favorited: boolean
+	onToggleFavorite: () => void
+	onPress: () => void
 }
 
 export function SearchResultCard({
@@ -54,5 +54,5 @@ export function SearchResultCard({
 				onToggle={onToggleFavorite}
 			/>
 		</View>
-	);
+	)
 }

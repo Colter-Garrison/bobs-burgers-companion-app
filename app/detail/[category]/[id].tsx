@@ -1,14 +1,14 @@
-import React from 'react';
-import { useLocalSearchParams } from 'expo-router';
-import { DetailLayout } from '../../../components/DetailLayout';
-import { ErrorState } from '../../../components/ErrorState';
-import { useCategoryItem } from '../../../hooks/useCategoryItem';
-import { getBurgerOfTheDayById } from '../../../hooks/fetchBurgersOfTheDay';
-import { getCharacterById } from '../../../hooks/fetchCharacters';
-import { getEndCreditsSequenceById } from '../../../hooks/fetchEndCreditsSequences';
-import { getEpisodeById } from '../../../hooks/fetchEpisodes';
-import { getPestControlTruckById } from '../../../hooks/fetchPestControlTrucks';
-import { getStoreNextDoorById } from '../../../hooks/fetchStoresNextDoor';
+import React from 'react'
+import { useLocalSearchParams } from 'expo-router'
+import { DetailLayout } from '../../../components/DetailLayout'
+import { ErrorState } from '../../../components/ErrorState'
+import { useCategoryItem } from '../../../hooks/useCategoryItem'
+import { getBurgerOfTheDayById } from '../../../hooks/fetchBurgersOfTheDay'
+import { getCharacterById } from '../../../hooks/fetchCharacters'
+import { getEndCreditsSequenceById } from '../../../hooks/fetchEndCreditsSequences'
+import { getEpisodeById } from '../../../hooks/fetchEpisodes'
+import { getPestControlTruckById } from '../../../hooks/fetchPestControlTrucks'
+import { getStoreNextDoorById } from '../../../hooks/fetchStoresNextDoor'
 import {
 	composeBurgerFullBio,
 	composeCharacterFullBio,
@@ -17,16 +17,16 @@ import {
 	composeStoreFullBio,
 	composeTruckFullBio,
 	extractEpisodeIdFromUrl,
-} from '../../../lib/categoryBio';
+} from '../../../lib/categoryBio'
 
 function useAssociatedEpisode(episodeUrl: string | undefined) {
-	const episodeId = episodeUrl ? extractEpisodeIdFromUrl(episodeUrl) : null;
+	const episodeId = episodeUrl ? extractEpisodeIdFromUrl(episodeUrl) : null
 	const { data } = useCategoryItem(
 		getEpisodeById,
 		`episode-detail-${episodeId}`,
 		episodeId,
-	);
-	return data;
+	)
+	return data
 }
 
 function BurgerDetail({ id }: { id: number }) {
@@ -36,8 +36,8 @@ function BurgerDetail({ id }: { id: number }) {
 		error,
 		retry,
 		cachedAt,
-	} = useCategoryItem(getBurgerOfTheDayById, `burger-detail-${id}`, id);
-	const episode = useAssociatedEpisode(burger?.episodeUrl);
+	} = useCategoryItem(getBurgerOfTheDayById, `burger-detail-${id}`, id)
+	const episode = useAssociatedEpisode(burger?.episodeUrl)
 
 	return (
 		<DetailLayout
@@ -49,7 +49,7 @@ function BurgerDetail({ id }: { id: number }) {
 			bio={burger ? composeBurgerFullBio(burger, episode) : ''}
 			fandomUrl={episode?.wikiUrl}
 		/>
-	);
+	)
 }
 
 function CharacterDetail({ id }: { id: number }) {
@@ -59,7 +59,7 @@ function CharacterDetail({ id }: { id: number }) {
 		error,
 		retry,
 		cachedAt,
-	} = useCategoryItem(getCharacterById, `character-detail-${id}`, id);
+	} = useCategoryItem(getCharacterById, `character-detail-${id}`, id)
 
 	return (
 		<DetailLayout
@@ -72,7 +72,7 @@ function CharacterDetail({ id }: { id: number }) {
 			bio={character ? composeCharacterFullBio(character) : ''}
 			fandomUrl={character?.wikiUrl}
 		/>
-	);
+	)
 }
 
 function EndCreditDetail({ id }: { id: number }) {
@@ -82,8 +82,8 @@ function EndCreditDetail({ id }: { id: number }) {
 		error,
 		retry,
 		cachedAt,
-	} = useCategoryItem(getEndCreditsSequenceById, `endCredit-detail-${id}`, id);
-	const episode = useAssociatedEpisode(endCredit?.episodeUrl);
+	} = useCategoryItem(getEndCreditsSequenceById, `endCredit-detail-${id}`, id)
+	const episode = useAssociatedEpisode(endCredit?.episodeUrl)
 
 	return (
 		<DetailLayout
@@ -100,7 +100,7 @@ function EndCreditDetail({ id }: { id: number }) {
 			bio={endCredit ? composeEndCreditFullBio(endCredit, episode) : ''}
 			fandomUrl={episode?.wikiUrl}
 		/>
-	);
+	)
 }
 
 function EpisodeDetail({ id }: { id: number }) {
@@ -110,7 +110,7 @@ function EpisodeDetail({ id }: { id: number }) {
 		error,
 		retry,
 		cachedAt,
-	} = useCategoryItem(getEpisodeById, `episode-detail-${id}`, id);
+	} = useCategoryItem(getEpisodeById, `episode-detail-${id}`, id)
 
 	return (
 		<DetailLayout
@@ -122,7 +122,7 @@ function EpisodeDetail({ id }: { id: number }) {
 			bio={episode ? composeEpisodeFullBio(episode) : ''}
 			fandomUrl={episode?.wikiUrl}
 		/>
-	);
+	)
 }
 
 function TruckDetail({ id }: { id: number }) {
@@ -132,8 +132,8 @@ function TruckDetail({ id }: { id: number }) {
 		error,
 		retry,
 		cachedAt,
-	} = useCategoryItem(getPestControlTruckById, `truck-detail-${id}`, id);
-	const episode = useAssociatedEpisode(truck?.episodeUrl);
+	} = useCategoryItem(getPestControlTruckById, `truck-detail-${id}`, id)
+	const episode = useAssociatedEpisode(truck?.episodeUrl)
 
 	return (
 		<DetailLayout
@@ -146,7 +146,7 @@ function TruckDetail({ id }: { id: number }) {
 			bio={truck ? composeTruckFullBio(truck, episode) : ''}
 			fandomUrl={episode?.wikiUrl}
 		/>
-	);
+	)
 }
 
 function StoreDetail({ id }: { id: number }) {
@@ -156,8 +156,8 @@ function StoreDetail({ id }: { id: number }) {
 		error,
 		retry,
 		cachedAt,
-	} = useCategoryItem(getStoreNextDoorById, `store-detail-${id}`, id);
-	const episode = useAssociatedEpisode(store?.episodeUrl);
+	} = useCategoryItem(getStoreNextDoorById, `store-detail-${id}`, id)
+	const episode = useAssociatedEpisode(store?.episodeUrl)
 
 	return (
 		<DetailLayout
@@ -170,30 +170,30 @@ function StoreDetail({ id }: { id: number }) {
 			bio={store ? composeStoreFullBio(store, episode) : ''}
 			fandomUrl={episode?.wikiUrl}
 		/>
-	);
+	)
 }
 
 export default function DetailScreen() {
 	const { category, id } = useLocalSearchParams<{
-		category: string;
-		id: string;
-	}>();
-	const numericId = Number(id);
+		category: string
+		id: string
+	}>()
+	const numericId = Number(id)
 
 	switch (category) {
 		case 'burgers':
-			return <BurgerDetail id={numericId} />;
+			return <BurgerDetail id={numericId} />
 		case 'characters':
-			return <CharacterDetail id={numericId} />;
+			return <CharacterDetail id={numericId} />
 		case 'endCredits':
-			return <EndCreditDetail id={numericId} />;
+			return <EndCreditDetail id={numericId} />
 		case 'episodes':
-			return <EpisodeDetail id={numericId} />;
+			return <EpisodeDetail id={numericId} />
 		case 'pestControl':
-			return <TruckDetail id={numericId} />;
+			return <TruckDetail id={numericId} />
 		case 'stores':
-			return <StoreDetail id={numericId} />;
+			return <StoreDetail id={numericId} />
 		default:
-			return <ErrorState message='Unknown category.' onRetry={() => {}} />;
+			return <ErrorState message='Unknown category.' onRetry={() => {}} />
 	}
 }

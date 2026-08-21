@@ -1,68 +1,68 @@
-import React, { useCallback } from 'react';
-import { FlatList, Pressable, Text, TextInput, View } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
-import { Burger, getBurgersOfTheDay } from '../../hooks/fetchBurgersOfTheDay';
-import { useCategoryData } from '../../hooks/useCategoryData';
-import { useCategorySearch } from '../../hooks/useCategorySearch';
-import { useAttributeFilters } from '../../hooks/useAttributeFilters';
-import { PAGE_SIZE, usePagination } from '../../hooks/usePagination';
-import { useFavorites } from '../../hooks/useFavorites';
-import { composeBurgerShortBio } from '../../lib/categoryBio';
-import { FavoriteButton } from '../../components/FavoriteButton';
-import { FilterPanel } from '../../components/FilterPanel';
-import { LoadMoreButton } from '../../components/LoadMoreButton';
-import { CategorySkeleton } from '../../components/CategorySkeleton';
-import { ErrorState } from '../../components/ErrorState';
-import { OfflineBanner } from '../../components/OfflineBanner';
-import { useTheme } from '../../hooks/useTheme';
+import React, { useCallback } from 'react'
+import { FlatList, Pressable, Text, TextInput, View } from 'react-native'
+import { useRouter } from 'expo-router'
+import { useFocusEffect } from '@react-navigation/native'
+import { Burger, getBurgersOfTheDay } from '../../hooks/fetchBurgersOfTheDay'
+import { useCategoryData } from '../../hooks/useCategoryData'
+import { useCategorySearch } from '../../hooks/useCategorySearch'
+import { useAttributeFilters } from '../../hooks/useAttributeFilters'
+import { PAGE_SIZE, usePagination } from '../../hooks/usePagination'
+import { useFavorites } from '../../hooks/useFavorites'
+import { composeBurgerShortBio } from '../../lib/categoryBio'
+import { FavoriteButton } from '../../components/FavoriteButton'
+import { FilterPanel } from '../../components/FilterPanel'
+import { LoadMoreButton } from '../../components/LoadMoreButton'
+import { CategorySkeleton } from '../../components/CategorySkeleton'
+import { ErrorState } from '../../components/ErrorState'
+import { OfflineBanner } from '../../components/OfflineBanner'
+import { useTheme } from '../../hooks/useTheme'
 
 const getSearchableText = (burger: Burger) =>
-	`${burger.name} ${composeBurgerShortBio(burger)}`;
+	`${burger.name} ${composeBurgerShortBio(burger)}`
 
 export default function Burgers() {
-	const router = useRouter();
-	const { isDark, colors } = useTheme();
-	const { isFavorited, addFavorite, removeFavorite } = useFavorites();
+	const router = useRouter()
+	const { isDark, colors } = useTheme()
+	const { isFavorited, addFavorite, removeFavorite } = useFavorites()
 	const {
 		data: burgers,
 		loading,
 		error,
 		retry,
 		cachedAt,
-	} = useCategoryData<Burger>(getBurgersOfTheDay, 'burgers');
+	} = useCategoryData<Burger>(getBurgersOfTheDay, 'burgers')
 	const {
 		query,
 		setQuery,
 		filteredItems: searchedBurgers,
-	} = useCategorySearch(burgers, getSearchableText);
-	const attributeFilters = useAttributeFilters<Burger>();
+	} = useCategorySearch(burgers, getSearchableText)
+	const attributeFilters = useAttributeFilters<Burger>()
 
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
-				setQuery('');
-				attributeFilters.reset();
-			};
+				setQuery('')
+				attributeFilters.reset()
+			}
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, []),
-	);
+	)
 
 	const visibleBurgers = attributeFilters.sortItems(
 		searchedBurgers,
 		(burger) => burger.name,
-	);
-	const { visibleItems, loadMore, hasMore } = usePagination(visibleBurgers);
+	)
+	const { visibleItems, loadMore, hasMore } = usePagination(visibleBurgers)
 
 	const handlePress = useCallback(
 		(burger: Burger) => {
 			router.push({
 				pathname: '/detail/[category]/[id]',
 				params: { category: 'burgers', id: String(burger.id) },
-			});
+			})
 		},
 		[router],
-	);
+	)
 
 	const renderItem = useCallback(
 		({ item: burger }: { item: Burger }) => (
@@ -96,14 +96,14 @@ export default function Burgers() {
 			</View>
 		),
 		[isFavorited, addFavorite, removeFavorite, handlePress],
-	);
+	)
 
 	if (loading) {
-		return <CategorySkeleton />;
+		return <CategorySkeleton />
 	}
 
 	if (error) {
-		return <ErrorState message={error} onRetry={retry} />;
+		return <ErrorState message={error} onRetry={retry} />
 	}
 
 	return (
@@ -154,5 +154,5 @@ export default function Burgers() {
 				hasMore ? <LoadMoreButton onPress={loadMore} /> : null
 			}
 		/>
-	);
+	)
 }

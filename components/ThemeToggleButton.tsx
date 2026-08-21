@@ -1,10 +1,10 @@
-import React from 'react';
-import { Pressable } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useTheme } from '../hooks/useTheme';
+import React from 'react'
+import { Pressable } from 'react-native'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { useTheme } from '../hooks/useTheme'
 
 export function ThemeToggleButton() {
-	const { isDark, toggleTheme, colors } = useTheme();
+	const { isDark, toggleTheme, colors } = useTheme()
 
 	return (
 		<Pressable
@@ -21,5 +21,5 @@ export function ThemeToggleButton() {
 				color={isDark ? '#F0F0F0' : colors.accent}
 			/>
 		</Pressable>
-	);
+	)
 }

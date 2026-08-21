@@ -1,10 +1,10 @@
-import React from 'react';
-import { Image, Text, View } from 'react-native';
-import { Character } from '../hooks/fetchCharacters';
+import React from 'react'
+import { Image, Text, View } from 'react-native'
+import { Character } from '../hooks/fetchCharacters'
 
 interface CharacterOfTheDayCardProps {
-	character: Character;
-	blurb: string;
+	character: Character
+	blurb: string
 }
 
 export function CharacterOfTheDayCard({
@@ -41,5 +41,5 @@ export function CharacterOfTheDayCard({
 				</Text>
 			</View>
 		</View>
-	);
+	)
 }

@@ -1,44 +1,44 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'expo-router';
-import { Alert, Platform, Pressable, Text, View } from 'react-native';
-import { useAuth } from '../../hooks/useAuth';
+import React, { useEffect, useState } from 'react'
+import { useRouter } from 'expo-router'
+import { Alert, Platform, Pressable, Text, View } from 'react-native'
+import { useAuth } from '../../hooks/useAuth'
 
 export default function Account() {
-	const router = useRouter();
-	const { token, username, loading, deleteAccount } = useAuth();
-	const [error, setError] = useState<string | null>(null);
-	const [deleting, setDeleting] = useState(false);
+	const router = useRouter()
+	const { token, username, loading, deleteAccount } = useAuth()
+	const [error, setError] = useState<string | null>(null)
+	const [deleting, setDeleting] = useState(false)
 
 	useEffect(() => {
 		if (!loading && !token) {
-			router.push('/login');
+			router.push('/login')
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [loading]);
+	}, [loading])
 
 	if (!token) {
-		return null;
+		return null
 	}
 
 	const performDelete = async () => {
-		setError(null);
-		setDeleting(true);
+		setError(null)
+		setDeleting(true)
 		try {
-			await deleteAccount();
-			router.push('/');
+			await deleteAccount()
+			router.push('/')
 		} catch (err) {
-			setError(err instanceof Error ? err.message : 'Something went wrong');
+			setError(err instanceof Error ? err.message : 'Something went wrong')
 		} finally {
-			setDeleting(false);
+			setDeleting(false)
 		}
-	};
+	}
 
 	const handleDeleteAccount = () => {
 		if (Platform.OS === 'web') {
 			if (window.confirm('Delete your account? This cannot be undone.')) {
-				void performDelete();
+				void performDelete()
 			}
-			return;
+			return
 		}
 
 		Alert.alert('Delete Account', 'This cannot be undone.', [
@@ -48,8 +48,8 @@ export default function Account() {
 				style: 'destructive',
 				onPress: () => void performDelete(),
 			},
-		]);
-	};
+		])
+	}
 
 	return (
 		<View className='flex-1 items-center justify-center gap-[10px] bg-lightBg dark:bg-darkBg p-[10px]'>
@@ -85,5 +85,5 @@ export default function Account() {
 				</Text>
 			</Pressable>
 		</View>
-	);
+	)
 }

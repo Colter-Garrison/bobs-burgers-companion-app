@@ -1,25 +1,25 @@
-import React from 'react';
-import { useRouter } from 'expo-router';
-import { Linking, Pressable, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import React from 'react'
+import { useRouter } from 'expo-router'
+import { Linking, Pressable, Text, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
 	DrawerContentComponentProps,
 	DrawerContentScrollView,
 	DrawerItem,
 	DrawerItemList,
-} from '@react-navigation/drawer';
-import { useAuth } from '../hooks/useAuth';
-import { useTheme } from '../hooks/useTheme';
-import { ThemeToggleButton } from './ThemeToggleButton';
-import { ColorblindModeButton } from './ColorblindModeButton';
+} from '@react-navigation/drawer'
+import { useAuth } from '../hooks/useAuth'
+import { useTheme } from '../hooks/useTheme'
+import { ThemeToggleButton } from './ThemeToggleButton'
+import { ColorblindModeButton } from './ColorblindModeButton'
 
 // For the auth block and Log Out, which intentionally stay plain (no
 // yellow box) — matches the font of react-navigation's own DrawerItem
 // label (screenOptions.drawerLabelStyle in app/_layout.tsx).
 const navLinkClassName =
-	'rounded-lg px-4 py-3 font-chewy text-[16px] text-lightAccent dark:text-darkAccent';
+	'rounded-lg px-4 py-3 font-chewy text-[16px] text-lightAccent dark:text-darkAccent'
 
-const boxedItemLabelStyle = { fontFamily: 'Chewy', fontSize: 16 };
+const boxedItemLabelStyle = { fontFamily: 'Chewy', fontSize: 16 }
 
 // A real embedded Buy Me a Coffee widget only works in a browser (it's a
 // third-party <script> that manipulates the DOM directly) — there's no
@@ -28,13 +28,13 @@ const boxedItemLabelStyle = { fontFamily: 'Chewy', fontSize: 16 };
 // page instead works identically on all three platforms, matching the
 // same pattern this app already uses for "View on Fandom" links (see
 // components/DetailLayout.tsx) — and needs no new script dependency.
-const BUY_ME_A_COFFEE_URL = 'https://www.buymeacoffee.com/colterg';
+const BUY_ME_A_COFFEE_URL = 'https://www.buymeacoffee.com/colterg'
 
 export function DrawerContent(props: DrawerContentComponentProps) {
-	const router = useRouter();
-	const { token, username, logout } = useAuth();
-	const { colors } = useTheme();
-	const insets = useSafeAreaInsets();
+	const router = useRouter()
+	const { token, username, logout } = useAuth()
+	const { colors } = useTheme()
+	const insets = useSafeAreaInsets()
 
 	// Matches app/_layout.tsx's screenOptions.drawerItemStyle so the
 	// Favorites link — rendered outside DrawerItemList, via the actual
@@ -50,12 +50,12 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 		borderColor: colors.accent,
 		backgroundColor: colors.surface,
 		borderRadius: 8,
-	};
+	}
 
 	const handleLogout = async () => {
-		await logout();
-		router.push('/');
-	};
+		await logout()
+		router.push('/')
+	}
 
 	return (
 		<DrawerContentScrollView
@@ -120,5 +120,5 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 			</View>
 			<View style={{ height: insets.bottom }} />
 		</DrawerContentScrollView>
-	);
+	)
 }

@@ -1,58 +1,58 @@
-import React, { useCallback, useState } from 'react';
-import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
-import { Pressable, Text, TextInput, View } from 'react-native';
-import { useAuth } from '../../hooks/useAuth';
-import { useTheme } from '../../hooks/useTheme';
+import React, { useCallback, useState } from 'react'
+import { useRouter } from 'expo-router'
+import { useFocusEffect } from '@react-navigation/native'
+import { Pressable, Text, TextInput, View } from 'react-native'
+import { useAuth } from '../../hooks/useAuth'
+import { useTheme } from '../../hooks/useTheme'
 
 export default function Signup() {
-	const router = useRouter();
-	const { isDark, colors } = useTheme();
-	const { signup } = useAuth();
-	const [username, setUsername] = useState('');
-	const [password, setPassword] = useState('');
-	const [error, setError] = useState<string | null>(null);
-	const [usernameError, setUsernameError] = useState<string | null>(null);
-	const [submitting, setSubmitting] = useState(false);
+	const router = useRouter()
+	const { isDark, colors } = useTheme()
+	const { signup } = useAuth()
+	const [username, setUsername] = useState('')
+	const [password, setPassword] = useState('')
+	const [error, setError] = useState<string | null>(null)
+	const [usernameError, setUsernameError] = useState<string | null>(null)
+	const [submitting, setSubmitting] = useState(false)
 
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
-				setUsername('');
-				setPassword('');
-				setError(null);
-				setUsernameError(null);
-			};
+				setUsername('')
+				setPassword('')
+				setError(null)
+				setUsernameError(null)
+			}
 		}, []),
-	);
+	)
 
 	const handleUsernameChange = (text: string) => {
-		setUsername(text);
-		if (usernameError) setUsernameError(null);
-	};
+		setUsername(text)
+		if (usernameError) setUsernameError(null)
+	}
 
 	const handleSubmit = async () => {
-		setError(null);
+		setError(null)
 		if (username.length < 2) {
-			setUsernameError('Username must be at least 2 characters.');
-			return;
+			setUsernameError('Username must be at least 2 characters.')
+			return
 		}
 		if (!/^[a-zA-Z0-9]+$/.test(username)) {
-			setUsernameError('Username can only contain letters and numbers.');
-			return;
+			setUsernameError('Username can only contain letters and numbers.')
+			return
 		}
-		setUsernameError(null);
+		setUsernameError(null)
 
-		setSubmitting(true);
+		setSubmitting(true)
 		try {
-			await signup(username, password);
-			router.push('/');
+			await signup(username, password)
+			router.push('/')
 		} catch (err) {
-			setError(err instanceof Error ? err.message : 'Something went wrong');
+			setError(err instanceof Error ? err.message : 'Something went wrong')
 		} finally {
-			setSubmitting(false);
+			setSubmitting(false)
 		}
-	};
+	}
 
 	return (
 		<View className='flex-1 items-center justify-center gap-[10px] bg-lightBg dark:bg-darkBg p-[10px]'>
@@ -126,5 +126,5 @@ export default function Signup() {
 				</Text>
 			</Pressable>
 		</View>
-	);
+	)
 }

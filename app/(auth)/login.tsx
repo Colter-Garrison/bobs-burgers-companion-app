@@ -1,41 +1,41 @@
-import React, { useCallback, useState } from 'react';
-import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
-import { Pressable, Text, TextInput, View } from 'react-native';
-import { useAuth } from '../../hooks/useAuth';
-import { useTheme } from '../../hooks/useTheme';
+import React, { useCallback, useState } from 'react'
+import { useRouter } from 'expo-router'
+import { useFocusEffect } from '@react-navigation/native'
+import { Pressable, Text, TextInput, View } from 'react-native'
+import { useAuth } from '../../hooks/useAuth'
+import { useTheme } from '../../hooks/useTheme'
 
 export default function Login() {
-	const router = useRouter();
-	const { isDark, colors } = useTheme();
-	const { login } = useAuth();
-	const [username, setUsername] = useState('');
-	const [password, setPassword] = useState('');
-	const [error, setError] = useState<string | null>(null);
-	const [submitting, setSubmitting] = useState(false);
+	const router = useRouter()
+	const { isDark, colors } = useTheme()
+	const { login } = useAuth()
+	const [username, setUsername] = useState('')
+	const [password, setPassword] = useState('')
+	const [error, setError] = useState<string | null>(null)
+	const [submitting, setSubmitting] = useState(false)
 
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
-				setUsername('');
-				setPassword('');
-				setError(null);
-			};
+				setUsername('')
+				setPassword('')
+				setError(null)
+			}
 		}, []),
-	);
+	)
 
 	const handleSubmit = async () => {
-		setError(null);
-		setSubmitting(true);
+		setError(null)
+		setSubmitting(true)
 		try {
-			await login(username, password);
-			router.push('/');
+			await login(username, password)
+			router.push('/')
 		} catch (err) {
-			setError(err instanceof Error ? err.message : 'Something went wrong');
+			setError(err instanceof Error ? err.message : 'Something went wrong')
 		} finally {
-			setSubmitting(false);
+			setSubmitting(false)
 		}
-	};
+	}
 
 	return (
 		<View className='flex-1 items-center justify-center gap-[10px] bg-lightBg dark:bg-darkBg p-[10px]'>
@@ -100,5 +100,5 @@ export default function Login() {
 				</Text>
 			</Pressable>
 		</View>
-	);
+	)
 }

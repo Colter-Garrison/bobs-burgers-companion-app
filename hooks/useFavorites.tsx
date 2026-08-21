@@ -4,8 +4,8 @@ import React, {
 	useContext,
 	useEffect,
 	useState,
-} from 'react';
-import { useRouter } from 'expo-router';
+} from 'react'
+import { useRouter } from 'expo-router'
 import {
 	ApiError,
 	Favorite,
@@ -13,63 +13,63 @@ import {
 	addFavoriteRequest,
 	fetchFavorites,
 	removeFavoriteRequest,
-} from '../lib/apiClient';
-import { useAuth } from './useAuth';
+} from '../lib/apiClient'
+import { useAuth } from './useAuth'
 
 interface FavoritesContextValue {
-	favorites: Favorite[];
-	loading: boolean;
-	isFavorited: (category: FavoriteCategory, itemId: number) => boolean;
-	addFavorite: (category: FavoriteCategory, itemId: number) => Promise<void>;
-	removeFavorite: (category: FavoriteCategory, itemId: number) => Promise<void>;
+	favorites: Favorite[]
+	loading: boolean
+	isFavorited: (category: FavoriteCategory, itemId: number) => boolean
+	addFavorite: (category: FavoriteCategory, itemId: number) => Promise<void>
+	removeFavorite: (category: FavoriteCategory, itemId: number) => Promise<void>
 }
 
 const FavoritesContext = createContext<FavoritesContextValue | undefined>(
 	undefined,
-);
+)
 
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
-	const { token, logout } = useAuth();
-	const router = useRouter();
-	const [favorites, setFavorites] = useState<Favorite[]>([]);
-	const [loading, setLoading] = useState(true);
+	const { token, logout } = useAuth()
+	const router = useRouter()
+	const [favorites, setFavorites] = useState<Favorite[]>([])
+	const [loading, setLoading] = useState(true)
 
 	const handleSessionExpired = useCallback(
 		(err: unknown) => {
 			if (err instanceof ApiError && err.status === 401) {
-				logout();
-				router.push('/login');
-				return true;
+				logout()
+				router.push('/login')
+				return true
 			}
-			return false;
+			return false
 		},
 		[logout, router],
-	);
+	)
 
 	useEffect(() => {
 		if (!token) {
-			setFavorites([]);
-			setLoading(false);
-			return;
+			setFavorites([])
+			setLoading(false)
+			return
 		}
-		setLoading(true);
+		setLoading(true)
 		fetchFavorites(token)
 			.then(setFavorites)
 			.catch((err) => {
-				handleSessionExpired(err);
+				handleSessionExpired(err)
 			})
-			.finally(() => setLoading(false));
-	}, [token, handleSessionExpired]);
+			.finally(() => setLoading(false))
+	}, [token, handleSessionExpired])
 
 	const isFavorited = useCallback(
 		(category: FavoriteCategory, itemId: number) =>
 			favorites.some((f) => f.category === category && f.itemId === itemId),
 		[favorites],
-	);
+	)
 
 	const addFavorite = useCallback(
 		async (category: FavoriteCategory, itemId: number) => {
-			if (!token) return;
+			if (!token) return
 
 			const optimistic: Favorite = {
 				id: -Date.now(),
@@ -77,42 +77,42 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
 				category,
 				itemId,
 				createdAt: new Date().toISOString(),
-			};
-			setFavorites((prev) => [...prev, optimistic]);
+			}
+			setFavorites((prev) => [...prev, optimistic])
 
 			try {
-				const saved = await addFavoriteRequest(token, category, itemId);
-				setFavorites((prev) => prev.map((f) => (f === optimistic ? saved : f)));
+				const saved = await addFavoriteRequest(token, category, itemId)
+				setFavorites((prev) => prev.map((f) => (f === optimistic ? saved : f)))
 			} catch (err) {
-				if (err instanceof ApiError && err.status === 409) return;
+				if (err instanceof ApiError && err.status === 409) return
 
-				setFavorites((prev) => prev.filter((f) => f !== optimistic));
-				handleSessionExpired(err);
+				setFavorites((prev) => prev.filter((f) => f !== optimistic))
+				handleSessionExpired(err)
 			}
 		},
 		[token, handleSessionExpired],
-	);
+	)
 
 	const removeFavorite = useCallback(
 		async (category: FavoriteCategory, itemId: number) => {
-			if (!token) return;
+			if (!token) return
 
-			const previous = favorites;
+			const previous = favorites
 			setFavorites((prev) =>
 				prev.filter((f) => !(f.category === category && f.itemId === itemId)),
-			);
+			)
 
 			try {
-				await removeFavoriteRequest(token, category, itemId);
+				await removeFavoriteRequest(token, category, itemId)
 			} catch (err) {
-				if (err instanceof ApiError && err.status === 404) return;
+				if (err instanceof ApiError && err.status === 404) return
 
-				setFavorites(previous);
-				handleSessionExpired(err);
+				setFavorites(previous)
+				handleSessionExpired(err)
 			}
 		},
 		[token, favorites, handleSessionExpired],
-	);
+	)
 
 	return (
 		<FavoritesContext.Provider
@@ -120,13 +120,13 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
 		>
 			{children}
 		</FavoritesContext.Provider>
-	);
+	)
 }
 
 export function useFavorites(): FavoritesContextValue {
-	const context = useContext(FavoritesContext);
+	const context = useContext(FavoritesContext)
 	if (!context) {
-		throw new Error('useFavorites must be used within a FavoritesProvider');
+		throw new Error('useFavorites must be used within a FavoritesProvider')
 	}
-	return context;
+	return context
 }

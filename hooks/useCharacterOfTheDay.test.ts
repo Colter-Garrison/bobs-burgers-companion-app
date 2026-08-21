@@ -1,16 +1,16 @@
-import { renderHook, waitFor } from '@testing-library/react-native';
-import { useCharacterOfTheDay } from './useCharacterOfTheDay';
-import { getCharacters } from './fetchCharacters';
+import { renderHook, waitFor } from '@testing-library/react-native'
+import { useCharacterOfTheDay } from './useCharacterOfTheDay'
+import { getCharacters } from './fetchCharacters'
 
-jest.mock('./fetchCharacters');
+jest.mock('./fetchCharacters')
 
 describe('useCharacterOfTheDay', () => {
 	afterEach(() => {
-		jest.clearAllMocks();
-	});
+		jest.clearAllMocks()
+	})
 
 	it('returns a character and a matching blurb once the character list loads', async () => {
-		(getCharacters as jest.Mock).mockResolvedValue([
+		;(getCharacters as jest.Mock).mockResolvedValue([
 			{
 				id: 1,
 				name: 'Bob Belcher',
@@ -25,22 +25,22 @@ describe('useCharacterOfTheDay', () => {
 				voicedBy: '',
 				url: 'https://url',
 			},
-		]);
+		])
 
-		const { result } = renderHook(() => useCharacterOfTheDay());
+		const { result } = renderHook(() => useCharacterOfTheDay())
 
-		await waitFor(() => expect(result.current.character).not.toBeNull());
+		await waitFor(() => expect(result.current.character).not.toBeNull())
 
-		expect(result.current.character?.name).toBe('Bob Belcher');
-		expect(result.current.blurb).toContain('Bob Belcher');
-	});
+		expect(result.current.character?.name).toBe('Bob Belcher')
+		expect(result.current.blurb).toContain('Bob Belcher')
+	})
 
 	it('returns null character and blurb while there is nothing to pick from yet', () => {
-		(getCharacters as jest.Mock).mockReturnValue(new Promise(() => {})); // never resolves
+		;(getCharacters as jest.Mock).mockReturnValue(new Promise(() => {})) // never resolves
 
-		const { result } = renderHook(() => useCharacterOfTheDay());
+		const { result } = renderHook(() => useCharacterOfTheDay())
 
-		expect(result.current.character).toBeNull();
-		expect(result.current.blurb).toBeNull();
-	});
-});
+		expect(result.current.character).toBeNull()
+		expect(result.current.blurb).toBeNull()
+	})
+})
