@@ -8,6 +8,9 @@ const envSchema = z.object({
 	JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
 	PORT: z.coerce.number().default(3000),
 	CORS_ORIGINS: z.string().optional(),
+	GRAFANA_LOKI_HOST: z.string().optional(),
+	GRAFANA_LOKI_USER_ID: z.string().optional(),
+	GRAFANA_LOKI_API_KEY: z.string().optional(),
 });
 
 export const env = envSchema.parse(process.env);
