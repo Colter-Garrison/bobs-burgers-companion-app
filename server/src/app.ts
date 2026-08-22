@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import authRoutes from './routes/auth.js';
 import profileRoutes from './routes/profile.js';
 import favoritesRoutes from './routes/favorites.js';
@@ -26,6 +27,11 @@ const allowedOrigins = env.CORS_ORIGINS
 	? env.CORS_ORIGINS.split(',').map((origin) => origin.trim())
 	: defaultOrigins;
 app.use(cors({ origin: allowedOrigins }));
+
+// Defaults only — this is a JSON API with no HTML responses, so
+// helmet's CSP/frameguard headers are inert here; nosniff and HSTS
+// are the ones that actually do something for this app.
+app.use(helmet());
 
 app.use(requestLogger);
 
