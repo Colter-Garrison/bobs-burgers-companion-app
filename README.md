@@ -6,7 +6,7 @@
 
 A React Native + Expo app for browsing the world of Bob's Burgers — characters, episodes, and more — built on the [Bob's Burgers API](https://www.bobsburgersapi.com/).
 
-**🌐 Try it live:** [bobsburgerscompanion.netlify.app](https://bobsburgerscompanion.netlify.app/) 
+**🌐 Try it live:** [bobsburgerscompanionapp.com](https://bobsburgerscompanionapp.com/) 
 *(Tap any card for more info)*
 [![Netlify Status](https://api.netlify.com/api/v1/badges/3ed63130-42c5-4ad3-a75d-b99e870ff2ed/deploy-status)](https://app.netlify.com/sites/bobsburgerscompanion/deploys)
 
