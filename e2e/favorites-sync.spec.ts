@@ -22,7 +22,7 @@ test('favoriting/unfavoriting on one screen stays in sync with Favorites and oth
 		.first()
 		.click()
 	await page.goto('/favorites')
-	await expect(page.getByText(characterName)).toBeVisible()
+	await expect(page.getByRole('heading', { name: characterName })).toBeVisible()
 
 	await page
 		.getByRole('button', { name: /^Remove .+ from favorites$/ })
@@ -40,7 +40,7 @@ test('favoriting/unfavoriting on one screen stays in sync with Favorites and oth
 		.first()
 		.click()
 	await page.goto('/favorites')
-	await expect(page.getByText(characterName)).toBeVisible()
+	await expect(page.getByRole('heading', { name: characterName })).toBeVisible()
 
 	page.once('dialog', (dialog) => void dialog.accept())
 	await page.goto('/account')

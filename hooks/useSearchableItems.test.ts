@@ -75,6 +75,23 @@ describe('useSearchableItems', () => {
 		)
 	})
 
+	it('gives every character (not just other categories) a short bio, using the same composer as the Characters screen', async () => {
+		const { result } = renderHook(() => useSearchableItems())
+		await waitFor(() => expect(result.current.loading).toBe(false))
+
+		const bob = result.current.items.find((item) => item.id === 'character-2')
+		expect(bob?.bio).toBe("Bob is a regular in the Bob's Burgers world.")
+
+		const dev = result.current.items.find(
+			(item) =>
+				item.category === 'Characters' && item.label === 'Colter Garrison',
+		)
+		expect(dev?.bio).toContain('React Native developer')
+
+		const burger = result.current.items.find((item) => item.id === 'burger-1')
+		expect(burger?.bio).toBeUndefined()
+	})
+
 	it("keeps the other five sources' results and surfaces an error when one source rejects", async () => {
 		;(getCharacters as jest.Mock).mockRejectedValue(new Error('boom'))
 

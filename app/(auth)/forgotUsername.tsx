@@ -2,34 +2,34 @@ import React, { useCallback, useState } from 'react'
 import { useRouter } from 'expo-router'
 import { useFocusEffect } from '@react-navigation/native'
 import { Pressable, Text, TextInput, View } from 'react-native'
-import { useAuth } from '../../hooks/useAuth'
+import { requestUsernameRecovery } from '../../lib/apiClient'
 import { useTheme } from '../../hooks/useTheme'
 
-export default function Login() {
+export default function ForgotUsername() {
 	const router = useRouter()
 	const { isDark, colors } = useTheme()
-	const { login } = useAuth()
-	const [username, setUsername] = useState('')
-	const [password, setPassword] = useState('')
+	const [email, setEmail] = useState('')
 	const [error, setError] = useState<string | null>(null)
+	const [message, setMessage] = useState<string | null>(null)
 	const [submitting, setSubmitting] = useState(false)
 
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
-				setUsername('')
-				setPassword('')
+				setEmail('')
 				setError(null)
+				setMessage(null)
 			}
 		}, []),
 	)
 
 	const handleSubmit = async () => {
 		setError(null)
+		setMessage(null)
 		setSubmitting(true)
 		try {
-			await login(username, password)
-			router.push('/')
+			const result = await requestUsernameRecovery(email)
+			setMessage(result.message)
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Something went wrong')
 		} finally {
@@ -43,31 +43,31 @@ export default function Login() {
 				accessibilityRole='header'
 				className='font-chewy text-[32px] text-lightAccent dark:text-darkAccent'
 			>
-				Log In
+				Forgot Username
 			</Text>
 
 			<TextInput
-				placeholder='Username'
+				placeholder='Email'
 				placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
-				value={username}
-				onChangeText={setUsername}
+				value={email}
+				onChangeText={setEmail}
 				autoCapitalize='none'
-				maxLength={25}
-				accessibilityLabel='Username'
-				className='w-full rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'
-			/>
-			<TextInput
-				placeholder='Password'
-				placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
-				value={password}
-				onChangeText={setPassword}
-				secureTextEntry
-				textContentType='password'
-				autoComplete='current-password'
-				accessibilityLabel='Password'
+				keyboardType='email-address'
+				textContentType='emailAddress'
+				autoComplete='email'
+				accessibilityLabel='Email'
 				className='w-full rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'
 			/>
 
+			{message ? (
+				<Text
+					accessibilityRole='alert'
+					accessibilityLiveRegion='polite'
+					className='font-chewy text-center text-lightAccent dark:text-darkAccent'
+				>
+					{message}
+				</Text>
+			) : null}
 			{error ? (
 				<Text
 					accessibilityRole='alert'
@@ -86,36 +86,17 @@ export default function Login() {
 				accessibilityState={{ busy: submitting }}
 			>
 				<Text className='font-chewy text-[20px] text-lightAccent dark:text-darkAccent'>
-					{submitting ? 'Logging In...' : 'Log In'}
+					{submitting ? 'Sending...' : 'Send'}
 				</Text>
 			</Pressable>
 
 			<Pressable
-				onPress={() => router.push('/signup')}
+				onPress={() => router.push('/login')}
 				hitSlop={12}
 				accessibilityRole='button'
 			>
 				<Text className='font-chewy text-lightAccent dark:text-darkAccent underline'>
-					Need an account? Sign Up
-				</Text>
-			</Pressable>
-
-			<Pressable
-				onPress={() => router.push('/forgotUsername')}
-				hitSlop={12}
-				accessibilityRole='button'
-			>
-				<Text className='font-chewy text-[14px] text-lightAccent dark:text-darkAccent underline'>
-					Forgot username?
-				</Text>
-			</Pressable>
-			<Pressable
-				onPress={() => router.push('/forgotPassword')}
-				hitSlop={12}
-				accessibilityRole='button'
-			>
-				<Text className='font-chewy text-[14px] text-lightAccent dark:text-darkAccent underline'>
-					Forgot password?
+					Back to Log In
 				</Text>
 			</Pressable>
 		</View>

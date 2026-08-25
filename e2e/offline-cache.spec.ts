@@ -42,7 +42,7 @@ test('the Home search falls back to its cached data when the API becomes unreach
 	}
 	expect(loadedCleanly).toBe(true)
 
-	const firstResult = page.getByText(/bob/i).first()
+	const firstResult = page.getByRole('heading', { name: /bob/i }).first()
 	const rememberedText = await firstResult.textContent()
 
 	await page.route(`**://${API_HOST}/**`, (route) => route.abort())
@@ -54,7 +54,9 @@ test('the Home search falls back to its cached data when the API becomes unreach
 	await expect(page.getByText(/You.re offline/)).toBeVisible({
 		timeout: 10_000,
 	})
-	await expect(page.getByText(rememberedText!)).toBeVisible()
+	await expect(
+		page.getByRole('heading', { name: rememberedText! }),
+	).toBeVisible()
 })
 
 test('the offline banner appears when connectivity is lost and clears automatically once it returns, with no reload', async ({

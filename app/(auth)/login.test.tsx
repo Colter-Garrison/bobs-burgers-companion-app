@@ -75,6 +75,22 @@ describe('Login screen', () => {
 		expect(mockPush).toHaveBeenCalledWith('/signup')
 	})
 
+	it('navigates to Forgot Username when the link is pressed', () => {
+		render(<Login />)
+
+		fireEvent.press(screen.getByText('Forgot username?'))
+
+		expect(mockPush).toHaveBeenCalledWith('/forgotUsername')
+	})
+
+	it('navigates to Forgot Password when the link is pressed', () => {
+		render(<Login />)
+
+		fireEvent.press(screen.getByText('Forgot password?'))
+
+		expect(mockPush).toHaveBeenCalledWith('/forgotPassword')
+	})
+
 	it('clears the username/password fields when the screen loses focus', () => {
 		render(<Login />)
 

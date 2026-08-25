@@ -20,6 +20,7 @@ jest.mock('@react-navigation/native', () => ({
 
 const USERNAME_PLACEHOLDER = 'Username (2-25 chars)'
 const PASSWORD_PLACEHOLDER = 'Password (min. 8 characters)'
+const EMAIL_PLACEHOLDER = 'Email (optional)'
 
 describe('Signup screen', () => {
 	const mockPush = jest.fn()
@@ -39,7 +40,7 @@ describe('Signup screen', () => {
 		jest.clearAllMocks()
 	})
 
-	it('submits the entered username/password and navigates home on success', async () => {
+	it('submits the entered username/password (no email) and navigates home on success', async () => {
 		mockSignup.mockResolvedValueOnce(undefined)
 		render(<Signup />)
 
@@ -55,8 +56,39 @@ describe('Signup screen', () => {
 			fireEvent.press(screen.getByRole('button', { name: 'Sign Up' }))
 		})
 
-		expect(mockSignup).toHaveBeenCalledWith('newbelcher', 'correcthorse')
+		expect(mockSignup).toHaveBeenCalledWith(
+			'newbelcher',
+			'correcthorse',
+			undefined,
+		)
 		expect(mockPush).toHaveBeenCalledWith('/')
+	})
+
+	it('passes a trimmed, optional email through to signup when provided', async () => {
+		mockSignup.mockResolvedValueOnce(undefined)
+		render(<Signup />)
+
+		fireEvent.changeText(
+			screen.getByPlaceholderText(USERNAME_PLACEHOLDER),
+			'newbelcher',
+		)
+		fireEvent.changeText(
+			screen.getByPlaceholderText(PASSWORD_PLACEHOLDER),
+			'correcthorse',
+		)
+		fireEvent.changeText(
+			screen.getByPlaceholderText(EMAIL_PLACEHOLDER),
+			'  new@example.com  ',
+		)
+		await act(async () => {
+			fireEvent.press(screen.getByRole('button', { name: 'Sign Up' }))
+		})
+
+		expect(mockSignup).toHaveBeenCalledWith(
+			'newbelcher',
+			'correcthorse',
+			'new@example.com',
+		)
 	})
 
 	it('shows an error message and does not navigate on failure', async () => {
@@ -151,7 +183,7 @@ describe('Signup screen', () => {
 		expect(mockPush).toHaveBeenCalledWith('/login')
 	})
 
-	it('clears the username/password fields when the screen loses focus', () => {
+	it('clears the username/password/email fields when the screen loses focus', () => {
 		render(<Signup />)
 
 		fireEvent.changeText(
@@ -161,6 +193,10 @@ describe('Signup screen', () => {
 		fireEvent.changeText(
 			screen.getByPlaceholderText(PASSWORD_PLACEHOLDER),
 			'correcthorse',
+		)
+		fireEvent.changeText(
+			screen.getByPlaceholderText(EMAIL_PLACEHOLDER),
+			'new@example.com',
 		)
 
 		act(() => {
@@ -173,5 +209,6 @@ describe('Signup screen', () => {
 		expect(screen.getByPlaceholderText(PASSWORD_PLACEHOLDER).props.value).toBe(
 			'',
 		)
+		expect(screen.getByPlaceholderText(EMAIL_PLACEHOLDER).props.value).toBe('')
 	})
 })

@@ -96,4 +96,30 @@ describe('SearchResultCard', () => {
 			screen.getByLabelText('Remove Bob Belcher from favorites'),
 		).toBeVisible()
 	})
+
+	it('shows the bio line when the item has one', () => {
+		render(
+			<SearchResultCard
+				item={{ ...item, bio: 'A gruff but loving father.' }}
+				favorited={false}
+				onToggleFavorite={mockOnToggleFavorite}
+				onPress={mockOnPress}
+			/>,
+		)
+
+		expect(screen.getByText('A gruff but loving father.')).toBeVisible()
+	})
+
+	it('shows no bio line when the item has none, matching every other category today', () => {
+		render(
+			<SearchResultCard
+				item={item}
+				favorited={false}
+				onToggleFavorite={mockOnToggleFavorite}
+				onPress={mockOnPress}
+			/>,
+		)
+
+		expect(screen.queryByText('A gruff but loving father.')).toBeNull()
+	})
 })

@@ -11,6 +11,7 @@ export default function Signup() {
 	const { signup } = useAuth()
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
+	const [email, setEmail] = useState('')
 	const [error, setError] = useState<string | null>(null)
 	const [usernameError, setUsernameError] = useState<string | null>(null)
 	const [submitting, setSubmitting] = useState(false)
@@ -20,6 +21,7 @@ export default function Signup() {
 			return () => {
 				setUsername('')
 				setPassword('')
+				setEmail('')
 				setError(null)
 				setUsernameError(null)
 			}
@@ -45,7 +47,7 @@ export default function Signup() {
 
 		setSubmitting(true)
 		try {
-			await signup(username, password)
+			await signup(username, password, email.trim() || undefined)
 			router.push('/')
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -91,6 +93,18 @@ export default function Signup() {
 				textContentType='newPassword'
 				autoComplete='new-password'
 				accessibilityLabel='Password, minimum 8 characters'
+				className='w-full rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'
+			/>
+			<TextInput
+				placeholder='Email (optional)'
+				placeholderTextColor={isDark ? '#F0F0F0' : colors.accent}
+				value={email}
+				onChangeText={setEmail}
+				autoCapitalize='none'
+				keyboardType='email-address'
+				textContentType='emailAddress'
+				autoComplete='email'
+				accessibilityLabel='Email, optional'
 				className='w-full rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2 text-[18px] text-lightAccent dark:text-darkAccent'
 			/>
 

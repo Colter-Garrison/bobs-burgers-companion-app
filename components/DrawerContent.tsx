@@ -1,6 +1,6 @@
 import React from 'react'
 import { useRouter } from 'expo-router'
-import { Linking, Pressable, Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
 	DrawerContentComponentProps,
@@ -20,15 +20,6 @@ const navLinkClassName =
 	'rounded-lg px-4 py-3 font-chewy text-[16px] text-lightAccent dark:text-darkAccent'
 
 const boxedItemLabelStyle = { fontFamily: 'Chewy', fontSize: 16 }
-
-// A real embedded Buy Me a Coffee widget only works in a browser (it's a
-// third-party <script> that manipulates the DOM directly) — there's no
-// equivalent on iOS/Android, since a React Native app has no DOM or
-// <script> tags to run at all. Linking.openURL to the actual donation
-// page instead works identically on all three platforms, matching the
-// same pattern this app already uses for "View on Fandom" links (see
-// components/DetailLayout.tsx) — and needs no new script dependency.
-const BUY_ME_A_COFFEE_URL = 'https://www.buymeacoffee.com/colterg'
 
 export function DrawerContent(props: DrawerContentComponentProps) {
 	const router = useRouter()
@@ -92,32 +83,44 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 			<DrawerItemList {...props} />
 
 			{token ? (
+				<>
+					<DrawerItem
+						label='Favorites'
+						onPress={() => router.push('/favorites')}
+						labelStyle={boxedItemLabelStyle}
+						style={boxedItemStyle}
+						activeTintColor={colors.accent}
+						inactiveTintColor={colors.accent}
+					/>
+					<DrawerItem
+						label='About the Dev'
+						onPress={() => router.push('/aboutTheDev')}
+						labelStyle={boxedItemLabelStyle}
+						style={boxedItemStyle}
+						activeTintColor={colors.accent}
+						inactiveTintColor={colors.accent}
+					/>
+				</>
+			) : (
 				<DrawerItem
-					label='Favorites'
-					onPress={() => router.push('/favorites')}
+					label='About the Dev'
+					onPress={() => router.push('/aboutTheDev')}
 					labelStyle={boxedItemLabelStyle}
 					style={boxedItemStyle}
 					activeTintColor={colors.accent}
 					inactiveTintColor={colors.accent}
 				/>
-			) : null}
+			)}
 
 			<View className='flex-1' />
 
-			<View className='gap-1 p-2'>
-				<Pressable
-					onPress={() => Linking.openURL(BUY_ME_A_COFFEE_URL)}
-					accessibilityRole='button'
-					accessibilityLabel='Buy me a beer, opens a support page'
-				>
-					<Text className={navLinkClassName}>Buy me a beer 🍺</Text>
-				</Pressable>
-				{token ? (
+			{token ? (
+				<View className='gap-1 p-2'>
 					<Pressable onPress={handleLogout} accessibilityRole='button'>
 						<Text className={navLinkClassName}>Log Out</Text>
 					</Pressable>
-				) : null}
-			</View>
+				</View>
+			) : null}
 			<View style={{ height: insets.bottom }} />
 		</DrawerContentScrollView>
 	)

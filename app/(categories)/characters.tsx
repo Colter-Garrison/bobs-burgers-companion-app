@@ -2,13 +2,19 @@ import React, { useCallback, useMemo } from 'react'
 import { FlatList, Image, Pressable, Text, TextInput, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useFocusEffect } from '@react-navigation/native'
-import { Character, getCharacters } from '../../hooks/fetchCharacters'
+import { Character } from '../../hooks/fetchCharacters'
 import { useCategoryData } from '../../hooks/useCategoryData'
 import { useCategorySearch } from '../../hooks/useCategorySearch'
 import { useAttributeFilters } from '../../hooks/useAttributeFilters'
 import { PAGE_SIZE, usePagination } from '../../hooks/usePagination'
 import { useFavorites } from '../../hooks/useFavorites'
 import { composeCharacterShortBio } from '../../lib/categoryBio'
+import {
+	DEV_CHARACTER_ID,
+	DEV_CHARACTER_SHORT_BIO,
+	getCharactersWithDev,
+} from '../../lib/devCharacter'
+import { detailHref } from '../../lib/detailRoute'
 import { FavoriteButton } from '../../components/FavoriteButton'
 import { LoadMoreButton } from '../../components/LoadMoreButton'
 import { FilterPanel } from '../../components/FilterPanel'
@@ -29,7 +35,7 @@ export default function Characters() {
 		error,
 		retry,
 		cachedAt,
-	} = useCategoryData<Character>(getCharacters, 'characters')
+	} = useCategoryData<Character>(getCharactersWithDev, 'characters')
 	const {
 		query,
 		setQuery,
@@ -60,10 +66,7 @@ export default function Characters() {
 
 	const handlePress = useCallback(
 		(character: Character) => {
-			router.push({
-				pathname: '/detail/[category]/[id]',
-				params: { category: 'characters', id: String(character.id) },
-			})
+			router.push(detailHref('Characters', character.id))
 		},
 		[router],
 	)
@@ -98,7 +101,9 @@ export default function Characters() {
 							{character.name}
 						</Text>
 						<Text className='font-chewy text-base text-lightAccent dark:text-darkAccent'>
-							{composeCharacterShortBio(character)}
+							{character.id === DEV_CHARACTER_ID
+								? DEV_CHARACTER_SHORT_BIO
+								: composeCharacterShortBio(character)}
 						</Text>
 					</View>
 				</Pressable>

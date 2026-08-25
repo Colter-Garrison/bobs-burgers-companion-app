@@ -46,6 +46,11 @@ export function SearchResultCard({
 					>
 						{item.label}
 					</Text>
+					{item.bio ? (
+						<Text className='font-chewy text-[14px] text-lightAccent dark:text-darkAccent'>
+							{item.bio}
+						</Text>
+					) : null}
 				</View>
 			</Pressable>
 			<FavoriteButton
