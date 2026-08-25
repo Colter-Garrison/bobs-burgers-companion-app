@@ -18,7 +18,7 @@ const router = Router();
 
 const credentialsSchema = z.object({
 	username: usernameSchema,
-	password: z.string().min(8),
+	password: z.string().min(8, 'Password must be at least 8 characters'),
 	email: z.string().email('Invalid email address').optional(),
 });
 

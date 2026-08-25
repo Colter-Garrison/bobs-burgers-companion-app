@@ -66,6 +66,15 @@ describe('POST /auth/register', () => {
 		expect(res.status).toBe(400);
 	});
 
+	it('rejects a password shorter than 8 characters with a message naming the password, not zod\'s generic default', async () => {
+		const res = await api
+			.post('/auth/register')
+			.send({ username: uniqueUsername(), password: 'short' });
+
+		expect(res.status).toBe(400);
+		expect(res.body.error).toBe('Password must be at least 8 characters');
+	});
+
 	it('accepts an optional email and leaves it unverified until the link is clicked', async () => {
 		const username = uniqueUsername();
 		createdUsernames.push(username);
