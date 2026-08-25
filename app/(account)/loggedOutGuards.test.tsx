@@ -5,7 +5,11 @@ import { useRouter } from 'expo-router'
 import { AuthProvider } from '../../hooks/useAuth'
 import { FavoritesProvider } from '../../hooks/useFavorites'
 import { tokenStorage } from '../../lib/tokenStorage'
-import { deleteAccountRequest, fetchFavorites } from '../../lib/apiClient'
+import {
+	deleteAccountRequest,
+	fetchFavorites,
+	fetchProfile,
+} from '../../lib/apiClient'
 import Account from './account'
 import Favorites from './favorites'
 
@@ -14,6 +18,7 @@ jest.mock('../../lib/apiClient', () => ({
 	...jest.requireActual('../../lib/apiClient'),
 	deleteAccountRequest: jest.fn(),
 	fetchFavorites: jest.fn(),
+	fetchProfile: jest.fn(),
 }))
 jest.mock('../../hooks/useSearchableItems', () => ({
 	useSearchableItems: () => ({ items: [], loading: false }),
@@ -43,6 +48,11 @@ describe('guarded screens sharing one AuthProvider', () => {
 		;(tokenStorage.getUsername as jest.Mock).mockResolvedValue('bobbelcher')
 		;(tokenStorage.clear as jest.Mock).mockResolvedValue(undefined)
 		;(fetchFavorites as jest.Mock).mockResolvedValue([])
+		;(fetchProfile as jest.Mock).mockResolvedValue({
+			username: 'bobbelcher',
+			email: null,
+			emailVerifiedAt: null,
+		})
 	})
 
 	afterEach(() => {

@@ -11,6 +11,17 @@ const envSchema = z.object({
 	GRAFANA_LOKI_HOST: z.string().optional(),
 	GRAFANA_LOKI_USER_ID: z.string().optional(),
 	GRAFANA_LOKI_API_KEY: z.string().optional(),
+	RESEND_API_KEY: z.string().optional(),
+	EMAIL_FROM_ADDRESS: z.string().default('onboarding@resend.dev'),
+	WEB_APP_URL: z.string().default('http://localhost:8081'),
 });
 
 export const env = envSchema.parse(process.env);
+
+// The test suite must never depend on (or accidentally trigger) a real
+// Resend send, regardless of what's configured in the shared .env for
+// manual testing — force lib/email.ts's console-log fallback during
+// tests. Vitest sets NODE_ENV to 'test' itself; nothing else needs to.
+if (process.env.NODE_ENV === 'test') {
+	env.RESEND_API_KEY = undefined;
+}

@@ -95,6 +95,34 @@ function ThemedDrawer() {
 				}}
 			/>
 			<Drawer.Screen
+				name='(auth)/forgotUsername'
+				options={{
+					title: 'Forgot Username',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
+				name='(auth)/forgotPassword'
+				options={{
+					title: 'Forgot Password',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
+				name='(auth)/resetPassword'
+				options={{
+					title: 'Reset Password',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
+				name='verifyEmail'
+				options={{
+					title: 'Verify Email',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
 				name='(account)/account'
 				options={{
 					title: 'Account',

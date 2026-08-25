@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import {
 	api,
 	uniqueUsername,
+	uniqueTestEmail,
 	deleteUserByUsername,
 	TEST_PASSWORD,
 } from './helpers.js';
@@ -63,6 +64,54 @@ describe('POST /auth/register', () => {
 			.send({ username: 'bob_belcher', password: TEST_PASSWORD });
 
 		expect(res.status).toBe(400);
+	});
+
+	it('accepts an optional email and leaves it unverified until the link is clicked', async () => {
+		const username = uniqueUsername();
+		createdUsernames.push(username);
+		const email = uniqueTestEmail(username);
+
+		const res = await api
+			.post('/auth/register')
+			.send({ username, password: TEST_PASSWORD, email });
+
+		expect(res.status).toBe(201);
+
+		// Not verified yet — username/password changes must still be gated.
+		const patchRes = await api
+			.patch('/profile/username')
+			.set('Authorization', `Bearer ${res.body.token}`)
+			.send({ oldUsername: username, newUsername: uniqueUsername() });
+		expect(patchRes.status).toBe(403);
+	});
+
+	it('rejects an invalid email format with 400', async () => {
+		const res = await api
+			.post('/auth/register')
+			.send({
+				username: uniqueUsername(),
+				password: TEST_PASSWORD,
+				email: 'not-an-email',
+			});
+
+		expect(res.status).toBe(400);
+	});
+
+	it('rejects registering with an email already used by another account, with 409', async () => {
+		const firstUsername = uniqueUsername();
+		createdUsernames.push(firstUsername);
+		const email = uniqueTestEmail(firstUsername);
+		await api
+			.post('/auth/register')
+			.send({ username: firstUsername, password: TEST_PASSWORD, email });
+
+		const secondUsername = uniqueUsername();
+		const res = await api
+			.post('/auth/register')
+			.send({ username: secondUsername, password: TEST_PASSWORD, email });
+
+		expect(res.status).toBe(409);
+		expect(res.body.error).toMatch(/email/i);
 	});
 });
 

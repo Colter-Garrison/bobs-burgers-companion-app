@@ -10,7 +10,7 @@ export class ApiError extends Error {
 }
 
 interface RequestOptions {
-	method?: 'GET' | 'POST' | 'DELETE'
+	method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
 	body?: unknown
 	token?: string | null
 }
@@ -50,10 +50,14 @@ export interface AuthResponse {
 	token: string
 }
 
-export function registerUser(username: string, password: string) {
+export function registerUser(
+	username: string,
+	password: string,
+	email?: string,
+) {
 	return apiFetch<AuthResponse>('/auth/register', {
 		method: 'POST',
-		body: { username, password },
+		body: email ? { username, password, email } : { username, password },
 	})
 }
 
@@ -61,6 +65,34 @@ export function loginUser(username: string, password: string) {
 	return apiFetch<AuthResponse>('/auth/login', {
 		method: 'POST',
 		body: { username, password },
+	})
+}
+
+export function requestUsernameRecovery(email: string) {
+	return apiFetch<{ message: string }>('/auth/forgot-username', {
+		method: 'POST',
+		body: { email },
+	})
+}
+
+export function requestPasswordReset(email: string) {
+	return apiFetch<{ message: string }>('/auth/forgot-password', {
+		method: 'POST',
+		body: { email },
+	})
+}
+
+export function resetPassword(token: string, newPassword: string) {
+	return apiFetch<void>('/auth/reset-password', {
+		method: 'POST',
+		body: { token, newPassword },
+	})
+}
+
+export function verifyEmail(verificationToken: string) {
+	return apiFetch<{ verified: boolean }>('/auth/verify-email', {
+		method: 'POST',
+		body: { token: verificationToken },
 	})
 }
 
@@ -107,6 +139,52 @@ export function removeFavoriteRequest(
 	})
 }
 
+export interface Profile {
+	username: string
+	email: string | null
+	emailVerifiedAt: string | null
+}
+
+export function fetchProfile(token: string) {
+	return apiFetch<Profile>('/profile', { token })
+}
+
 export function deleteAccountRequest(token: string) {
 	return apiFetch<void>('/profile', { method: 'DELETE', token })
+}
+
+export function updateUsernameRequest(
+	token: string,
+	oldUsername: string,
+	newUsername: string,
+) {
+	return apiFetch<{ username: string }>('/profile/username', {
+		method: 'PATCH',
+		token,
+		body: { oldUsername, newUsername },
+	})
+}
+
+export function updatePasswordRequest(
+	token: string,
+	oldPassword: string,
+	newPassword: string,
+) {
+	return apiFetch<void>('/profile/password', {
+		method: 'PATCH',
+		token,
+		body: { oldPassword, newPassword },
+	})
+}
+
+export function updateEmailRequest(
+	token: string,
+	newEmail: string,
+	oldEmail?: string,
+) {
+	return apiFetch<{ email: string }>('/profile/email', {
+		method: 'PATCH',
+		token,
+		body: oldEmail ? { oldEmail, newEmail } : { newEmail },
+	})
 }

@@ -1,7 +1,15 @@
 import React from 'react'
 import { act, renderHook, waitFor } from '@testing-library/react-native'
 import { AuthProvider, useAuth } from './useAuth'
-import { deleteAccountRequest, loginUser, registerUser } from '../lib/apiClient'
+import {
+	deleteAccountRequest,
+	fetchProfile,
+	loginUser,
+	registerUser,
+	updateEmailRequest,
+	updatePasswordRequest,
+	updateUsernameRequest,
+} from '../lib/apiClient'
 import { tokenStorage } from '../lib/tokenStorage'
 
 jest.mock('../lib/apiClient')
@@ -17,6 +25,11 @@ describe('useAuth', () => {
 		;(tokenStorage.getUsername as jest.Mock).mockResolvedValue(null)
 		;(tokenStorage.save as jest.Mock).mockResolvedValue(undefined)
 		;(tokenStorage.clear as jest.Mock).mockResolvedValue(undefined)
+		;(fetchProfile as jest.Mock).mockResolvedValue({
+			username: 'bobbelcher',
+			email: null,
+			emailVerifiedAt: null,
+		})
 	})
 
 	afterEach(() => {
@@ -87,9 +100,33 @@ describe('useAuth', () => {
 			await result.current.signup('newbelcher', 'correcthorse')
 		})
 
-		expect(registerUser).toHaveBeenCalledWith('newbelcher', 'correcthorse')
+		expect(registerUser).toHaveBeenCalledWith(
+			'newbelcher',
+			'correcthorse',
+			undefined,
+		)
 		expect(result.current.token).toBe('signup-token')
 		expect(result.current.username).toBe('newbelcher')
+	})
+
+	it('signup passes an optional email through to registerUser', async () => {
+		;(registerUser as jest.Mock).mockResolvedValue({ token: 'signup-token' })
+		const { result } = renderHook(() => useAuth(), { wrapper })
+		await waitFor(() => expect(result.current.loading).toBe(false))
+
+		await act(async () => {
+			await result.current.signup(
+				'newbelcher',
+				'correcthorse',
+				'new@example.com',
+			)
+		})
+
+		expect(registerUser).toHaveBeenCalledWith(
+			'newbelcher',
+			'correcthorse',
+			'new@example.com',
+		)
 	})
 
 	it('logout clears storage and resets state', async () => {
@@ -153,6 +190,97 @@ describe('useAuth', () => {
 
 		expect(tokenStorage.clear).not.toHaveBeenCalled()
 		expect(result.current.token).toBe('stored-token')
+	})
+
+	it('fetches and exposes the profile once a token is present', async () => {
+		;(tokenStorage.getToken as jest.Mock).mockResolvedValue('stored-token')
+		;(tokenStorage.getUsername as jest.Mock).mockResolvedValue('bobbelcher')
+		;(fetchProfile as jest.Mock).mockResolvedValue({
+			username: 'bobbelcher',
+			email: 'bob@example.com',
+			emailVerifiedAt: '2024-01-01T00:00:00.000Z',
+		})
+
+		const { result } = renderHook(() => useAuth(), { wrapper })
+		await waitFor(() => expect(result.current.loading).toBe(false))
+		await waitFor(() => expect(result.current.email).toBe('bob@example.com'))
+
+		expect(result.current.emailVerified).toBe(true)
+	})
+
+	it('updateUsername persists the new username and updates state', async () => {
+		;(tokenStorage.getToken as jest.Mock).mockResolvedValue('stored-token')
+		;(tokenStorage.getUsername as jest.Mock).mockResolvedValue('bobbelcher')
+		;(updateUsernameRequest as jest.Mock).mockResolvedValue({
+			username: 'newbelcher',
+		})
+		const { result } = renderHook(() => useAuth(), { wrapper })
+		await waitFor(() => expect(result.current.loading).toBe(false))
+
+		await act(async () => {
+			await result.current.updateUsername('bobbelcher', 'newbelcher')
+		})
+
+		expect(updateUsernameRequest).toHaveBeenCalledWith(
+			'stored-token',
+			'bobbelcher',
+			'newbelcher',
+		)
+		expect(tokenStorage.save).toHaveBeenCalledWith('stored-token', 'newbelcher')
+		expect(result.current.username).toBe('newbelcher')
+	})
+
+	it('updatePassword calls through without changing local state', async () => {
+		;(tokenStorage.getToken as jest.Mock).mockResolvedValue('stored-token')
+		;(updatePasswordRequest as jest.Mock).mockResolvedValue(undefined)
+		const { result } = renderHook(() => useAuth(), { wrapper })
+		await waitFor(() => expect(result.current.loading).toBe(false))
+
+		await act(async () => {
+			await result.current.updatePassword('old-pass', 'new-pass')
+		})
+
+		expect(updatePasswordRequest).toHaveBeenCalledWith(
+			'stored-token',
+			'old-pass',
+			'new-pass',
+		)
+	})
+
+	it('updatePassword rethrows on failure', async () => {
+		;(tokenStorage.getToken as jest.Mock).mockResolvedValue('stored-token')
+		;(updatePasswordRequest as jest.Mock).mockRejectedValue(
+			new Error('Current password is incorrect'),
+		)
+		const { result } = renderHook(() => useAuth(), { wrapper })
+		await waitFor(() => expect(result.current.loading).toBe(false))
+
+		await expect(
+			act(async () => {
+				await result.current.updatePassword('wrong', 'new-pass')
+			}),
+		).rejects.toThrow('Current password is incorrect')
+	})
+
+	it('updateEmail updates state to the new (unverified) email', async () => {
+		;(tokenStorage.getToken as jest.Mock).mockResolvedValue('stored-token')
+		;(updateEmailRequest as jest.Mock).mockResolvedValue({
+			email: 'new@example.com',
+		})
+		const { result } = renderHook(() => useAuth(), { wrapper })
+		await waitFor(() => expect(result.current.loading).toBe(false))
+
+		await act(async () => {
+			await result.current.updateEmail('new@example.com', 'old@example.com')
+		})
+
+		expect(updateEmailRequest).toHaveBeenCalledWith(
+			'stored-token',
+			'new@example.com',
+			'old@example.com',
+		)
+		expect(result.current.email).toBe('new@example.com')
+		expect(result.current.emailVerified).toBe(false)
 	})
 
 	it('throws when useAuth is called outside an AuthProvider', () => {
