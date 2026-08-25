@@ -1,6 +1,13 @@
 import { detailHref } from './detailRoute'
+import { DEV_CHARACTER_ID } from './devCharacter'
 
 describe('detailHref', () => {
+	it('routes the dev character to About the Dev instead of the generic detail page', () => {
+		expect(detailHref('Characters', DEV_CHARACTER_ID)).toEqual({
+			pathname: '/aboutTheDev',
+		})
+	})
+
 	it('maps each SearchCategory to its matching detail route slug', () => {
 		expect(detailHref('Burgers of the Day', 5)).toEqual({
 			pathname: '/detail/[category]/[id]',

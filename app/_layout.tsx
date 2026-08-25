@@ -109,6 +109,13 @@ function ThemedDrawer() {
 				}}
 			/>
 			<Drawer.Screen
+				name='aboutTheDev'
+				options={{
+					title: 'About the Dev',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
 				name='detail/[category]/[id]'
 				options={{
 					title: 'Details',

@@ -80,11 +80,12 @@ describe('Characters screen', () => {
 		await flush()
 	})
 
-	it('shows the "UH OH" empty state when there is no data', async () => {
+	it('shows Colter Garrison (not the "UH OH" empty state) when the API has no data, since the dev character is always present', async () => {
 		;(getCharacters as jest.Mock).mockResolvedValue([])
 		render(<Characters />)
 		await flush()
-		expect(screen.getByText('Character UH OH...')).toBeVisible()
+		expect(screen.queryByText('Character UH OH...')).toBeNull()
+		expect(screen.getByText('Colter Garrison')).toBeVisible()
 	})
 
 	it('shows the name and a bio blurb assembled from the sparse fields available', async () => {
@@ -231,14 +232,14 @@ describe('Characters screen', () => {
 		const manyCharacters = Array.from({ length: 25 }, (_, i) => ({
 			...baseCharacter,
 			id: i,
-			name: `Character Number ${i}`,
+			name: `Character Number ${String(i).padStart(2, '0')}`,
 		}))
 		;(getCharacters as jest.Mock).mockResolvedValue(manyCharacters)
 
 		render(<Characters />)
 		await flush()
 
-		expect(screen.getByText('Character Number 0')).toBeVisible()
+		expect(screen.getByText('Character Number 00')).toBeVisible()
 		expect(screen.getByText('Character Number 19')).toBeVisible()
 		expect(screen.queryByText('Character Number 20')).toBeNull()
 		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(20)
@@ -247,6 +248,24 @@ describe('Characters screen', () => {
 			screen.UNSAFE_getByType(FlatList).props.onEndReached()
 		})
 
-		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(25)
+		// 25 real characters + the always-appended dev character
+		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(26)
+	})
+
+	it('shows Colter Garrison’s short bio and navigates to About the Dev (not the generic detail page) when tapped', async () => {
+		;(getCharacters as jest.Mock).mockResolvedValue([baseCharacter])
+		render(<Characters />)
+		await flush()
+
+		expect(screen.getByText('Colter Garrison')).toBeVisible()
+		expect(
+			screen.getByText(
+				"Colter is a React Native developer who built this entire app in his spare time, clearly a man with his priorities in order. First appeared in this app's git log.",
+			),
+		).toBeVisible()
+
+		fireEvent.press(screen.getByText('Colter Garrison'))
+
+		expect(mockPush).toHaveBeenCalledWith({ pathname: '/aboutTheDev' })
 	})
 })

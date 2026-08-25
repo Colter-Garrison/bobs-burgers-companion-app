@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import { FavoriteCategory } from '../lib/apiClient'
+import { composeCharacterShortBio } from '../lib/categoryBio'
 import { loadFromCache, saveToCache } from '../lib/dataCache'
+import {
+	DEV_CHARACTER_ID,
+	DEV_CHARACTER_SHORT_BIO,
+	getCharactersWithDev,
+} from '../lib/devCharacter'
 import { getBurgersOfTheDay } from './fetchBurgersOfTheDay'
-import { getCharacters } from './fetchCharacters'
 import { getEndCreditsSequences } from './fetchEndCreditsSequences'
 import { getEpisodes } from './fetchEpisodes'
 import { getPestControlTrucks } from './fetchPestControlTrucks'
@@ -28,6 +33,7 @@ export interface SearchItem {
 	favoriteCategory: FavoriteCategory
 	gender?: string
 	hair?: string
+	bio?: string
 }
 
 export function useSearchableItems() {
@@ -59,7 +65,7 @@ export function useSearchableItems() {
 			const [burgers, characters, endCredits, episodes, trucks, stores] =
 				await Promise.allSettled([
 					getBurgersOfTheDay(),
-					getCharacters(),
+					getCharactersWithDev(),
 					getEndCreditsSequences(),
 					getEpisodes(),
 					getPestControlTrucks(),
@@ -117,6 +123,10 @@ export function useSearchableItems() {
 						favoriteCategory: 'character' as const,
 						gender: character.gender,
 						hair: character.hair,
+						bio:
+							character.id === DEV_CHARACTER_ID
+								? DEV_CHARACTER_SHORT_BIO
+								: composeCharacterShortBio(character),
 					}),
 				),
 				...(endCredits.status === 'fulfilled' ? endCredits.value : []).map(

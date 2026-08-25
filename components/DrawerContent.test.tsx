@@ -1,5 +1,4 @@
 import React from 'react'
-import { Linking } from 'react-native'
 import { fireEvent, render, screen } from '@testing-library/react-native'
 import { useRouter } from 'expo-router'
 import { DrawerContentComponentProps } from '@react-navigation/drawer'
@@ -64,7 +63,7 @@ describe('DrawerContent', () => {
 		jest.clearAllMocks()
 	})
 
-	it('shows only a Log In link at the top when logged out, but still shows Buy Me a Beer', () => {
+	it('shows only a Log In link at the top when logged out, and About the Dev below the categories (no Buy Me a Coffee)', () => {
 		;(useAuth as jest.Mock).mockReturnValue({
 			token: null,
 			username: null,
@@ -78,13 +77,17 @@ describe('DrawerContent', () => {
 		expect(screen.queryByText(/^Hello, /)).toBeNull()
 		expect(screen.queryByText('Favorites')).toBeNull()
 		expect(screen.queryByText('Log Out')).toBeNull()
-		expect(screen.getByText('Buy me a beer 🍺')).toBeVisible()
+		expect(screen.queryByText(/Buy me a/)).toBeNull()
+		expect(screen.getByText('About the Dev')).toBeVisible()
 
 		fireEvent.press(screen.getByText('Log In'))
 		expect(mockPush).toHaveBeenCalledWith('/login')
+
+		fireEvent.press(screen.getByText('About the Dev'))
+		expect(mockPush).toHaveBeenCalledWith('/aboutTheDev')
 	})
 
-	it('shows "Hello, {username}!", Favorites, and Log Out when logged in', () => {
+	it('shows "Hello, {username}!", Favorites, About the Dev, and Log Out when logged in', () => {
 		;(useAuth as jest.Mock).mockReturnValue({
 			token: 'token-abc',
 			username: 'bobbelcher',
@@ -96,12 +99,31 @@ describe('DrawerContent', () => {
 		expect(screen.queryByText('Log In')).toBeNull()
 		expect(screen.queryByText('Sign Up')).toBeNull()
 		expect(screen.queryByText('Account')).toBeNull()
+		expect(screen.queryByText(/Buy me a/)).toBeNull()
 
 		fireEvent.press(screen.getByText('Hello, bobbelcher!'))
 		expect(mockPush).toHaveBeenCalledWith('/account')
 
 		fireEvent.press(screen.getByText('Favorites'))
 		expect(mockPush).toHaveBeenCalledWith('/favorites')
+
+		fireEvent.press(screen.getByText('About the Dev'))
+		expect(mockPush).toHaveBeenCalledWith('/aboutTheDev')
+	})
+
+	it('renders About the Dev after Favorites when logged in', () => {
+		;(useAuth as jest.Mock).mockReturnValue({
+			token: 'token-abc',
+			username: 'bobbelcher',
+			logout: mockLogout,
+		})
+
+		render(<DrawerContent {...fakeDrawerProps} />)
+
+		const favoritesIndex = screen
+			.getAllByText(/Favorites|About the Dev/)
+			.map((node) => node.props.children)
+		expect(favoritesIndex).toEqual(['Favorites', 'About the Dev'])
 	})
 
 	it('Log Out logs out and navigates home', async () => {
@@ -116,46 +138,6 @@ describe('DrawerContent', () => {
 		await fireEvent.press(screen.getByText('Log Out'))
 		expect(mockLogout).toHaveBeenCalled()
 		expect(mockPush).toHaveBeenCalledWith('/')
-	})
-
-	it('Buy Me a Beer opens the donation page when logged in', () => {
-		const openURLSpy = jest
-			.spyOn(Linking, 'openURL')
-			.mockResolvedValue(true as never)
-		;(useAuth as jest.Mock).mockReturnValue({
-			token: 'token-abc',
-			username: 'bobbelcher',
-			logout: mockLogout,
-		})
-
-		render(<DrawerContent {...fakeDrawerProps} />)
-
-		fireEvent.press(screen.getByText('Buy me a beer 🍺'))
-		expect(openURLSpy).toHaveBeenCalledWith(
-			'https://www.buymeacoffee.com/colterg',
-		)
-
-		openURLSpy.mockRestore()
-	})
-
-	it('Buy Me a Beer opens the donation page when logged out too — it is not an account action', () => {
-		const openURLSpy = jest
-			.spyOn(Linking, 'openURL')
-			.mockResolvedValue(true as never)
-		;(useAuth as jest.Mock).mockReturnValue({
-			token: null,
-			username: null,
-			logout: mockLogout,
-		})
-
-		render(<DrawerContent {...fakeDrawerProps} />)
-
-		fireEvent.press(screen.getByText('Buy me a beer 🍺'))
-		expect(openURLSpy).toHaveBeenCalledWith(
-			'https://www.buymeacoffee.com/colterg',
-		)
-
-		openURLSpy.mockRestore()
 	})
 
 	it('shows the sun icon (not the moon) in light mode, and calls toggleTheme when pressed', () => {
