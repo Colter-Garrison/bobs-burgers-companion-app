@@ -146,7 +146,11 @@ router.patch('/email', async (req, res, next) => {
 			}
 		}
 
-		await issueEmailVerification(req.userId!, newEmail);
+		const isChangingToADifferentAddress =
+			!!current?.email && current.email !== newEmail;
+		await issueEmailVerification(req.userId!, newEmail, {
+			skipCooldown: isChangingToADifferentAddress,
+		});
 
 		return res.json({ email: newEmail });
 	} catch (err: any) {

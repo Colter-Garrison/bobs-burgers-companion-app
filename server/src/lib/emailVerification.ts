@@ -10,6 +10,7 @@ const VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 export async function issueEmailVerification(
 	userId: number,
 	email: string,
+	options?: { skipCooldown?: boolean },
 ): Promise<void> {
 	await db
 		.update(users)
@@ -20,6 +21,7 @@ export async function issueEmailVerification(
 		userId,
 		'email_verification',
 		VERIFICATION_TTL_MS,
+		options,
 	);
 	if (!token) {
 		return;

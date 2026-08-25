@@ -33,3 +33,10 @@ test('an unrelated unknown path still shows the Page Not Found screen', async ({
 	await page.getByRole('button', { name: 'Go to Home' }).click()
 	await expect(page).toHaveURL('/')
 })
+
+test('the drawer does not show a "+not-found" link', async ({ page }) => {
+	await page.goto('/')
+	await page.getByLabel('Open navigation menu').click()
+
+	await expect(page.getByRole('button', { name: '+not-found' })).toHaveCount(0)
+})

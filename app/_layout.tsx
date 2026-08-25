@@ -150,6 +150,13 @@ function ThemedDrawer() {
 					drawerItemStyle: { display: 'none' },
 				}}
 			/>
+			<Drawer.Screen
+				name='+not-found'
+				options={{
+					title: 'Page Not Found',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
 		</Drawer>
 	)
 }

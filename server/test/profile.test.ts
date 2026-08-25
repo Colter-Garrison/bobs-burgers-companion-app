@@ -9,6 +9,7 @@ import {
 	uniqueUsername,
 	uniqueTestEmail,
 	deleteUserByUsername,
+	getLatestAuthToken,
 	TEST_PASSWORD,
 } from './helpers.js';
 
@@ -315,5 +316,42 @@ describe('PATCH /profile/email', () => {
 			.send({ oldEmail: email, newEmail: otherEmail });
 
 		expect(res.status).toBe(409);
+	});
+
+	it('switching to a different email issues its own fresh token even right after a still-unconsumed change to another address (regression: the reissue cooldown used to block this, leaving the account silently stuck on "pending verification" with no email ever sent)', async () => {
+		const { username, token, email: originalEmail, userId } =
+			await registerVerifiedUser();
+		createdUsernames.push(username);
+		const otherEmail = uniqueTestEmail(`${username}-other`);
+
+		const firstChange = await api
+			.patch('/profile/email')
+			.set('Authorization', `Bearer ${token}`)
+			.send({ oldEmail: originalEmail, newEmail: otherEmail });
+		expect(firstChange.status).toBe(200);
+		const firstToken = await getLatestAuthToken(userId, 'email_verification');
+		expect(firstToken).toBeTruthy();
+
+		// Switch straight back, well within the 60s reissue cooldown window.
+		const secondChange = await api
+			.patch('/profile/email')
+			.set('Authorization', `Bearer ${token}`)
+			.send({ oldEmail: otherEmail, newEmail: originalEmail });
+		expect(secondChange.status).toBe(200);
+
+		const secondToken = await getLatestAuthToken(userId, 'email_verification');
+		expect(secondToken).toBeTruthy();
+		expect(secondToken).not.toBe(firstToken);
+
+		const verifyRes = await api
+			.post('/auth/verify-email')
+			.send({ token: secondToken });
+		expect(verifyRes.status).toBe(200);
+
+		const profileRes = await api
+			.get('/profile')
+			.set('Authorization', `Bearer ${token}`);
+		expect(profileRes.body.email).toBe(originalEmail);
+		expect(profileRes.body.emailVerifiedAt).not.toBeNull();
 	});
 });

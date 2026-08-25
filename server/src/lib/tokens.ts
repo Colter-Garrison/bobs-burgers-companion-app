@@ -11,22 +11,28 @@ export async function createToken(
 	userId: number,
 	purpose: TokenPurpose,
 	ttlMs: number,
+	options?: { skipCooldown?: boolean },
 ): Promise<string | null> {
-	const [recent] = await db
-		.select()
-		.from(authTokens)
-		.where(
-			and(
-				eq(authTokens.userId, userId),
-				eq(authTokens.purpose, purpose),
-				isNull(authTokens.usedAt),
-			),
-		)
-		.orderBy(desc(authTokens.createdAt))
-		.limit(1);
+	if (!options?.skipCooldown) {
+		const [recent] = await db
+			.select()
+			.from(authTokens)
+			.where(
+				and(
+					eq(authTokens.userId, userId),
+					eq(authTokens.purpose, purpose),
+					isNull(authTokens.usedAt),
+				),
+			)
+			.orderBy(desc(authTokens.createdAt))
+			.limit(1);
 
-	if (recent && Date.now() - recent.createdAt.getTime() < REISSUE_COOLDOWN_MS) {
-		return null;
+		if (
+			recent &&
+			Date.now() - recent.createdAt.getTime() < REISSUE_COOLDOWN_MS
+		) {
+			return null;
+		}
 	}
 
 	await db
