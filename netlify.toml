@@ -2,6 +2,25 @@
   publish = "dist"
   command = "expo export"
 
+# verifyEmail and resetPassword are clicked from a raw link inside an
+# email, not navigated to in-app — something between Resend and the
+# click (observed: Gmail) lowercases the path before the browser ever
+# requests it. Expo Router's file-based routing matches paths exactly, so
+# /verifyemail wouldn't match the camelCase route at all without this —
+# rewritten here (not a second app/ file: this filesystem is
+# case-insensitive, so app/verifyEmail.tsx and app/verifyemail.tsx would
+# collide into the same file rather than existing as two routes).
+# Must come before the catch-all below — Netlify uses the first match.
+[[redirects]]
+  from = "/verifyemail"
+  to = "/verifyEmail"
+  status = 200
+
+[[redirects]]
+  from = "/resetpassword"
+  to = "/resetPassword"
+  status = 200
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
