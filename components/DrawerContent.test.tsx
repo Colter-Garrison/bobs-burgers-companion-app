@@ -1,6 +1,6 @@
 import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react-native'
-import { useRouter } from 'expo-router'
+import { usePathname, useRouter } from 'expo-router'
 import { DrawerContentComponentProps } from '@react-navigation/drawer'
 import { DrawerContent } from './DrawerContent'
 import { useAuth } from '../hooks/useAuth'
@@ -14,6 +14,7 @@ jest.mock('../hooks/useAuth')
 jest.mock('../hooks/useTheme')
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
+	usePathname: jest.fn(),
 }))
 jest.mock('react-native-safe-area-context', () => ({
 	useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
@@ -50,6 +51,7 @@ describe('DrawerContent', () => {
 
 	beforeEach(() => {
 		;(useRouter as jest.Mock).mockReturnValue({ push: mockPush })
+		;(usePathname as jest.Mock).mockReturnValue('/')
 		;(useTheme as jest.Mock).mockReturnValue({
 			isDark: false,
 			toggleTheme: mockToggleTheme,

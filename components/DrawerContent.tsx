@@ -1,7 +1,8 @@
-import React from 'react'
-import { useRouter } from 'expo-router'
+import React, { useEffect, useRef } from 'react'
+import { usePathname, useRouter } from 'expo-router'
 import { Pressable, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { DrawerActions } from '@react-navigation/native'
 import {
 	DrawerContentComponentProps,
 	DrawerContentScrollView,
@@ -23,19 +24,21 @@ const boxedItemLabelStyle = { fontFamily: 'Chewy', fontSize: 16 }
 
 export function DrawerContent(props: DrawerContentComponentProps) {
 	const router = useRouter()
+	const pathname = usePathname()
 	const { token, username, logout } = useAuth()
 	const { colors } = useTheme()
 	const insets = useSafeAreaInsets()
 
-	// Matches app/_layout.tsx's screenOptions.drawerItemStyle so the
-	// Favorites link — rendered outside DrawerItemList, via the actual
-	// DrawerItem component rather than a hand-rolled one, for a
-	// guaranteed pixel match — looks identical to Home and the six
-	// category items. DrawerItem's style/labelStyle props are plain
-	// style objects, not classNames, so (like _layout.tsx's
-	// screenOptions) the colors have to be picked explicitly here rather
-	// than via a dark: Tailwind variant. `colors` is already resolved
-	// for the current isDark + colorblindMode combination.
+	const isFirstRender = useRef(true)
+	useEffect(() => {
+		if (isFirstRender.current) {
+			isFirstRender.current = false
+			return
+		}
+		props.navigation.dispatch(DrawerActions.closeDrawer())
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [pathname])
+
 	const boxedItemStyle = {
 		borderWidth: 4,
 		borderColor: colors.accent,
