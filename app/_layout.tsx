@@ -11,8 +11,10 @@ import { FavoritesProvider } from '../hooks/useFavorites'
 import { ThemeProvider, useTheme } from '../hooks/useTheme'
 import { DrawerContent } from '../components/DrawerContent'
 import { SplashOverlay } from '../components/SplashOverlay'
+import { preserveBrowserHistory } from '../lib/preserveBrowserHistory'
 
 SplashScreen.preventAutoHideAsync()
+preserveBrowserHistory()
 
 function ThemedDrawer() {
 	const { isDark, colors } = useTheme()
@@ -147,6 +149,13 @@ function ThemedDrawer() {
 				name='detail/[category]/[id]'
 				options={{
 					title: 'Details',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
+				name='+not-found'
+				options={{
+					title: 'Page Not Found',
 					drawerItemStyle: { display: 'none' },
 				}}
 			/>
