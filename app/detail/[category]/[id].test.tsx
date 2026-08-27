@@ -230,4 +230,19 @@ describe('DetailScreen', () => {
 
 		expect(screen.getByText('Unknown category.')).toBeVisible()
 	})
+
+	it('regression: resolves a lowercased category (e.g. from a mobile browser lowercasing the URL on refresh) the same as its correctly-cased form', () => {
+		;(useLocalSearchParams as jest.Mock).mockReturnValue({
+			category: 'endcredits',
+			id: '8',
+		})
+		mockDataByCacheKey({
+			'endCredit-detail-8': endCredit,
+			'episode-detail-10': episode,
+		})
+
+		render(<DetailScreen />)
+
+		expect(screen.getByText('End Credits — Season 1, Episode 1')).toBeVisible()
+	})
 })

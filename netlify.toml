@@ -17,8 +17,33 @@
   status = 200
 
 [[redirects]]
+  from = "/forgotpassword"
+  to = "/forgotPassword"
+  status = 200
+
+[[redirects]]
   from = "/resetpassword"
   to = "/resetPassword"
+  status = 200
+
+  [[redirects]]
+  from = "/forgotusername"
+  to = "/forgotUsername"
+  status = 200
+
+  [[redirects]]
+  from = "/endcredits"
+  to = "/endCredits"
+  status = 200
+
+  [[redirects]]
+  from = "/pestcontrol"
+  to = "/pestControl"
+  status = 200
+
+  [[redirects]]
+  from = "/aboutthedev"
+  to = "/aboutTheDev"
   status = 200
 
 [[redirects]]
