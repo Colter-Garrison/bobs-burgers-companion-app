@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { Platform, Pressable, Text, View } from 'react-native'
-import { useRootNavigationState, useRouter } from 'expo-router'
+import { Href, useRootNavigationState, useRouter } from 'expo-router'
+
+const LOWERCASE_ROUTE_REDIRECTS: Record<string, string> = {
+	'/verifyemail': '/verifyEmail',
+	'/resetpassword': '/resetPassword',
+	'/forgotusername': '/forgotUsername',
+	'/forgotpassword': '/forgotPassword',
+	'/endcredits': '/endCredits',
+	'/pestcontrol': '/pestControl',
+	'/aboutthedev': '/aboutTheDev',
+}
 
 export default function NotFound() {
 	const router = useRouter()
@@ -18,14 +28,10 @@ export default function NotFound() {
 		}
 
 		const path = window.location.pathname.toLowerCase()
-		const token = new URLSearchParams(window.location.search).get('token') ?? ''
+		const correctedPath = LOWERCASE_ROUTE_REDIRECTS[path]
 
-		if (path === '/verifyemail') {
-			router.push(`/verifyEmail?token=${token}`)
-			return
-		}
-		if (path === '/resetpassword') {
-			router.push(`/resetPassword?token=${token}`)
+		if (correctedPath) {
+			router.push(`${correctedPath}${window.location.search}` as Href)
 			return
 		}
 

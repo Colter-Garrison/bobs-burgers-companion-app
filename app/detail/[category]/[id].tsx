@@ -180,16 +180,16 @@ export default function DetailScreen() {
 	}>()
 	const numericId = Number(id)
 
-	switch (category) {
+	switch (category?.toLowerCase()) {
 		case 'burgers':
 			return <BurgerDetail id={numericId} />
 		case 'characters':
 			return <CharacterDetail id={numericId} />
-		case 'endCredits':
+		case 'endcredits':
 			return <EndCreditDetail id={numericId} />
 		case 'episodes':
 			return <EpisodeDetail id={numericId} />
-		case 'pestControl':
+		case 'pestcontrol':
 			return <TruckDetail id={numericId} />
 		case 'stores':
 			return <StoreDetail id={numericId} />
