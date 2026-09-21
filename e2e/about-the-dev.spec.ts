@@ -47,14 +47,7 @@ test('Colter Garrison can be favorited and shows up on Favorites', async ({
 		page.getByLabel('Remove Colter Garrison from favorites'),
 	).toBeVisible()
 
-	// In-app navigation, not page.goto — favorites are in memory only
-	// until persistent storage lands, so a full reload would clear them.
-	await page
-		.getByLabel('Open navigation menu')
-		.filter({ visible: true })
-		.click()
-	await page.getByRole('button', { name: 'Favorites', exact: true }).click()
-	await expect(page).toHaveURL('/favorites')
+	await page.goto('/favorites')
 	await expect(page.getByText('Colter Garrison')).toBeVisible({
 		timeout: 10_000,
 	})

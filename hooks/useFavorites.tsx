@@ -1,9 +1,16 @@
-import React, { createContext, useCallback, useContext, useState } from 'react'
-import { Favorite, FavoriteCategory } from '../lib/favorites'
-
-// Favorites live only in memory for now — they reset on reload. Accounts
-// were removed, and the persistent storage that replaces the server-backed
-// list lands separately.
+import React, {
+	createContext,
+	useCallback,
+	useContext,
+	useEffect,
+	useState,
+} from 'react'
+import {
+	Favorite,
+	FavoriteCategory,
+	loadFavorites,
+	saveFavorites,
+} from '../lib/favorites'
 
 interface FavoritesContextValue {
 	favorites: Favorite[]
@@ -17,19 +24,46 @@ const FavoritesContext = createContext<FavoritesContextValue | undefined>(
 	undefined,
 )
 
+function matches(f: Favorite, category: FavoriteCategory, itemId: number) {
+	return f.category === category && f.itemId === itemId
+}
+
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
 	const [favorites, setFavorites] = useState<Favorite[]>([])
+	const [loading, setLoading] = useState(true)
+
+	useEffect(() => {
+		loadFavorites().then((saved) => {
+			// Merge rather than replace: anything favorited in the moment
+			// before storage finished loading would otherwise be dropped.
+			setFavorites((current) => [
+				...saved,
+				...current.filter(
+					(f) => !saved.some((s) => matches(s, f.category, f.itemId)),
+				),
+			])
+			setLoading(false)
+		})
+	}, [])
+
+	// Only save after the initial load — saving the empty starting list
+	// first would wipe out what's stored before it was ever read.
+	useEffect(() => {
+		if (!loading) {
+			saveFavorites(favorites)
+		}
+	}, [favorites, loading])
 
 	const isFavorited = useCallback(
 		(category: FavoriteCategory, itemId: number) =>
-			favorites.some((f) => f.category === category && f.itemId === itemId),
+			favorites.some((f) => matches(f, category, itemId)),
 		[favorites],
 	)
 
 	const addFavorite = useCallback(
 		async (category: FavoriteCategory, itemId: number) => {
 			setFavorites((prev) =>
-				prev.some((f) => f.category === category && f.itemId === itemId)
+				prev.some((f) => matches(f, category, itemId))
 					? prev
 					: [
 							...prev,
@@ -42,22 +76,14 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
 
 	const removeFavorite = useCallback(
 		async (category: FavoriteCategory, itemId: number) => {
-			setFavorites((prev) =>
-				prev.filter((f) => !(f.category === category && f.itemId === itemId)),
-			)
+			setFavorites((prev) => prev.filter((f) => !matches(f, category, itemId)))
 		},
 		[],
 	)
 
 	return (
 		<FavoritesContext.Provider
-			value={{
-				favorites,
-				loading: false,
-				isFavorited,
-				addFavorite,
-				removeFavorite,
-			}}
+			value={{ favorites, loading, isFavorited, addFavorite, removeFavorite }}
 		>
 			{children}
 		</FavoritesContext.Provider>
