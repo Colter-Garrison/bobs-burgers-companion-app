@@ -1,24 +1,12 @@
-import React, { useEffect, useSyncExternalStore } from 'react'
+import React, { useEffect } from 'react'
 import { Platform, Pressable, Text, View } from 'react-native'
 import { Href, useRootNavigationState, useRouter } from 'expo-router'
+import { useIsClient } from '../hooks/useIsClient'
 
 const LOWERCASE_ROUTE_REDIRECTS: Record<string, string> = {
 	'/endcredits': '/endCredits',
 	'/pestcontrol': '/pestControl',
 	'/aboutthedev': '/aboutTheDev',
-}
-
-const subscribeNever = () => () => {}
-
-// false while statically rendering (no window to read the URL from) and
-// during hydration, true in the browser after that — without a mount
-// effect that sets state.
-function useIsClient() {
-	return useSyncExternalStore(
-		subscribeNever,
-		() => true,
-		() => false,
-	)
 }
 
 export default function NotFound() {

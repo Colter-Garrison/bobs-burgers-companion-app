@@ -1,0 +1,5 @@
+{
+	"rewrites": [
+		{ "source": "/detail/**", "destination": "/detail/[category]/[id].html" }
+	]
+}
