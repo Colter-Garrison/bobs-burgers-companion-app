@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { FlatList, Image, Pressable, Text, TextInput, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useFocusEffect } from 'expo-router/react-navigation'
@@ -48,9 +48,12 @@ export default function Stores() {
 		}, []),
 	)
 
-	const visibleStores = attributeFilters.sortItems(
-		searchedStores,
-		(store) => store.name,
+	const { sortItems } = attributeFilters
+	// Memoized so the sorted copy keeps the same identity between renders —
+	// usePagination treats a new array as a new list and resets to page 1.
+	const visibleStores = useMemo(
+		() => sortItems(searchedStores, (store) => store.name),
+		[searchedStores, sortItems],
 	)
 	const { visibleItems, loadMore, hasMore } = usePagination(visibleStores)
 

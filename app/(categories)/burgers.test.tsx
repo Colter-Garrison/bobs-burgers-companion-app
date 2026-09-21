@@ -253,4 +253,29 @@ describe('Burgers screen', () => {
 
 		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(25)
 	})
+
+	it('keeps the extra page loaded while an A-Z sort is active (the sorted list must not look new on every render)', async () => {
+		const manyBurgers = Array.from({ length: 25 }, (_, i) => ({
+			id: i,
+			name: `Burger Number ${String(i).padStart(2, '0')}`,
+			price: '$5.00',
+			season: 1,
+			episode: 1,
+		}))
+		;(getBurgersOfTheDay as jest.Mock).mockResolvedValue(manyBurgers)
+
+		render(<Burgers />)
+		await flush()
+
+		fireEvent.press(screen.getByLabelText('Show filter options'))
+		fireEvent.press(screen.getByLabelText('Tap to sort A to Z'))
+		act(() => {
+			screen.UNSAFE_getByType(FlatList).props.onEndReached()
+		})
+		// An unrelated re-render (closing the filter panel) must not snap the
+		// list back to the first page.
+		fireEvent.press(screen.getByLabelText('Hide filter options'))
+
+		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(25)
+	})
 })

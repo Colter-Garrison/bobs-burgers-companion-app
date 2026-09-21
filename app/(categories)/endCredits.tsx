@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { FlatList, Image, Pressable, Text, TextInput, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useFocusEffect } from 'expo-router/react-navigation'
@@ -51,9 +51,12 @@ export default function EndCredits() {
 		}, []),
 	)
 
-	const visibleEndCredits = attributeFilters.sortItems(
-		searchedEndCredits,
-		getSearchableText,
+	const { sortItems } = attributeFilters
+	// Memoized so the sorted copy keeps the same identity between renders —
+	// usePagination treats a new array as a new list and resets to page 1.
+	const visibleEndCredits = useMemo(
+		() => sortItems(searchedEndCredits, getSearchableText),
+		[searchedEndCredits, sortItems],
 	)
 	const { visibleItems, loadMore, hasMore } = usePagination(visibleEndCredits)
 

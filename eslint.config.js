@@ -42,17 +42,6 @@ module.exports = defineConfig([
 			// redundant hints just to satisfy the linter, which actively hurts
 			// the a11y this whole plugin exists to help.
 			'react-native-a11y/has-accessibility-hint': 'off',
-			// React Compiler rules that arrived with eslint-config-expo 56.
-			// They flag real patterns (setState called directly inside an
-			// effect, refs read during render, Date.now() in render) in the
-			// data-fetching hooks, +not-found, CategorySkeleton, and
-			// SplashOverlay.
-			// Warn rather than error until those are refactored as their
-			// own change, so the SDK upgrade doesn't also rewrite the
-			// offline/cache logic those hooks carry.
-			'react-hooks/set-state-in-effect': 'warn',
-			'react-hooks/refs': 'warn',
-			'react-hooks/purity': 'warn',
 		},
 	},
 	{
