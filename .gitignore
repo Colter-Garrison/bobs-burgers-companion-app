@@ -46,3 +46,10 @@ expo-env.d.ts
 # @end expo-cli
 # Local Netlify folder
 .netlify
+
+# Claude Design sync: staged scripts, build output, machine state
+.ds-sync/
+ds-bundle/
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules
