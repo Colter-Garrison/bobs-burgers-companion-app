@@ -1,7 +1,7 @@
 import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react-native'
 import { usePathname, useRouter } from 'expo-router'
-import { DrawerContentComponentProps } from '@react-navigation/drawer'
+import { DrawerContentComponentProps } from 'expo-router/drawer'
 import { DrawerContent } from './DrawerContent'
 import { useTheme } from '../hooks/useTheme'
 import {
@@ -17,7 +17,7 @@ jest.mock('expo-router', () => ({
 jest.mock('react-native-safe-area-context', () => ({
 	useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }))
-jest.mock('@react-navigation/drawer', () => {
+jest.mock('expo-router/drawer', () => {
 	const { Pressable, Text, View } = jest.requireActual('react-native')
 	return {
 		DrawerContentScrollView: ({ children }: { children: React.ReactNode }) => (

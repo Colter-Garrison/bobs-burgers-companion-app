@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react'
 import { FlatList, Image, Pressable, Text, TextInput, View } from 'react-native'
 import { useRouter } from 'expo-router'
-import { useFocusEffect } from '@react-navigation/native'
+import { useFocusEffect } from 'expo-router/react-navigation'
 import { Character } from '../../hooks/fetchCharacters'
 import { useCategoryData } from '../../hooks/useCategoryData'
 import { useCategorySearch } from '../../hooks/useCategorySearch'

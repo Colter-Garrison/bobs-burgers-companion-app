@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import { FlatList, Pressable, Text, TextInput, View } from 'react-native'
 import { useRouter } from 'expo-router'
-import { useFocusEffect } from '@react-navigation/native'
+import { useFocusEffect } from 'expo-router/react-navigation'
 import { Burger, getBurgersOfTheDay } from '../../hooks/fetchBurgersOfTheDay'
 import { useCategoryData } from '../../hooks/useCategoryData'
 import { useCategorySearch } from '../../hooks/useCategorySearch'

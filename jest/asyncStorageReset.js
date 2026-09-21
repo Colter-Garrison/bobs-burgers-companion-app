@@ -1,4 +1,3 @@
-/* eslint-env jest */
 // Unlike a real device, the AsyncStorage jest mock's in-memory store
 // persists across every test in a file, not just within one test — so a
 // screen test that lets a fetch succeed (writing to the cache) would

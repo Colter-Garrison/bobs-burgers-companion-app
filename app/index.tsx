@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { FlatList, Pressable, Text, TextInput, View } from 'react-native'
 import { useRouter } from 'expo-router'
-import { useFocusEffect } from '@react-navigation/native'
+import { useFocusEffect } from 'expo-router/react-navigation'
 import { SearchItem, useSearchableItems } from '../hooks/useSearchableItems'
 import { detailHref } from '../lib/detailRoute'
 import { useFavorites } from '../hooks/useFavorites'

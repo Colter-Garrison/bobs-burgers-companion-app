@@ -17,7 +17,7 @@ jest.mock('expo-router', () => ({
 }))
 
 let focusEffectCleanup: (() => void) | undefined
-jest.mock('@react-navigation/native', () => ({
+jest.mock('expo-router/react-navigation', () => ({
 	useFocusEffect: (callback: () => void | (() => void)) => {
 		focusEffectCleanup = callback() ?? undefined
 	},

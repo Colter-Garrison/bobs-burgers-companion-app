@@ -56,7 +56,7 @@ export function SplashOverlay() {
 
 	return (
 		<View
-			style={[StyleSheet.absoluteFillObject, styles.container]}
+			style={[StyleSheet.absoluteFill, styles.container]}
 			testID='splash-overlay'
 		>
 			<Image
@@ -65,7 +65,7 @@ export function SplashOverlay() {
 						? require('../assets/images/banner-image.png')
 						: require('../assets/images/bobs-splash.png')
 				}
-				style={[StyleSheet.absoluteFillObject, styles.image]}
+				style={[StyleSheet.absoluteFill, styles.image]}
 				resizeMode='cover'
 				accessibilityIgnoresInvertColors
 				accessible={false}

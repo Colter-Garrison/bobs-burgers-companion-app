@@ -2,10 +2,10 @@ import '../global.css'
 
 import { useEffect } from 'react'
 import { useFonts } from 'expo-font'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { SplashScreen } from 'expo-router'
-import { Drawer } from 'expo-router/drawer'
+import { Drawer, DrawerToggleButton } from 'expo-router/drawer'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { DrawerToggleButton } from '@react-navigation/drawer'
 import { FavoritesProvider } from '../hooks/useFavorites'
 import { ThemeProvider, useTheme } from '../hooks/useTheme'
 import { DrawerContent } from '../components/DrawerContent'
@@ -118,6 +118,11 @@ export default function RootLayout() {
 		BobsBurgers: require('../assets/fonts/BobsBurgers.ttf'),
 		BobsBurgers2: require('../assets/fonts/BobsBurgers2.ttf'),
 		Chewy: require('../assets/fonts/Chewy.ttf'),
+		// @expo/vector-icons renders an icon empty until its font is
+		// loaded. Loading it here lets the static web export pre-render
+		// the glyphs too — otherwise the server HTML has blank icons, the
+		// browser's doesn't, and React discards the page to re-render it.
+		...MaterialCommunityIcons.font,
 	})
 
 	useEffect(() => {

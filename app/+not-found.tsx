@@ -52,7 +52,7 @@ export default function NotFound() {
 				Page Not Found
 			</Text>
 			<Text className='font-chewy text-center text-lightAccent dark:text-darkAccent'>
-				This page doesn't exist.
+				This page doesn&apos;t exist.
 			</Text>
 			<Pressable
 				onPress={() => router.push('/')}

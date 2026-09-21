@@ -10,7 +10,7 @@ function mockJsonResponse(status: number, body: unknown) {
 
 describe('fetchBobsBurgersApi', () => {
 	beforeEach(() => {
-		global.fetch = jest.fn()
+		globalThis.fetch = jest.fn()
 	})
 
 	afterEach(() => {
@@ -18,13 +18,13 @@ describe('fetchBobsBurgersApi', () => {
 	})
 
 	it('returns the parsed JSON on a successful response', async () => {
-		;(global.fetch as jest.Mock).mockResolvedValueOnce(
+		;(globalThis.fetch as jest.Mock).mockResolvedValueOnce(
 			mockJsonResponse(200, [{ id: 1 }]),
 		)
 
 		const result = await fetchBobsBurgersApi('/burgerOfTheDay/')
 
-		expect(global.fetch).toHaveBeenCalledWith(
+		expect(globalThis.fetch).toHaveBeenCalledWith(
 			'https://bobsburgers-api.herokuapp.com/burgerOfTheDay/',
 			expect.objectContaining({ signal: expect.anything() }),
 		)
@@ -32,7 +32,7 @@ describe('fetchBobsBurgersApi', () => {
 	})
 
 	it('throws when the response is not ok', async () => {
-		;(global.fetch as jest.Mock).mockResolvedValueOnce(
+		;(globalThis.fetch as jest.Mock).mockResolvedValueOnce(
 			mockJsonResponse(500, { error: 'Server error' }),
 		)
 
@@ -42,7 +42,7 @@ describe('fetchBobsBurgersApi', () => {
 	})
 
 	it('rethrows a network error as-is', async () => {
-		;(global.fetch as jest.Mock).mockRejectedValueOnce(
+		;(globalThis.fetch as jest.Mock).mockRejectedValueOnce(
 			new Error('network down'),
 		)
 
@@ -53,7 +53,7 @@ describe('fetchBobsBurgersApi', () => {
 
 	it('aborts and throws a timeout error if the request takes too long', async () => {
 		jest.useFakeTimers()
-		;(global.fetch as jest.Mock).mockImplementation(
+		;(globalThis.fetch as jest.Mock).mockImplementation(
 			(_url: string, { signal }: { signal: AbortSignal }) =>
 				new Promise((_resolve, reject) => {
 					signal.addEventListener('abort', () => {

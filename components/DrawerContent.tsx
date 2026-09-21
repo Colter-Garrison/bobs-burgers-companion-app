@@ -2,13 +2,13 @@ import React, { useEffect, useRef } from 'react'
 import { usePathname, useRouter } from 'expo-router'
 import { View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { DrawerActions } from '@react-navigation/native'
+import { DrawerActions } from 'expo-router/react-navigation'
 import {
 	DrawerContentComponentProps,
 	DrawerContentScrollView,
 	DrawerItem,
 	DrawerItemList,
-} from '@react-navigation/drawer'
+} from 'expo-router/drawer'
 import { useTheme } from '../hooks/useTheme'
 import { ThemeToggleButton } from './ThemeToggleButton'
 import { ColorblindModeButton } from './ColorblindModeButton'

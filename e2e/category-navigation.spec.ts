@@ -6,7 +6,7 @@ test('drawer link navigates to the category screen and back', async ({
 	await page.goto('/')
 
 	await page.getByLabel('Open navigation menu').click()
-	await page.getByRole('link', { name: 'Burgers of the Day' }).click()
+	await page.getByRole('button', { name: 'Burgers of the Day' }).click()
 	await expect(page).toHaveURL(/\/burgers/)
 
 	await expect(page.getByLabel(/^Add .+ to favorites$/).first()).toBeVisible({
@@ -38,7 +38,7 @@ test('repeatedly opening the drawer, visiting a category, and hitting back never
 	for (let i = 0; i < 5; i++) {
 		await page.getByLabel('Open navigation menu').first().click()
 		await page
-			.getByRole('link', { name: 'Characters', exact: true })
+			.getByRole('button', { name: 'Characters', exact: true })
 			.first()
 			.click()
 		await expect(page).toHaveURL(/\/characters/)
