@@ -1,5 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Modal, Platform, Pressable, Text, View } from 'react-native'
+import {
+	Modal,
+	Platform,
+	Pressable,
+	StyleSheet,
+	Text,
+	View,
+} from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { useTheme } from '../hooks/useTheme'
 import {
@@ -56,17 +63,21 @@ export function ColorblindModeButton() {
 				animationType='fade'
 				onRequestClose={() => setIsOpen(false)}
 			>
-				<Pressable
+				<View
 					className='flex-1 items-center justify-center p-[10px]'
 					style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}
-					onPress={() => setIsOpen(false)}
-					accessibilityLabel='Close colorblind mode menu'
-					accessibilityRole='button'
 				>
+					{/* The backdrop is a sibling behind the panel, not its parent:
+					    on web a button role renders a real <button>, and the
+					    option buttons can't be nested inside it. */}
 					<Pressable
+						style={StyleSheet.absoluteFill}
+						onPress={() => setIsOpen(false)}
+						accessibilityLabel='Close colorblind mode menu'
+						accessibilityRole='button'
+					/>
+					<View
 						ref={panelRef}
-						onPress={() => {}}
-						accessibilityRole='none'
 						className='w-64 gap-1 rounded-lg border-4 border-lightAccent dark:border-darkAccent bg-lightSurface dark:bg-darkSurface p-2'
 					>
 						<Text
@@ -110,8 +121,8 @@ export function ColorblindModeButton() {
 								</Pressable>
 							)
 						})}
-					</Pressable>
-				</Pressable>
+					</View>
+				</View>
 			</Modal>
 		</>
 	)
