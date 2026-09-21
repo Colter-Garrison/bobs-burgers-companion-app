@@ -2,22 +2,20 @@ import { act, fireEvent, render, screen } from '@testing-library/react-native'
 import { useRouter } from 'expo-router'
 import { FlatList } from 'react-native'
 import Favorites from './favorites'
-import { useSearchableItems } from '../../hooks/useSearchableItems'
-import { useFavorites } from '../../hooks/useFavorites'
-import { useAuth } from '../../hooks/useAuth'
-import { useTheme } from '../../hooks/useTheme'
-import { LIGHT_THEME_COLORS } from '../../jest/themeColorsFixture'
+import { useSearchableItems } from '../hooks/useSearchableItems'
+import { useFavorites } from '../hooks/useFavorites'
+import { useTheme } from '../hooks/useTheme'
+import { LIGHT_THEME_COLORS } from '../jest/themeColorsFixture'
 
-jest.mock('../../hooks/useSearchableItems')
-jest.mock('../../hooks/useFavorites')
-jest.mock('../../hooks/useAuth')
-jest.mock('../../hooks/useTheme')
+jest.mock('../hooks/useSearchableItems')
+jest.mock('../hooks/useFavorites')
+jest.mock('../hooks/useTheme')
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }))
 
 let focusEffectCleanup: (() => void) | undefined
-jest.mock('@react-navigation/native', () => ({
+jest.mock('expo-router/react-navigation', () => ({
 	useFocusEffect: (callback: () => void | (() => void)) => {
 		focusEffectCleanup = callback() ?? undefined
 	},
@@ -51,10 +49,6 @@ describe('Favorites screen', () => {
 			colors: LIGHT_THEME_COLORS,
 		})
 		;(useRouter as jest.Mock).mockReturnValue({ push: mockPush })
-		;(useAuth as jest.Mock).mockReturnValue({
-			token: 'token-abc',
-			loading: false,
-		})
 		;(useSearchableItems as jest.Mock).mockReturnValue({
 			items,
 			loading: false,
@@ -69,22 +63,6 @@ describe('Favorites screen', () => {
 
 	afterEach(() => {
 		jest.clearAllMocks()
-	})
-
-	it('redirects to /login when there is no token and loading has settled', () => {
-		;(useAuth as jest.Mock).mockReturnValue({ token: null, loading: false })
-
-		render(<Favorites />)
-
-		expect(mockPush).toHaveBeenCalledWith('/login')
-	})
-
-	it('does not redirect while the session is still being restored', () => {
-		;(useAuth as jest.Mock).mockReturnValue({ token: null, loading: true })
-
-		render(<Favorites />)
-
-		expect(mockPush).not.toHaveBeenCalled()
 	})
 
 	it('shows only the favorited items, not everything from useSearchableItems', () => {

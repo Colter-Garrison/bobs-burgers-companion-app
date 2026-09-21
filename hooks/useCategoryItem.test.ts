@@ -151,4 +151,30 @@ describe('useCategoryItem', () => {
 
 		expect(fetchFn).toHaveBeenNthCalledWith(2, 2)
 	})
+
+	it('ignores a slow response for a previous id once the id has changed', async () => {
+		let resolveFirst: (value: { id: number; name: string }) => void = () => {}
+		const fetchFn = jest.fn((id: number) =>
+			id === 1
+				? new Promise<{ id: number; name: string }>((resolve) => {
+						resolveFirst = resolve
+					})
+				: Promise.resolve({ id: 2, name: 'Linda' }),
+		)
+
+		const { result, rerender } = renderHook(
+			({ id }: { id: number }) => useCategoryItem(fetchFn, `detail-${id}`, id),
+			{ initialProps: { id: 1 } },
+		)
+		rerender({ id: 2 })
+		await waitFor(() =>
+			expect(result.current.data).toEqual({ id: 2, name: 'Linda' }),
+		)
+
+		await act(async () => {
+			resolveFirst({ id: 1, name: 'Bob' })
+		})
+
+		expect(result.current.data).toEqual({ id: 2, name: 'Linda' })
+	})
 })

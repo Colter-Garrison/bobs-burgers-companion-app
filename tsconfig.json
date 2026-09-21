@@ -2,6 +2,7 @@
 	"extends": "expo/tsconfig.base",
 	"compilerOptions": {
 		"strict": true,
+		"types": ["jest", "expo/types"],
 		"paths": {
 			"@/*": ["./*"]
 		}
@@ -16,7 +17,6 @@
 	"exclude": [
 		"e2e/**",
 		"playwright-report/**",
-		"test-results/**",
-		"server/**"
+		"test-results/**"
 	]
 }

@@ -1,17 +1,18 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, Page } from '@playwright/test'
 
-test('favoriting/unfavoriting on one screen stays in sync with Favorites and other screens', async ({
+// In-app navigation (no reload), so this checks that screens share one
+// favorites list live — the reload test below covers persistence.
+async function openFromDrawer(page: Page, name: string) {
+	await page
+		.getByLabel('Open navigation menu')
+		.filter({ visible: true })
+		.click()
+	await page.getByRole('link', { name, exact: true }).click()
+}
+
+test('favoriting/unfavoriting on one screen stays in sync with Favorites and other screens, no account needed', async ({
 	page,
 }) => {
-	const username = `e2efavsync${Date.now().toString(36)}`
-	const password = 'correcthorsebatterystaple'
-
-	await page.goto('/signup')
-	await page.getByPlaceholder('Username (2-25 chars)').fill(username)
-	await page.getByPlaceholder('Password (min. 8 characters)').fill(password)
-	await page.getByRole('button', { name: 'Sign Up', exact: true }).click()
-	await expect(page).toHaveURL('/')
-
 	await page.goto('/characters')
 	const firstNameText = page.getByTestId('card-title').first()
 	await expect(firstNameText).toBeVisible({ timeout: 10_000 })
@@ -21,7 +22,9 @@ test('favoriting/unfavoriting on one screen stays in sync with Favorites and oth
 		.getByRole('button', { name: /^Add .+ to favorites$/ })
 		.first()
 		.click()
-	await page.goto('/favorites')
+
+	await openFromDrawer(page, 'Favorites')
+	await expect(page).toHaveURL('/favorites')
 	await expect(page.getByRole('heading', { name: characterName })).toBeVisible()
 
 	await page
@@ -30,20 +33,75 @@ test('favoriting/unfavoriting on one screen stays in sync with Favorites and oth
 		.click()
 	await expect(page.getByText('No favorites yet.')).toBeVisible()
 
-	await page.goto('/characters')
+	await openFromDrawer(page, 'Characters')
 	await expect(
-		page.getByRole('button', { name: /^Add .+ to favorites$/ }).first(),
+		page.getByRole('button', { name: `Add ${characterName} to favorites` }),
 	).toBeVisible({ timeout: 10_000 })
+})
+
+test('favorites survive a full page reload, and unfavoriting is saved too', async ({
+	page,
+}) => {
+	await page.goto('/characters')
+	const firstNameText = page.getByTestId('card-title').first()
+	await expect(firstNameText).toBeVisible({ timeout: 10_000 })
+	const characterName = (await firstNameText.textContent())!
 
 	await page
-		.getByRole('button', { name: /^Add .+ to favorites$/ })
-		.first()
+		.getByRole('button', { name: `Add ${characterName} to favorites` })
 		.click()
-	await page.goto('/favorites')
-	await expect(page.getByRole('heading', { name: characterName })).toBeVisible()
 
-	page.once('dialog', (dialog) => void dialog.accept())
-	await page.goto('/account')
-	await page.getByRole('button', { name: 'Delete Account' }).click()
-	await expect(page).toHaveURL('/')
+	await page.goto('/favorites')
+	await expect(page.getByRole('heading', { name: characterName })).toBeVisible({
+		timeout: 10_000,
+	})
+
+	await page.reload()
+	await expect(page.getByRole('heading', { name: characterName })).toBeVisible({
+		timeout: 10_000,
+	})
+
+	await page
+		.getByRole('button', { name: `Remove ${characterName} from favorites` })
+		.click()
+	await expect(page.getByText('No favorites yet.')).toBeVisible()
+
+	await page.reload()
+	await expect(page.getByText('No favorites yet.')).toBeVisible({
+		timeout: 10_000,
+	})
+})
+
+test('two open tabs share favorites live, and neither overwrites the other', async ({
+	context,
+}) => {
+	const tabA = await context.newPage()
+	const tabB = await context.newPage()
+	await tabA.goto('/characters')
+	await tabB.goto('/characters')
+	const titles = tabA.getByTestId('card-title')
+	await expect(titles.first()).toBeVisible({ timeout: 10_000 })
+	await expect(tabB.getByTestId('card-title').first()).toBeVisible({
+		timeout: 10_000,
+	})
+	const first = (await titles.nth(0).textContent())!
+	const second = (await titles.nth(1).textContent())!
+
+	await tabA.getByRole('button', { name: `Add ${first} to favorites` }).click()
+	// Tab B was never reloaded — it should hear about tab A's change.
+	await expect(
+		tabB.getByRole('button', { name: `Remove ${first} from favorites` }),
+	).toBeVisible()
+
+	await tabB.getByRole('button', { name: `Add ${second} to favorites` }).click()
+	await expect(
+		tabA.getByRole('button', { name: `Remove ${second} from favorites` }),
+	).toBeVisible()
+
+	// Both survive a reload: tab B's save didn't drop tab A's favorite.
+	await tabA.goto('/favorites')
+	await expect(tabA.getByRole('heading', { name: first })).toBeVisible({
+		timeout: 10_000,
+	})
+	await expect(tabA.getByRole('heading', { name: second })).toBeVisible()
 })

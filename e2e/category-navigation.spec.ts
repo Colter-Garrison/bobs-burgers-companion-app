@@ -50,3 +50,21 @@ test('repeatedly opening the drawer, visiting a category, and hitting back never
 		).toBeVisible()
 	}
 })
+
+test('drawer entries are real links that navigate in the same tab', async ({
+	page,
+	context,
+}) => {
+	await page.goto('/')
+	await page.getByLabel('Open navigation menu').click()
+
+	const link = page.getByRole('link', { name: 'Episodes', exact: true })
+	await expect(link).toHaveAttribute('href', '/episodes')
+	await expect(
+		page.getByRole('link', { name: 'Home', exact: true }),
+	).toHaveAttribute('aria-current', 'page')
+
+	await link.click()
+	await expect(page).toHaveURL('/episodes')
+	expect(context.pages()).toHaveLength(1)
+})

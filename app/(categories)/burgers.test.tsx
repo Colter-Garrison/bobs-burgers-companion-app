@@ -4,21 +4,19 @@ import { FlatList } from 'react-native'
 import Burgers from './burgers'
 import { getBurgersOfTheDay } from '../../hooks/fetchBurgersOfTheDay'
 import { useFavorites } from '../../hooks/useFavorites'
-import { useAuth } from '../../hooks/useAuth'
 import { useTheme } from '../../hooks/useTheme'
 import { LIGHT_THEME_COLORS } from '../../jest/themeColorsFixture'
 import { saveToCache } from '../../lib/dataCache'
 
 jest.mock('../../hooks/fetchBurgersOfTheDay')
 jest.mock('../../hooks/useFavorites')
-jest.mock('../../hooks/useAuth')
 jest.mock('../../hooks/useTheme')
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }))
 
 let focusEffectCleanup: (() => void) | undefined
-jest.mock('@react-navigation/native', () => ({
+jest.mock('expo-router/react-navigation', () => ({
 	useFocusEffect: (callback: () => void | (() => void)) => {
 		focusEffectCleanup = callback() ?? undefined
 	},
@@ -46,7 +44,6 @@ describe('Burgers screen', () => {
 			addFavorite: mockAddFavorite,
 			removeFavorite: mockRemoveFavorite,
 		})
-		;(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' })
 		;(useRouter as jest.Mock).mockReturnValue({ push: mockPush })
 	})
 
@@ -253,6 +250,31 @@ describe('Burgers screen', () => {
 		act(() => {
 			screen.UNSAFE_getByType(FlatList).props.onEndReached()
 		})
+
+		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(25)
+	})
+
+	it('keeps the extra page loaded while an A-Z sort is active (the sorted list must not look new on every render)', async () => {
+		const manyBurgers = Array.from({ length: 25 }, (_, i) => ({
+			id: i,
+			name: `Burger Number ${String(i).padStart(2, '0')}`,
+			price: '$5.00',
+			season: 1,
+			episode: 1,
+		}))
+		;(getBurgersOfTheDay as jest.Mock).mockResolvedValue(manyBurgers)
+
+		render(<Burgers />)
+		await flush()
+
+		fireEvent.press(screen.getByLabelText('Show filter options'))
+		fireEvent.press(screen.getByLabelText('Tap to sort A to Z'))
+		act(() => {
+			screen.UNSAFE_getByType(FlatList).props.onEndReached()
+		})
+		// An unrelated re-render (closing the filter panel) must not snap the
+		// list back to the first page.
+		fireEvent.press(screen.getByLabelText('Hide filter options'))
 
 		expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(25)
 	})

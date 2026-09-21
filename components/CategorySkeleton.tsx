@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Animated, View } from 'react-native'
 import { useTheme } from '../hooks/useTheme'
 
@@ -21,7 +21,9 @@ export function CategorySkeleton({
 	count = 4,
 	fullScreen = true,
 }: CategorySkeletonProps) {
-	const opacity = useRef(new Animated.Value(0.4)).current
+	// A lazy useState initializer creates the value once, like useRef,
+	// without reading a ref during render.
+	const [opacity] = useState(() => new Animated.Value(0.4))
 	const { colors } = useTheme()
 	const cardStyle = getCardStyle(colors)
 

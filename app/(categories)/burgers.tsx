@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { FlatList, Pressable, Text, TextInput, View } from 'react-native'
 import { useRouter } from 'expo-router'
-import { useFocusEffect } from '@react-navigation/native'
+import { useFocusEffect } from 'expo-router/react-navigation'
 import { Burger, getBurgersOfTheDay } from '../../hooks/fetchBurgersOfTheDay'
 import { useCategoryData } from '../../hooks/useCategoryData'
 import { useCategorySearch } from '../../hooks/useCategorySearch'
@@ -48,9 +48,12 @@ export default function Burgers() {
 		}, []),
 	)
 
-	const visibleBurgers = attributeFilters.sortItems(
-		searchedBurgers,
-		(burger) => burger.name,
+	const { sortItems } = attributeFilters
+	// Memoized so the sorted copy keeps the same identity between renders —
+	// usePagination treats a new array as a new list and resets to page 1.
+	const visibleBurgers = useMemo(
+		() => sortItems(searchedBurgers, (burger) => burger.name),
+		[searchedBurgers, sortItems],
 	)
 	const { visibleItems, loadMore, hasMore } = usePagination(visibleBurgers)
 

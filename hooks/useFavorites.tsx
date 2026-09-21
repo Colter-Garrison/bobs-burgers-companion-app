@@ -5,16 +5,13 @@ import React, {
 	useEffect,
 	useState,
 } from 'react'
-import { useRouter } from 'expo-router'
 import {
-	ApiError,
 	Favorite,
 	FavoriteCategory,
-	addFavoriteRequest,
-	fetchFavorites,
-	removeFavoriteRequest,
-} from '../lib/apiClient'
-import { useAuth } from './useAuth'
+	loadFavorites,
+	saveFavorites,
+	subscribeToFavoriteChanges,
+} from '../lib/favorites'
 
 interface FavoritesContextValue {
 	favorites: Favorite[]
@@ -28,90 +25,69 @@ const FavoritesContext = createContext<FavoritesContextValue | undefined>(
 	undefined,
 )
 
+function matches(f: Favorite, category: FavoriteCategory, itemId: number) {
+	return f.category === category && f.itemId === itemId
+}
+
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
-	const { token, logout } = useAuth()
-	const router = useRouter()
 	const [favorites, setFavorites] = useState<Favorite[]>([])
 	const [loading, setLoading] = useState(true)
 
-	const handleSessionExpired = useCallback(
-		(err: unknown) => {
-			if (err instanceof ApiError && err.status === 401) {
-				logout()
-				router.push('/login')
-				return true
-			}
-			return false
-		},
-		[logout, router],
+	useEffect(() => {
+		loadFavorites().then((saved) => {
+			// Merge rather than replace: anything favorited in the moment
+			// before storage finished loading would otherwise be dropped.
+			setFavorites((current) => [
+				...saved,
+				...current.filter(
+					(f) => !saved.some((s) => matches(s, f.category, f.itemId)),
+				),
+			])
+			setLoading(false)
+		})
+	}, [])
+
+	useEffect(
+		() =>
+			subscribeToFavoriteChanges(() => {
+				loadFavorites().then(setFavorites)
+			}),
+		[],
 	)
 
+	// Only save after the initial load — saving the empty starting list
+	// first would wipe out what's stored before it was ever read.
 	useEffect(() => {
-		if (!token) {
-			setFavorites([])
-			setLoading(false)
-			return
+		if (!loading) {
+			saveFavorites(favorites)
 		}
-		setLoading(true)
-		fetchFavorites(token)
-			.then(setFavorites)
-			.catch((err) => {
-				handleSessionExpired(err)
-			})
-			.finally(() => setLoading(false))
-	}, [token, handleSessionExpired])
+	}, [favorites, loading])
 
 	const isFavorited = useCallback(
 		(category: FavoriteCategory, itemId: number) =>
-			favorites.some((f) => f.category === category && f.itemId === itemId),
+			favorites.some((f) => matches(f, category, itemId)),
 		[favorites],
 	)
 
 	const addFavorite = useCallback(
 		async (category: FavoriteCategory, itemId: number) => {
-			if (!token) return
-
-			const optimistic: Favorite = {
-				id: -Date.now(),
-				userId: -1,
-				category,
-				itemId,
-				createdAt: new Date().toISOString(),
-			}
-			setFavorites((prev) => [...prev, optimistic])
-
-			try {
-				const saved = await addFavoriteRequest(token, category, itemId)
-				setFavorites((prev) => prev.map((f) => (f === optimistic ? saved : f)))
-			} catch (err) {
-				if (err instanceof ApiError && err.status === 409) return
-
-				setFavorites((prev) => prev.filter((f) => f !== optimistic))
-				handleSessionExpired(err)
-			}
+			setFavorites((prev) =>
+				prev.some((f) => matches(f, category, itemId))
+					? prev
+					: [
+							...prev,
+							{ category, itemId, createdAt: new Date().toISOString() },
+						],
+			)
 		},
-		[token, handleSessionExpired],
+		[],
 	)
 
 	const removeFavorite = useCallback(
 		async (category: FavoriteCategory, itemId: number) => {
-			if (!token) return
-
-			const previous = favorites
-			setFavorites((prev) =>
-				prev.filter((f) => !(f.category === category && f.itemId === itemId)),
-			)
-
-			try {
-				await removeFavoriteRequest(token, category, itemId)
-			} catch (err) {
-				if (err instanceof ApiError && err.status === 404) return
-
-				setFavorites(previous)
-				handleSessionExpired(err)
-			}
+			setFavorites((prev) => prev.filter((f) => !matches(f, category, itemId)))
 		},
-		[token, favorites, handleSessionExpired],
+		[],
 	)
 
 	return (

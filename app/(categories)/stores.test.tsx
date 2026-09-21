@@ -4,20 +4,18 @@ import { useRouter } from 'expo-router'
 import Stores from './stores'
 import { getStoresNextDoor } from '../../hooks/fetchStoresNextDoor'
 import { useFavorites } from '../../hooks/useFavorites'
-import { useAuth } from '../../hooks/useAuth'
 import { useTheme } from '../../hooks/useTheme'
 import { LIGHT_THEME_COLORS } from '../../jest/themeColorsFixture'
 
 jest.mock('../../hooks/fetchStoresNextDoor')
 jest.mock('../../hooks/useFavorites')
-jest.mock('../../hooks/useAuth')
 jest.mock('../../hooks/useTheme')
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
 }))
 
 let focusEffectCleanup: (() => void) | undefined
-jest.mock('@react-navigation/native', () => ({
+jest.mock('expo-router/react-navigation', () => ({
 	useFocusEffect: (callback: () => void | (() => void)) => {
 		focusEffectCleanup = callback() ?? undefined
 	},
@@ -45,7 +43,6 @@ describe('Stores screen', () => {
 			addFavorite: mockAddFavorite,
 			removeFavorite: mockRemoveFavorite,
 		})
-		;(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' })
 		;(useRouter as jest.Mock).mockReturnValue({ push: mockPush })
 	})
 

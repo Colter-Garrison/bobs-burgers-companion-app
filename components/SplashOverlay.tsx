@@ -25,7 +25,7 @@ export const MIN_DISPLAY_MS = 2000
 export function SplashOverlay() {
 	const { isThemeReady } = useTheme()
 	const [shouldRender, setShouldRender] = useState(true)
-	const mountedAtRef = useRef(Date.now())
+	const mountedAtRef = useRef(0)
 	// bobs-splash.png is a tall, portrait-shaped image (designed for a
 	// phone screen) — 'cover' fills a portrait/near-square viewport
 	// nicely, but on a wide landscape browser window it forces the image
@@ -39,6 +39,13 @@ export function SplashOverlay() {
 	// README.)
 	const { width, height } = useWindowDimensions()
 	const isWideViewport = width > height
+
+	// Recorded in an effect rather than during render, since Date.now()
+	// gives a different answer on every render. Declared before the effect
+	// below so it runs first even if the theme is already ready on mount.
+	useEffect(() => {
+		mountedAtRef.current = Date.now()
+	}, [])
 
 	useEffect(() => {
 		if (!isThemeReady) {
@@ -56,7 +63,7 @@ export function SplashOverlay() {
 
 	return (
 		<View
-			style={[StyleSheet.absoluteFillObject, styles.container]}
+			style={[StyleSheet.absoluteFill, styles.container]}
 			testID='splash-overlay'
 		>
 			<Image
@@ -65,7 +72,7 @@ export function SplashOverlay() {
 						? require('../assets/images/banner-image.png')
 						: require('../assets/images/bobs-splash.png')
 				}
-				style={[StyleSheet.absoluteFillObject, styles.image]}
+				style={[StyleSheet.absoluteFill, styles.image]}
 				resizeMode='cover'
 				accessibilityIgnoresInvertColors
 				accessible={false}

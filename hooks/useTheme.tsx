@@ -36,6 +36,12 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
 
+// React Native 0.85 added 'unspecified' to Appearance's possible values;
+// anything other than an explicit 'dark' falls back to light.
+function systemColorScheme(): 'light' | 'dark' {
+	return Appearance.getColorScheme() === 'dark' ? 'dark' : 'light'
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
 	const { colorScheme: activeScheme } = useColorScheme()
 	const [colorblindMode, setColorblindModeState] =
@@ -48,11 +54,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 				if (saved === 'light' || saved === 'dark') {
 					colorScheme.set(saved)
 				} else {
-					colorScheme.set(Appearance.getColorScheme() ?? 'light')
+					colorScheme.set(systemColorScheme())
 				}
 			})
 			.catch(() => {
-				colorScheme.set(Appearance.getColorScheme() ?? 'light')
+				colorScheme.set(systemColorScheme())
 			})
 			.finally(() => setIsThemeReady(true))
 	}, [])

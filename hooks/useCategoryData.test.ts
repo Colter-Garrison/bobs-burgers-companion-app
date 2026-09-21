@@ -128,9 +128,9 @@ describe('useCategoryData', () => {
 
 		;(useNetworkStatus as jest.Mock).mockReturnValue({ isOffline: false })
 		rerender({})
-		await waitFor(() => expect(fetchFn).toHaveBeenCalledTimes(1))
+		await waitFor(() => expect(result.current.data).toEqual([{ id: 2 }]))
 
-		expect(result.current.data).toEqual([{ id: 2 }])
+		expect(fetchFn).toHaveBeenCalledTimes(1)
 		expect(result.current.cachedAt).toBeNull()
 	})
 

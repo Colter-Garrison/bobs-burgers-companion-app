@@ -1,32 +1,22 @@
 import React, { useEffect, useRef } from 'react'
-import { usePathname, useRouter } from 'expo-router'
-import { Pressable, Text, View } from 'react-native'
+import { usePathname } from 'expo-router'
+import { StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { DrawerActions } from '@react-navigation/native'
+import { DrawerActions, useLinkBuilder } from 'expo-router/react-navigation'
 import {
 	DrawerContentComponentProps,
 	DrawerContentScrollView,
-	DrawerItem,
-	DrawerItemList,
-} from '@react-navigation/drawer'
-import { useAuth } from '../hooks/useAuth'
+} from 'expo-router/drawer'
 import { useTheme } from '../hooks/useTheme'
 import { ThemeToggleButton } from './ThemeToggleButton'
 import { ColorblindModeButton } from './ColorblindModeButton'
-
-// For the auth block and Log Out, which intentionally stay plain (no
-// yellow box) — matches the font of react-navigation's own DrawerItem
-// label (screenOptions.drawerLabelStyle in app/_layout.tsx).
-const navLinkClassName =
-	'rounded-lg px-4 py-3 font-chewy text-[16px] text-lightAccent dark:text-darkAccent'
-
-const boxedItemLabelStyle = { fontFamily: 'Chewy', fontSize: 16 }
+import { DrawerLink } from './DrawerLink'
 
 export function DrawerContent(props: DrawerContentComponentProps) {
-	const router = useRouter()
 	const pathname = usePathname()
-	const { token, username, logout } = useAuth()
 	const { colors } = useTheme()
+	const { buildHref } = useLinkBuilder()
+	const { state, descriptors, navigation } = props
 	const insets = useSafeAreaInsets()
 
 	const isFirstRender = useRef(true)
@@ -35,21 +25,9 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 			isFirstRender.current = false
 			return
 		}
-		props.navigation.dispatch(DrawerActions.closeDrawer())
+		navigation.dispatch(DrawerActions.closeDrawer())
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [pathname])
-
-	const boxedItemStyle = {
-		borderWidth: 4,
-		borderColor: colors.accent,
-		backgroundColor: colors.surface,
-		borderRadius: 8,
-	}
-
-	const handleLogout = async () => {
-		await logout()
-		router.push('/')
-	}
 
 	return (
 		<DrawerContentScrollView
@@ -57,73 +35,47 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 			className='bg-lightBg dark:bg-darkBg'
 			contentContainerStyle={{ flexGrow: 1 }}
 		>
-			<View className='flex-row items-center justify-between gap-1 p-2'>
-				<View className='flex-1'>
-					{token ? (
-						<Pressable
-							onPress={() => router.push('/account')}
-							accessibilityRole='button'
-							accessibilityLabel={`Account settings for ${username}`}
-						>
-							<Text className={navLinkClassName}>Hello, {username}!</Text>
-						</Pressable>
-					) : (
-						<Pressable
-							onPress={() => router.push('/login')}
-							accessibilityRole='button'
-							accessibilityLabel='Log In (menu)'
-						>
-							<Text className={navLinkClassName}>Log In</Text>
-						</Pressable>
-					)}
-				</View>
-				<View className='flex-row items-center gap-2'>
-					<ColorblindModeButton />
-					<ThemeToggleButton />
-				</View>
+			<View className='flex-row items-center justify-end gap-2 p-2'>
+				<ColorblindModeButton />
+				<ThemeToggleButton />
 			</View>
 
-			<DrawerItemList {...props} />
-
-			{token ? (
-				<>
-					<DrawerItem
-						label='Favorites'
-						onPress={() => router.push('/favorites')}
-						labelStyle={boxedItemLabelStyle}
-						style={boxedItemStyle}
-						activeTintColor={colors.accent}
-						inactiveTintColor={colors.accent}
+			{/* Every Drawer.Screen in app/_layout.tsx that isn't hidden, in the
+			    order declared there — titles and styles stay defined in one
+			    place. */}
+			{state.routes.map((route, index) => {
+				const options = descriptors[route.key].options
+				const itemStyle = StyleSheet.flatten(options.drawerItemStyle)
+				if (itemStyle?.display === 'none') return null
+				const focused = index === state.index
+				const label =
+					typeof options.drawerLabel === 'string'
+						? options.drawerLabel
+						: (options.title ?? route.name)
+				return (
+					<DrawerLink
+						key={route.key}
+						href={buildHref(route.name, route.params) ?? '/'}
+						label={label}
+						focused={focused}
+						color={
+							(focused
+								? options.drawerActiveTintColor
+								: options.drawerInactiveTintColor) ?? colors.accent
+						}
+						style={options.drawerItemStyle}
+						labelStyle={options.drawerLabelStyle}
+						// Already on this screen: nothing to navigate to, so the
+						// pathname effect above won't close the drawer — do it here.
+						onPress={
+							focused
+								? () => navigation.dispatch(DrawerActions.closeDrawer())
+								: undefined
+						}
 					/>
-					<DrawerItem
-						label='About the Dev'
-						onPress={() => router.push('/aboutTheDev')}
-						labelStyle={boxedItemLabelStyle}
-						style={boxedItemStyle}
-						activeTintColor={colors.accent}
-						inactiveTintColor={colors.accent}
-					/>
-				</>
-			) : (
-				<DrawerItem
-					label='About the Dev'
-					onPress={() => router.push('/aboutTheDev')}
-					labelStyle={boxedItemLabelStyle}
-					style={boxedItemStyle}
-					activeTintColor={colors.accent}
-					inactiveTintColor={colors.accent}
-				/>
-			)}
+				)
+			})}
 
-			<View className='flex-1' />
-
-			{token ? (
-				<View className='gap-1 p-2'>
-					<Pressable onPress={handleLogout} accessibilityRole='button'>
-						<Text className={navLinkClassName}>Log Out</Text>
-					</Pressable>
-				</View>
-			) : null}
 			<View style={{ height: insets.bottom }} />
 		</DrawerContentScrollView>
 	)

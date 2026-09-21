@@ -1,191 +1,139 @@
 import { act, renderHook, waitFor } from '@testing-library/react-native'
-import { useRouter } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { FavoritesProvider, useFavorites } from './useFavorites'
-import { useAuth } from './useAuth'
-import {
-	ApiError,
-	addFavoriteRequest,
-	fetchFavorites,
-	removeFavoriteRequest,
-} from '../lib/apiClient'
+import { loadFavorites } from '../lib/favorites'
 
-jest.mock('./useAuth')
-jest.mock('../lib/apiClient', () => ({
-	...jest.requireActual('../lib/apiClient'),
-	fetchFavorites: jest.fn(),
-	addFavoriteRequest: jest.fn(),
-	removeFavoriteRequest: jest.fn(),
-}))
-jest.mock('expo-router', () => ({
-	useRouter: jest.fn(),
-}))
-
-const existingFavorite = {
-	id: 1,
-	userId: 1,
+const savedBurger = {
 	category: 'burger' as const,
 	itemId: 42,
-	createdAt: '2024-01-01T00:00:00.000Z',
+	createdAt: '2026-09-21T00:00:00.000Z',
+}
+
+async function renderLoaded() {
+	const hook = renderHook(() => useFavorites(), {
+		wrapper: FavoritesProvider,
+	})
+	await waitFor(() => expect(hook.result.current.loading).toBe(false))
+	return hook
 }
 
 describe('useFavorites', () => {
-	const mockLogout = jest.fn()
-	const mockPush = jest.fn()
-
-	beforeEach(() => {
-		;(useRouter as jest.Mock).mockReturnValue({ push: mockPush })
-		;(useAuth as jest.Mock).mockReturnValue({
-			token: 'token-abc',
-			logout: mockLogout,
-		})
-		;(fetchFavorites as jest.Mock).mockResolvedValue([existingFavorite])
-	})
-
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
-	it('stays empty and never calls the API when logged out', async () => {
-		;(useAuth as jest.Mock).mockReturnValue({ token: null, logout: mockLogout })
-
-		const { result } = renderHook(() => useFavorites(), {
-			wrapper: FavoritesProvider,
-		})
-
-		await waitFor(() => expect(result.current.loading).toBe(false))
-		expect(result.current.favorites).toEqual([])
-		expect(fetchFavorites).not.toHaveBeenCalled()
-	})
-
-	it('fetches favorites when a token is present', async () => {
+	it('is loading until saved favorites have been read', async () => {
 		const { result } = renderHook(() => useFavorites(), {
 			wrapper: FavoritesProvider,
 		})
 
 		expect(result.current.loading).toBe(true)
 		await waitFor(() => expect(result.current.loading).toBe(false))
+		expect(result.current.favorites).toEqual([])
+	})
 
-		expect(fetchFavorites).toHaveBeenCalledWith('token-abc')
+	it('restores favorites saved by a previous visit', async () => {
+		await AsyncStorage.setItem('bbca_favorites', JSON.stringify([savedBurger]))
+
+		const { result } = await renderLoaded()
+
 		expect(result.current.isFavorited('burger', 42)).toBe(true)
-		expect(result.current.isFavorited('character', 99)).toBe(false)
 	})
 
-	it('addFavorite optimistically adds, then keeps it once the request resolves', async () => {
-		;(addFavoriteRequest as jest.Mock).mockResolvedValue({
-			id: 2,
-			userId: 1,
-			category: 'character',
-			itemId: 7,
-			createdAt: '2024-01-02T00:00:00.000Z',
-		})
-		const { result } = renderHook(() => useFavorites(), {
-			wrapper: FavoritesProvider,
-		})
-		await waitFor(() => expect(result.current.loading).toBe(false))
-
-		await act(async () => {
-			await result.current.addFavorite('character', 7)
-		})
-
-		expect(addFavoriteRequest).toHaveBeenCalledWith('token-abc', 'character', 7)
-		expect(result.current.isFavorited('character', 7)).toBe(true)
-	})
-
-	it('addFavorite rolls back on a non-409 failure', async () => {
-		;(addFavoriteRequest as jest.Mock).mockRejectedValue(
-			new ApiError(500, 'Server error'),
-		)
-		const { result } = renderHook(() => useFavorites(), {
-			wrapper: FavoritesProvider,
-		})
-		await waitFor(() => expect(result.current.loading).toBe(false))
-
-		await act(async () => {
-			await result.current.addFavorite('character', 7)
-		})
-
-		expect(result.current.isFavorited('character', 7)).toBe(false)
-	})
-
-	it('addFavorite treats a 409 (already favorited) as a no-op, not a rollback', async () => {
-		;(addFavoriteRequest as jest.Mock).mockRejectedValue(
-			new ApiError(409, 'Already favorited'),
-		)
-		const { result } = renderHook(() => useFavorites(), {
-			wrapper: FavoritesProvider,
-		})
-		await waitFor(() => expect(result.current.loading).toBe(false))
+	it('addFavorite marks the item favorited, scoped to its category, and saves it', async () => {
+		const { result } = await renderLoaded()
 
 		await act(async () => {
 			await result.current.addFavorite('character', 7)
 		})
 
 		expect(result.current.isFavorited('character', 7)).toBe(true)
+		expect(result.current.isFavorited('episode', 7)).toBe(false)
+		await waitFor(async () =>
+			expect(await loadFavorites()).toEqual([
+				expect.objectContaining({ category: 'character', itemId: 7 }),
+			]),
+		)
 	})
 
-	it('removeFavorite optimistically removes, then stays removed once the request resolves', async () => {
-		;(removeFavoriteRequest as jest.Mock).mockResolvedValue(undefined)
-		const { result } = renderHook(() => useFavorites(), {
-			wrapper: FavoritesProvider,
-		})
-		await waitFor(() => expect(result.current.loading).toBe(false))
-		expect(result.current.isFavorited('burger', 42)).toBe(true)
+	it('adding the same item twice keeps a single entry', async () => {
+		const { result } = await renderLoaded()
 
 		await act(async () => {
-			await result.current.removeFavorite('burger', 42)
+			await result.current.addFavorite('burger', 42)
+			await result.current.addFavorite('burger', 42)
 		})
 
-		expect(removeFavoriteRequest).toHaveBeenCalledWith(
-			'token-abc',
-			'burger',
-			42,
-		)
-		expect(result.current.isFavorited('burger', 42)).toBe(false)
+		expect(result.current.favorites).toHaveLength(1)
 	})
 
-	it('removeFavorite rolls back on a non-404 failure', async () => {
-		;(removeFavoriteRequest as jest.Mock).mockRejectedValue(
-			new ApiError(500, 'Server error'),
-		)
-		const { result } = renderHook(() => useFavorites(), {
-			wrapper: FavoritesProvider,
-		})
-		await waitFor(() => expect(result.current.loading).toBe(false))
-
-		await act(async () => {
-			await result.current.removeFavorite('burger', 42)
-		})
-
-		expect(result.current.isFavorited('burger', 42)).toBe(true)
-	})
-
-	it('removeFavorite treats a 404 (already gone) as a no-op, not a rollback', async () => {
-		;(removeFavoriteRequest as jest.Mock).mockRejectedValue(
-			new ApiError(404, 'Favorite not found'),
-		)
-		const { result } = renderHook(() => useFavorites(), {
-			wrapper: FavoritesProvider,
-		})
-		await waitFor(() => expect(result.current.loading).toBe(false))
+	it('removeFavorite unmarks the item and removes it from storage', async () => {
+		await AsyncStorage.setItem('bbca_favorites', JSON.stringify([savedBurger]))
+		const { result } = await renderLoaded()
 
 		await act(async () => {
 			await result.current.removeFavorite('burger', 42)
 		})
 
 		expect(result.current.isFavorited('burger', 42)).toBe(false)
+		await waitFor(async () => expect(await loadFavorites()).toEqual([]))
 	})
 
-	it('a 401 while fetching logs out and redirects to /login', async () => {
-		;(fetchFavorites as jest.Mock).mockRejectedValue(
-			new ApiError(401, 'Invalid or expired token'),
-		)
+	it('does not overwrite saved favorites before they have been loaded', async () => {
+		await AsyncStorage.setItem('bbca_favorites', JSON.stringify([savedBurger]))
+		// The AsyncStorage mock is shared across tests, so drop calls
+		// recorded by earlier ones before checking this test's writes.
+		const setItem = jest.spyOn(AsyncStorage, 'setItem')
+		setItem.mockClear()
+
+		await renderLoaded()
+
+		expect(setItem).not.toHaveBeenCalledWith('bbca_favorites', '[]')
+		expect(await loadFavorites()).toEqual([savedBurger])
+	})
+
+	it('keeps a favorite added before storage finished loading', async () => {
+		await AsyncStorage.setItem('bbca_favorites', JSON.stringify([savedBurger]))
 		const { result } = renderHook(() => useFavorites(), {
 			wrapper: FavoritesProvider,
 		})
 
+		await act(async () => {
+			await result.current.addFavorite('character', 7)
+		})
 		await waitFor(() => expect(result.current.loading).toBe(false))
 
-		expect(mockLogout).toHaveBeenCalled()
-		expect(mockPush).toHaveBeenCalledWith('/login')
+		expect(result.current.isFavorited('burger', 42)).toBe(true)
+		expect(result.current.isFavorited('character', 7)).toBe(true)
+	})
+
+	it('picks up changes another tab saved', async () => {
+		const target = new EventTarget()
+		Object.assign(window, {
+			addEventListener: target.addEventListener.bind(target),
+			removeEventListener: target.removeEventListener.bind(target),
+		})
+		const { result, unmount } = await renderLoaded()
+		expect(result.current.isFavorited('burger', 42)).toBe(false)
+
+		// Another tab writes to storage, then the browser notifies this one.
+		await AsyncStorage.setItem('bbca_favorites', JSON.stringify([savedBurger]))
+		await act(async () => {
+			target.dispatchEvent(
+				Object.assign(new Event('storage'), { key: 'bbca_favorites' }),
+			)
+		})
+
+		await waitFor(() =>
+			expect(result.current.isFavorited('burger', 42)).toBe(true),
+		)
+		unmount()
+		Object.assign(window, {
+			addEventListener: undefined,
+			removeEventListener: undefined,
+		})
+	})
+
+	it('throws when used outside a FavoritesProvider', () => {
+		jest.spyOn(console, 'error').mockImplementation(() => {})
+		expect(() => renderHook(() => useFavorites())).toThrow(
+			'useFavorites must be used within a FavoritesProvider',
+		)
 	})
 })

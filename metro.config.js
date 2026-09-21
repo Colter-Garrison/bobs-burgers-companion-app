@@ -10,6 +10,9 @@ const config = getDefaultConfig(__dirname)
 // module that doesn't exist in a browser/RN bundle. Test files should
 // never be part of the shipped app, so exclude them from Metro's module
 // graph entirely, wherever they live.
-config.resolver.blockList = [config.resolver.blockList, /\.test\.[jt]sx?$/]
+config.resolver.blockList = [
+	...[config.resolver.blockList].flat(),
+	/\.test\.[jt]sx?$/,
+]
 
 module.exports = withNativeWind(config, { input: './global.css' })

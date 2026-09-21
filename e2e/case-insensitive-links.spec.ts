@@ -1,49 +1,5 @@
 import { test, expect } from '@playwright/test'
 
-test('visiting /verifyemail (lowercase) redirects to the real Verify Email screen', async ({
-	page,
-}) => {
-	await page.goto('/verifyemail?token=abc123')
-
-	await expect(page).toHaveURL('/verifyEmail?token=abc123')
-	await expect(
-		page.getByRole('heading', { name: 'Verify Email' }).first(),
-	).toBeVisible({ timeout: 10_000 })
-})
-
-test('visiting /resetpassword (lowercase) redirects to the real Reset Password screen', async ({
-	page,
-}) => {
-	await page.goto('/resetpassword?token=abc123')
-
-	await expect(page).toHaveURL('/resetPassword?token=abc123')
-	await expect(
-		page.getByPlaceholder('New password (min. 8 characters)'),
-	).toBeVisible({ timeout: 10_000 })
-})
-
-test('visiting /forgotusername (lowercase) redirects to the real Forgot Username screen', async ({
-	page,
-}) => {
-	await page.goto('/forgotusername')
-
-	await expect(page).toHaveURL('/forgotUsername')
-	await expect(
-		page.getByRole('heading', { name: 'Forgot Username' }).first(),
-	).toBeVisible({ timeout: 10_000 })
-})
-
-test('visiting /forgotpassword (lowercase) redirects to the real Forgot Password screen', async ({
-	page,
-}) => {
-	await page.goto('/forgotpassword')
-
-	await expect(page).toHaveURL('/forgotPassword')
-	await expect(
-		page.getByRole('heading', { name: 'Forgot Password' }).first(),
-	).toBeVisible({ timeout: 10_000 })
-})
-
 test('visiting /endcredits (lowercase) redirects to the real End Credits screen', async ({
 	page,
 }) => {

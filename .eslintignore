@@ -1,6 +1,0 @@
-dist/
-web-build/
-.expo/
-server/
-playwright-report/
-test-results/
