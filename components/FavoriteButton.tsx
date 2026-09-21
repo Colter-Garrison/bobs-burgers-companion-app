@@ -1,8 +1,6 @@
 import React from 'react'
-import { useRouter } from 'expo-router'
 import { Pressable } from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { useAuth } from '../hooks/useAuth'
 import { useTheme } from '../hooks/useTheme'
 
 interface FavoriteButtonProps {
@@ -16,14 +14,12 @@ export function FavoriteButton({
 	onToggle,
 	itemName,
 }: FavoriteButtonProps) {
-	const { token } = useAuth()
-	const router = useRouter()
 	const { colors } = useTheme()
 	const iconColor = colors.accent
 
 	return (
 		<Pressable
-			onPress={() => (token ? onToggle() : router.push('/login'))}
+			onPress={onToggle}
 			hitSlop={10}
 			className='ml-1'
 			accessibilityRole='button'

@@ -1,17 +1,23 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, Page } from '@playwright/test'
 
-test('favoriting/unfavoriting on one screen stays in sync with Favorites and other screens', async ({
+// Navigates through the drawer rather than page.goto — favorites are in
+// memory only until persistent storage lands, so a reload would clear them.
+// Category screens render as links in the drawer; Favorites is a button.
+async function openFromDrawer(
+	page: Page,
+	role: 'link' | 'button',
+	name: string,
+) {
+	await page
+		.getByLabel('Open navigation menu')
+		.filter({ visible: true })
+		.click()
+	await page.getByRole(role, { name, exact: true }).click()
+}
+
+test('favoriting/unfavoriting on one screen stays in sync with Favorites and other screens, no account needed', async ({
 	page,
 }) => {
-	const username = `e2efavsync${Date.now().toString(36)}`
-	const password = 'correcthorsebatterystaple'
-
-	await page.goto('/signup')
-	await page.getByPlaceholder('Username (2-25 chars)').fill(username)
-	await page.getByPlaceholder('Password (min. 8 characters)').fill(password)
-	await page.getByRole('button', { name: 'Sign Up', exact: true }).click()
-	await expect(page).toHaveURL('/')
-
 	await page.goto('/characters')
 	const firstNameText = page.getByTestId('card-title').first()
 	await expect(firstNameText).toBeVisible({ timeout: 10_000 })
@@ -21,7 +27,9 @@ test('favoriting/unfavoriting on one screen stays in sync with Favorites and oth
 		.getByRole('button', { name: /^Add .+ to favorites$/ })
 		.first()
 		.click()
-	await page.goto('/favorites')
+
+	await openFromDrawer(page, 'button', 'Favorites')
+	await expect(page).toHaveURL('/favorites')
 	await expect(page.getByRole('heading', { name: characterName })).toBeVisible()
 
 	await page
@@ -30,20 +38,8 @@ test('favoriting/unfavoriting on one screen stays in sync with Favorites and oth
 		.click()
 	await expect(page.getByText('No favorites yet.')).toBeVisible()
 
-	await page.goto('/characters')
+	await openFromDrawer(page, 'link', 'Characters')
 	await expect(
-		page.getByRole('button', { name: /^Add .+ to favorites$/ }).first(),
+		page.getByRole('button', { name: `Add ${characterName} to favorites` }),
 	).toBeVisible({ timeout: 10_000 })
-
-	await page
-		.getByRole('button', { name: /^Add .+ to favorites$/ })
-		.first()
-		.click()
-	await page.goto('/favorites')
-	await expect(page.getByRole('heading', { name: characterName })).toBeVisible()
-
-	page.once('dialog', (dialog) => void dialog.accept())
-	await page.goto('/account')
-	await page.getByRole('button', { name: 'Delete Account' }).click()
-	await expect(page).toHaveURL('/')
 })

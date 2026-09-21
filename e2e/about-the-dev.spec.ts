@@ -30,18 +30,10 @@ test('searching Colter Garrison on Home shows his photo and bio, and tapping him
 	expect(box?.height).toBeLessThanOrEqual(220)
 })
 
-test('Colter Garrison can be favorited and stays favorited (regression: the backend rejects negative itemIds)', async ({
+test('Colter Garrison can be favorited and shows up on Favorites', async ({
 	page,
 }) => {
-	const username = `e2edevfav${Date.now().toString(36)}`
-	const password = 'correcthorsebatterystaple'
-
-	await page.goto('/signup')
-	await page.getByPlaceholder('Username (2-25 chars)').fill(username)
-	await page.getByPlaceholder('Password (min. 8 characters)').fill(password)
-	await page.getByRole('button', { name: 'Sign Up', exact: true }).click()
-	await expect(page).toHaveURL('/')
-
+	await page.goto('/')
 	const search = page.getByPlaceholder(
 		'Search burgers, characters, episodes...',
 	)
@@ -53,21 +45,19 @@ test('Colter Garrison can be favorited and stays favorited (regression: the back
 	await page.getByLabel('Add Colter Garrison to favorites').click()
 	await expect(
 		page.getByLabel('Remove Colter Garrison from favorites'),
-	).toBeVisible({ timeout: 5_000 })
-	await page.waitForTimeout(1_000)
-	await expect(
-		page.getByLabel('Remove Colter Garrison from favorites'),
 	).toBeVisible()
 
-	await page.goto('/favorites')
+	// In-app navigation, not page.goto — favorites are in memory only
+	// until persistent storage lands, so a full reload would clear them.
+	await page
+		.getByLabel('Open navigation menu')
+		.filter({ visible: true })
+		.click()
+	await page.getByRole('button', { name: 'Favorites', exact: true }).click()
+	await expect(page).toHaveURL('/favorites')
 	await expect(page.getByText('Colter Garrison')).toBeVisible({
 		timeout: 10_000,
 	})
-
-	page.once('dialog', (dialog) => void dialog.accept())
-	await page.goto('/account')
-	await page.getByRole('button', { name: 'Delete Account' }).click()
-	await expect(page).toHaveURL('/')
 })
 
 test('Colter Garrison appears on the Characters screen and is filterable by Male / Blonde', async ({

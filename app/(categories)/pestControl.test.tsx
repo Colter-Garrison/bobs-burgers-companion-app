@@ -4,13 +4,11 @@ import { useRouter } from 'expo-router'
 import PestControl from './pestControl'
 import { getPestControlTrucks } from '../../hooks/fetchPestControlTrucks'
 import { useFavorites } from '../../hooks/useFavorites'
-import { useAuth } from '../../hooks/useAuth'
 import { useTheme } from '../../hooks/useTheme'
 import { LIGHT_THEME_COLORS } from '../../jest/themeColorsFixture'
 
 jest.mock('../../hooks/fetchPestControlTrucks')
 jest.mock('../../hooks/useFavorites')
-jest.mock('../../hooks/useAuth')
 jest.mock('../../hooks/useTheme')
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
@@ -45,7 +43,6 @@ describe('PestControl screen', () => {
 			addFavorite: mockAddFavorite,
 			removeFavorite: mockRemoveFavorite,
 		})
-		;(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' })
 		;(useRouter as jest.Mock).mockReturnValue({ push: mockPush })
 	})
 

@@ -4,14 +4,12 @@ import { FlatList } from 'react-native'
 import Burgers from './burgers'
 import { getBurgersOfTheDay } from '../../hooks/fetchBurgersOfTheDay'
 import { useFavorites } from '../../hooks/useFavorites'
-import { useAuth } from '../../hooks/useAuth'
 import { useTheme } from '../../hooks/useTheme'
 import { LIGHT_THEME_COLORS } from '../../jest/themeColorsFixture'
 import { saveToCache } from '../../lib/dataCache'
 
 jest.mock('../../hooks/fetchBurgersOfTheDay')
 jest.mock('../../hooks/useFavorites')
-jest.mock('../../hooks/useAuth')
 jest.mock('../../hooks/useTheme')
 jest.mock('expo-router', () => ({
 	useRouter: jest.fn(),
@@ -46,7 +44,6 @@ describe('Burgers screen', () => {
 			addFavorite: mockAddFavorite,
 			removeFavorite: mockRemoveFavorite,
 		})
-		;(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' })
 		;(useRouter as jest.Mock).mockReturnValue({ push: mockPush })
 	})
 

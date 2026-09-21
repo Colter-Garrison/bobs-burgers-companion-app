@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { FavoriteCategory } from '../lib/apiClient'
+import { FavoriteCategory } from '../lib/favorites'
 import { composeCharacterShortBio } from '../lib/categoryBio'
 import { loadFromCache, saveToCache } from '../lib/dataCache'
 import {

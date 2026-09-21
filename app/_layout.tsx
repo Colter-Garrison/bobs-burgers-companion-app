@@ -6,7 +6,6 @@ import { SplashScreen } from 'expo-router'
 import { Drawer } from 'expo-router/drawer'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { DrawerToggleButton } from '@react-navigation/drawer'
-import { AuthProvider } from '../hooks/useAuth'
 import { FavoritesProvider } from '../hooks/useFavorites'
 import { ThemeProvider, useTheme } from '../hooks/useTheme'
 import { DrawerContent } from '../components/DrawerContent'
@@ -83,56 +82,7 @@ function ThemedDrawer() {
 				options={{ title: 'Stores Next Door' }}
 			/>
 			<Drawer.Screen
-				name='(auth)/login'
-				options={{
-					title: 'Log In',
-					drawerItemStyle: { display: 'none' },
-				}}
-			/>
-			<Drawer.Screen
-				name='(auth)/signup'
-				options={{
-					title: 'Sign Up',
-					drawerItemStyle: { display: 'none' },
-				}}
-			/>
-			<Drawer.Screen
-				name='(auth)/forgotUsername'
-				options={{
-					title: 'Forgot Username',
-					drawerItemStyle: { display: 'none' },
-				}}
-			/>
-			<Drawer.Screen
-				name='(auth)/forgotPassword'
-				options={{
-					title: 'Forgot Password',
-					drawerItemStyle: { display: 'none' },
-				}}
-			/>
-			<Drawer.Screen
-				name='(auth)/resetPassword'
-				options={{
-					title: 'Reset Password',
-					drawerItemStyle: { display: 'none' },
-				}}
-			/>
-			<Drawer.Screen
-				name='verifyEmail'
-				options={{
-					title: 'Verify Email',
-					drawerItemStyle: { display: 'none' },
-				}}
-			/>
-			<Drawer.Screen
-				name='(account)/account'
-				options={{
-					title: 'Account',
-					drawerItemStyle: { display: 'none' },
-				}}
-			/>
-			<Drawer.Screen
-				name='(account)/favorites'
+				name='favorites'
 				options={{
 					title: 'My Favorites',
 					drawerItemStyle: { display: 'none' },
@@ -182,13 +132,11 @@ export default function RootLayout() {
 
 	return (
 		<ThemeProvider>
-			<AuthProvider>
-				<FavoritesProvider>
-					<GestureHandlerRootView style={{ flex: 1 }}>
-						<ThemedDrawer />
-					</GestureHandlerRootView>
-				</FavoritesProvider>
-			</AuthProvider>
+			<FavoritesProvider>
+				<GestureHandlerRootView style={{ flex: 1 }}>
+					<ThemedDrawer />
+				</GestureHandlerRootView>
+			</FavoritesProvider>
 			<SplashOverlay />
 		</ThemeProvider>
 	)

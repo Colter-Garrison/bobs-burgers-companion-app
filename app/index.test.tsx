@@ -4,14 +4,12 @@ import { FlatList } from 'react-native'
 import Index from './index'
 import { useSearchableItems } from '../hooks/useSearchableItems'
 import { useFavorites } from '../hooks/useFavorites'
-import { useAuth } from '../hooks/useAuth'
 import { useCharacterOfTheDay } from '../hooks/useCharacterOfTheDay'
 import { useTheme } from '../hooks/useTheme'
 import { LIGHT_THEME_COLORS } from '../jest/themeColorsFixture'
 
 jest.mock('../hooks/useSearchableItems')
 jest.mock('../hooks/useFavorites')
-jest.mock('../hooks/useAuth')
 jest.mock('../hooks/useCharacterOfTheDay')
 jest.mock('../hooks/useTheme')
 jest.mock('expo-router', () => ({
@@ -70,7 +68,6 @@ describe('Home / search screen', () => {
 			addFavorite: mockAddFavorite,
 			removeFavorite: mockRemoveFavorite,
 		})
-		;(useAuth as jest.Mock).mockReturnValue({ token: 'token-abc' })
 		;(useRouter as jest.Mock).mockReturnValue({ push: mockPush })
 		;(useCharacterOfTheDay as jest.Mock).mockReturnValue({
 			character: {
