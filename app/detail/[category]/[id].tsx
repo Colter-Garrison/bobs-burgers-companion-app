@@ -1,8 +1,10 @@
 import React from 'react'
 import { useLocalSearchParams } from 'expo-router'
 import { DetailLayout } from '../../../components/DetailLayout'
+import { CategorySkeleton } from '../../../components/CategorySkeleton'
 import { ErrorState } from '../../../components/ErrorState'
 import { useCategoryItem } from '../../../hooks/useCategoryItem'
+import { useIsClient } from '../../../hooks/useIsClient'
 import { getBurgerOfTheDayById } from '../../../hooks/fetchBurgersOfTheDay'
 import { getCharacterById } from '../../../hooks/fetchCharacters'
 import { getEndCreditsSequenceById } from '../../../hooks/fetchEndCreditsSequences'
@@ -179,6 +181,15 @@ export default function DetailScreen() {
 		id: string
 	}>()
 	const numericId = Number(id)
+	const isClient = useIsClient()
+
+	// The web export has one pre-built page for every detail URL, rendered
+	// with placeholder params ("[category]"), so it can't know which item
+	// is being shown. Render the same skeleton in that HTML and in the
+	// browser's first pass, then the real screen.
+	if (!isClient) {
+		return <CategorySkeleton />
+	}
 
 	switch (category?.toLowerCase()) {
 		case 'burgers':

@@ -60,7 +60,7 @@ const routes = [
 		name: 'favorites',
 		options: { title: 'My Favorites', drawerLabel: 'Favorites' },
 	},
-	{ key: 'about', name: 'aboutTheDev', options: { title: 'About the Dev' } },
+	{ key: 'about', name: 'aboutthedev', options: { title: 'About the Dev' } },
 	{
 		key: 'detail',
 		name: 'detail/[category]/[id]',
@@ -108,7 +108,7 @@ describe('DrawerContent', () => {
 			'/',
 			'/characters',
 			'/favorites',
-			'/aboutTheDev',
+			'/aboutthedev',
 		])
 		expect(screen.getByRole('link', { name: 'Characters' })).toBeVisible()
 	})

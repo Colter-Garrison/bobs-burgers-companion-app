@@ -66,7 +66,7 @@ function ThemedDrawer() {
 				options={{ title: 'Characters' }}
 			/>
 			<Drawer.Screen
-				name='(categories)/endCredits'
+				name='(categories)/endcredits'
 				options={{ title: 'End Credits' }}
 			/>
 			<Drawer.Screen
@@ -74,7 +74,7 @@ function ThemedDrawer() {
 				options={{ title: 'Episodes' }}
 			/>
 			<Drawer.Screen
-				name='(categories)/pestControl'
+				name='(categories)/pestcontrol'
 				options={{ title: 'Pest Control Trucks' }}
 			/>
 			<Drawer.Screen
@@ -85,7 +85,7 @@ function ThemedDrawer() {
 				name='favorites'
 				options={{ title: 'My Favorites', drawerLabel: 'Favorites' }}
 			/>
-			<Drawer.Screen name='aboutTheDev' options={{ title: 'About the Dev' }} />
+			<Drawer.Screen name='aboutthedev' options={{ title: 'About the Dev' }} />
 			<Drawer.Screen
 				name='detail/[category]/[id]'
 				options={{

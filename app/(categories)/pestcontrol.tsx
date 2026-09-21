@@ -61,7 +61,7 @@ export default function PestControl() {
 		(truck: Truck) => {
 			router.push({
 				pathname: '/detail/[category]/[id]',
-				params: { category: 'pestControl', id: String(truck.id) },
+				params: { category: 'pestcontrol', id: String(truck.id) },
 			})
 		},
 		[router],

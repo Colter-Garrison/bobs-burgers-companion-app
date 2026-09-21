@@ -263,6 +263,6 @@ describe('Characters screen', () => {
 
 		fireEvent.press(screen.getByText('Colter Garrison'))
 
-		expect(mockPush).toHaveBeenCalledWith({ pathname: '/aboutTheDev' })
+		expect(mockPush).toHaveBeenCalledWith({ pathname: '/aboutthedev' })
 	})
 })

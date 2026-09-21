@@ -5,15 +5,15 @@ import { DEV_CHARACTER_ID } from './devCharacter'
 export const CATEGORY_SLUGS: Record<SearchCategory, string> = {
 	'Burgers of the Day': 'burgers',
 	Characters: 'characters',
-	'End Credits': 'endCredits',
+	'End Credits': 'endcredits',
 	Episodes: 'episodes',
-	'Pest Control Trucks': 'pestControl',
+	'Pest Control Trucks': 'pestcontrol',
 	'Stores Next Door': 'stores',
 }
 
 export function detailHref(category: SearchCategory, itemId: number): Href {
 	if (category === 'Characters' && itemId === DEV_CHARACTER_ID) {
-		return { pathname: '/aboutTheDev' }
+		return { pathname: '/aboutthedev' }
 	}
 
 	return {

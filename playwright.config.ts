@@ -22,7 +22,14 @@ export default defineConfig({
 	// `npx playwright test` is a single, correct command every time,
 	// including in CI where there's no human around to start a server.
 	webServer: {
-		command: 'npm run build:web && npx serve dist -l 4173 -s',
+		// Routes like Netlify does (see netlify.toml), not as a single-page
+		// app: each URL gets its own pre-built HTML, /detail/* gets the detail
+		// template, and anything else is a real 404 (+not-found.html, copied
+		// to the 404.html name serve looks for). serve.json mirrors
+		// netlify.toml's /detail/* rewrite. `serve -s` would hand Home's HTML
+		// to every URL, which hid a hydration error on every non-Home page.
+		command:
+			'npm run build:web && cp "dist/+not-found.html" dist/404.html && npx serve dist -l 4173 -c ../serve.json',
 		url: 'http://localhost:4173',
 		// In CI, always do a full export + fresh server. Locally, reuse a
 		// server that's already running on this port (e.g. from a prior

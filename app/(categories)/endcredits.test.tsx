@@ -1,7 +1,7 @@
 import { FlatList, Image } from 'react-native'
 import { act, fireEvent, render, screen } from '@testing-library/react-native'
 import { useRouter } from 'expo-router'
-import EndCredits from './endCredits'
+import EndCredits from './endcredits'
 import { getEndCreditsSequences } from '../../hooks/fetchEndCreditsSequences'
 import { useFavorites } from '../../hooks/useFavorites'
 import { useTheme } from '../../hooks/useTheme'
@@ -113,7 +113,7 @@ describe('EndCredits screen', () => {
 
 		expect(mockPush).toHaveBeenCalledWith({
 			pathname: '/detail/[category]/[id]',
-			params: { category: 'endCredits', id: '1' },
+			params: { category: 'endcredits', id: '1' },
 		})
 	})
 

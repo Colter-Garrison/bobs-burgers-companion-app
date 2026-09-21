@@ -2,28 +2,24 @@
   publish = "dist"
   command = "expo export"
 
-# Expo Router's file-based routing matches paths exactly, so a lowercased
-# URL (e.g. /endcredits, typed by hand or lowercased by some link
-# handler) wouldn't match the camelCase route without these rewrites —
-# a second lowercase app/ file isn't an option since this filesystem is
-# case-insensitive and the two would collide.
-# Must come before the catch-all below — Netlify uses the first match.
+# Route files are all lowercase on purpose: Netlify lowercases mixed-case
+# URLs itself (/endCredits -> 301 -> /endcredits), so a camelCase route
+# would land on its lowercase form, which the router doesn't match. With
+# lowercase routes, old camelCase links still work through that redirect.
+
+# Every detail URL (/detail/episodes/3, ...) is served the one pre-built
+# detail page; the screen reads the real category/id in the browser. See
+# the static-export note in app/detail/[category]/[id].tsx.
 [[redirects]]
-  from = "/endcredits"
-  to = "/endCredits"
+  from = "/detail/*"
+  to = "/detail/[category]/[id].html"
   status = 200
 
-[[redirects]]
-  from = "/pestcontrol"
-  to = "/pestControl"
-  status = 200
-
-[[redirects]]
-  from = "/aboutthedev"
-  to = "/aboutTheDev"
-  status = 200
-
+# Anything else without its own pre-built page is a real 404. There's
+# deliberately no single-page-app catch-all to /index.html: this is a
+# static export, so serving Home's HTML for another URL makes the browser
+# hydrate the wrong page (React error #418).
 [[redirects]]
   from = "/*"
-  to = "/index.html"
-  status = 200
+  to = "/+not-found.html"
+  status = 404

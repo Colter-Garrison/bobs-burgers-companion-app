@@ -1,7 +1,7 @@
 import React from 'react'
 import { Linking } from 'react-native'
 import { render, screen, fireEvent } from '@testing-library/react-native'
-import AboutTheDev from './aboutTheDev'
+import AboutTheDev from './aboutthedev'
 import {
 	DEV_CHARACTER_LONG_BIO,
 	DEV_GITHUB_URL,

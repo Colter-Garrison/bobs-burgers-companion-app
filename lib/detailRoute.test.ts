@@ -4,7 +4,7 @@ import { DEV_CHARACTER_ID } from './devCharacter'
 describe('detailHref', () => {
 	it('routes the dev character to About the Dev instead of the generic detail page', () => {
 		expect(detailHref('Characters', DEV_CHARACTER_ID)).toEqual({
-			pathname: '/aboutTheDev',
+			pathname: '/aboutthedev',
 		})
 	})
 
@@ -19,7 +19,7 @@ describe('detailHref', () => {
 		})
 		expect(detailHref('End Credits', 5)).toEqual({
 			pathname: '/detail/[category]/[id]',
-			params: { category: 'endCredits', id: '5' },
+			params: { category: 'endcredits', id: '5' },
 		})
 		expect(detailHref('Episodes', 5)).toEqual({
 			pathname: '/detail/[category]/[id]',
@@ -27,7 +27,7 @@ describe('detailHref', () => {
 		})
 		expect(detailHref('Pest Control Trucks', 5)).toEqual({
 			pathname: '/detail/[category]/[id]',
-			params: { category: 'pestControl', id: '5' },
+			params: { category: 'pestcontrol', id: '5' },
 		})
 		expect(detailHref('Stores Next Door', 5)).toEqual({
 			pathname: '/detail/[category]/[id]',
