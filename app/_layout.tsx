@@ -83,18 +83,9 @@ function ThemedDrawer() {
 			/>
 			<Drawer.Screen
 				name='favorites'
-				options={{
-					title: 'My Favorites',
-					drawerItemStyle: { display: 'none' },
-				}}
+				options={{ title: 'My Favorites', drawerLabel: 'Favorites' }}
 			/>
-			<Drawer.Screen
-				name='aboutTheDev'
-				options={{
-					title: 'About the Dev',
-					drawerItemStyle: { display: 'none' },
-				}}
-			/>
+			<Drawer.Screen name='aboutTheDev' options={{ title: 'About the Dev' }} />
 			<Drawer.Screen
 				name='detail/[category]/[id]'
 				options={{

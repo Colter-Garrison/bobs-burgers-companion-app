@@ -75,7 +75,7 @@ test('the drawer shows an About the Dev link below the categories, with no Buy M
 	await page.goto('/')
 	await page.getByLabel('Open navigation menu').click()
 
-	const aboutTheDevLink = page.getByRole('button', { name: 'About the Dev' })
+	const aboutTheDevLink = page.getByRole('link', { name: 'About the Dev' })
 	await expect(aboutTheDevLink).toBeVisible()
 	await expect(page.getByText(/Buy me a beer/)).toHaveCount(0)
 

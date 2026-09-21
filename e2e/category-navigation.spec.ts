@@ -6,7 +6,7 @@ test('drawer link navigates to the category screen and back', async ({
 	await page.goto('/')
 
 	await page.getByLabel('Open navigation menu').click()
-	await page.getByRole('button', { name: 'Burgers of the Day' }).click()
+	await page.getByRole('link', { name: 'Burgers of the Day' }).click()
 	await expect(page).toHaveURL(/\/burgers/)
 
 	await expect(page.getByLabel(/^Add .+ to favorites$/).first()).toBeVisible({
@@ -38,7 +38,7 @@ test('repeatedly opening the drawer, visiting a category, and hitting back never
 	for (let i = 0; i < 5; i++) {
 		await page.getByLabel('Open navigation menu').first().click()
 		await page
-			.getByRole('button', { name: 'Characters', exact: true })
+			.getByRole('link', { name: 'Characters', exact: true })
 			.first()
 			.click()
 		await expect(page).toHaveURL(/\/characters/)
@@ -49,4 +49,22 @@ test('repeatedly opening the drawer, visiting a category, and hitting back never
 			page.getByPlaceholder('Search burgers, characters, episodes...'),
 		).toBeVisible()
 	}
+})
+
+test('drawer entries are real links that navigate in the same tab', async ({
+	page,
+	context,
+}) => {
+	await page.goto('/')
+	await page.getByLabel('Open navigation menu').click()
+
+	const link = page.getByRole('link', { name: 'Episodes', exact: true })
+	await expect(link).toHaveAttribute('href', '/episodes')
+	await expect(
+		page.getByRole('link', { name: 'Home', exact: true }),
+	).toHaveAttribute('aria-current', 'page')
+
+	await link.click()
+	await expect(page).toHaveURL('/episodes')
+	expect(context.pages()).toHaveLength(1)
 })

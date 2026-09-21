@@ -7,7 +7,7 @@ async function openFromDrawer(page: Page, name: string) {
 		.getByLabel('Open navigation menu')
 		.filter({ visible: true })
 		.click()
-	await page.getByRole('button', { name, exact: true }).click()
+	await page.getByRole('link', { name, exact: true }).click()
 }
 
 test('favoriting/unfavoriting on one screen stays in sync with Favorites and other screens, no account needed', async ({
