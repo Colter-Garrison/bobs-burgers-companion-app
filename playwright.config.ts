@@ -26,13 +26,8 @@ export default defineConfig({
 		// app: each URL gets its own pre-built HTML, /detail/* gets the detail
 		// template, and anything else is a real 404 (+not-found.html, copied
 		// to the 404.html name serve looks for). serve.json mirrors
-		// netlify.toml's /detail/* rewrite. netlify.toml's lowercase-URL 301s
-		// are left out: serve matches redirect rules case-insensitively
-		// before checking for a real file, so /endCredits would redirect to
-		// itself forever (Netlify checks files first). Here those URLs fall
-		// through to the 404 page, whose client-side redirect in
-		// app/+not-found.tsx takes over. `serve -s` would hand Home's HTML to
-		// every URL, which hid a hydration error on every non-Home page.
+		// netlify.toml's /detail/* rewrite. `serve -s` would hand Home's HTML
+		// to every URL, which hid a hydration error on every non-Home page.
 		command:
 			'npm run build:web && cp "dist/+not-found.html" dist/404.html && npx serve dist -l 4173 -c ../serve.json',
 		url: 'http://localhost:4173',

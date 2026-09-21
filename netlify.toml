@@ -2,27 +2,10 @@
   publish = "dist"
   command = "expo export"
 
-# Expo Router's file-based routing matches paths exactly, so a lowercased
-# URL (e.g. /endcredits, typed by hand or lowercased by some link handler)
-# wouldn't match the camelCase route. These are real redirects (301), not
-# rewrites: the browser has to land on the camelCase URL, or its router
-# would render the not-found route onto that page's pre-built HTML and hit
-# a hydration mismatch.
-# Must come before the catch-all below — Netlify uses the first match.
-[[redirects]]
-  from = "/endcredits"
-  to = "/endCredits"
-  status = 301
-
-[[redirects]]
-  from = "/pestcontrol"
-  to = "/pestControl"
-  status = 301
-
-[[redirects]]
-  from = "/aboutthedev"
-  to = "/aboutTheDev"
-  status = 301
+# Route files are all lowercase on purpose: Netlify lowercases mixed-case
+# URLs itself (/endCredits -> 301 -> /endcredits), so a camelCase route
+# would land on its lowercase form, which the router doesn't match. With
+# lowercase routes, old camelCase links still work through that redirect.
 
 # Every detail URL (/detail/episodes/3, ...) is served the one pre-built
 # detail page; the screen reads the real category/id in the browser. See

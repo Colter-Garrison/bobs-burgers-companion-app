@@ -18,7 +18,7 @@ test('searching Colter Garrison on Home shows his photo and bio, and tapping him
 
 	await page.getByText('Colter Garrison').click()
 
-	await expect(page).toHaveURL('/aboutTheDev')
+	await expect(page).toHaveURL('/aboutthedev')
 	await expect(page.getByText('LinkedIn')).toBeVisible({ timeout: 10_000 })
 	await expect(page.getByText('GitHub')).toBeVisible()
 	await expect(page.getByText('Buy me a Coffee ☕')).toBeVisible()
@@ -80,5 +80,5 @@ test('the drawer shows an About the Dev link below the categories, with no Buy M
 	await expect(page.getByText(/Buy me a beer/)).toHaveCount(0)
 
 	await aboutTheDevLink.click()
-	await expect(page).toHaveURL('/aboutTheDev')
+	await expect(page).toHaveURL('/aboutthedev')
 })

@@ -1,38 +1,5 @@
 import { test, expect } from '@playwright/test'
 
-test('visiting /endcredits (lowercase) redirects to the real End Credits screen', async ({
-	page,
-}) => {
-	await page.goto('/endcredits')
-
-	await expect(page).toHaveURL('/endCredits')
-	await expect(page.getByPlaceholder('Search End Credits...')).toBeVisible({
-		timeout: 10_000,
-	})
-})
-
-test('visiting /pestcontrol (lowercase) redirects to the real Pest Control Trucks screen', async ({
-	page,
-}) => {
-	await page.goto('/pestcontrol')
-
-	await expect(page).toHaveURL('/pestControl')
-	await expect(
-		page.getByPlaceholder('Search Pest Control Trucks...'),
-	).toBeVisible({ timeout: 10_000 })
-})
-
-test('visiting /aboutthedev (lowercase) redirects to the real About the Dev screen', async ({
-	page,
-}) => {
-	await page.goto('/aboutthedev')
-
-	await expect(page).toHaveURL('/aboutTheDev')
-	await expect(page.getByText('Colter Garrison')).toBeVisible({
-		timeout: 10_000,
-	})
-})
-
 test('visiting a detail page with a lowercased category param (e.g. /detail/endcredits/1) still resolves — the outer route has no uppercase to redirect on, so this is handled inside the detail screen itself, not by app/+not-found.tsx', async ({
 	page,
 }) => {

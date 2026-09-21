@@ -1,7 +1,7 @@
 import { FlatList, Image } from 'react-native'
 import { act, fireEvent, render, screen } from '@testing-library/react-native'
 import { useRouter } from 'expo-router'
-import PestControl from './pestControl'
+import PestControl from './pestcontrol'
 import { getPestControlTrucks } from '../../hooks/fetchPestControlTrucks'
 import { useFavorites } from '../../hooks/useFavorites'
 import { useTheme } from '../../hooks/useTheme'
@@ -123,7 +123,7 @@ describe('PestControl screen', () => {
 
 		expect(mockPush).toHaveBeenCalledWith({
 			pathname: '/detail/[category]/[id]',
-			params: { category: 'pestControl', id: '1' },
+			params: { category: 'pestcontrol', id: '1' },
 		})
 	})
 

@@ -64,7 +64,7 @@ export default function EndCredits() {
 		(endCredit: EndCredit) => {
 			router.push({
 				pathname: '/detail/[category]/[id]',
-				params: { category: 'endCredits', id: String(endCredit.id) },
+				params: { category: 'endcredits', id: String(endCredit.id) },
 			})
 		},
 		[router],
