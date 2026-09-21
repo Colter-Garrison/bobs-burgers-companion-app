@@ -71,3 +71,37 @@ test('favorites survive a full page reload, and unfavoriting is saved too', asyn
 		timeout: 10_000,
 	})
 })
+
+test('two open tabs share favorites live, and neither overwrites the other', async ({
+	context,
+}) => {
+	const tabA = await context.newPage()
+	const tabB = await context.newPage()
+	await tabA.goto('/characters')
+	await tabB.goto('/characters')
+	const titles = tabA.getByTestId('card-title')
+	await expect(titles.first()).toBeVisible({ timeout: 10_000 })
+	await expect(tabB.getByTestId('card-title').first()).toBeVisible({
+		timeout: 10_000,
+	})
+	const first = (await titles.nth(0).textContent())!
+	const second = (await titles.nth(1).textContent())!
+
+	await tabA.getByRole('button', { name: `Add ${first} to favorites` }).click()
+	// Tab B was never reloaded — it should hear about tab A's change.
+	await expect(
+		tabB.getByRole('button', { name: `Remove ${first} from favorites` }),
+	).toBeVisible()
+
+	await tabB.getByRole('button', { name: `Add ${second} to favorites` }).click()
+	await expect(
+		tabA.getByRole('button', { name: `Remove ${second} from favorites` }),
+	).toBeVisible()
+
+	// Both survive a reload: tab B's save didn't drop tab A's favorite.
+	await tabA.goto('/favorites')
+	await expect(tabA.getByRole('heading', { name: first })).toBeVisible({
+		timeout: 10_000,
+	})
+	await expect(tabA.getByRole('heading', { name: second })).toBeVisible()
+})

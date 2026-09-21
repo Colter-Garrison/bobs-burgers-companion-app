@@ -1,5 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { loadFavorites, saveFavorites } from './favorites'
+import {
+	loadFavorites,
+	saveFavorites,
+	subscribeToFavoriteChanges,
+} from './favorites'
 
 const bob = {
 	category: 'character' as const,
@@ -51,5 +55,63 @@ describe('favorites storage', () => {
 			.mockRejectedValueOnce(new Error('quota exceeded'))
 
 		await expect(saveFavorites([bob])).resolves.toBeUndefined()
+	})
+})
+
+// Jest's window has no event methods, so these tests lend it a real
+// EventTarget and dispatch storage events the way another tab would.
+describe('subscribeToFavoriteChanges', () => {
+	const target = new EventTarget()
+	const storageEvent = (key: string | null) =>
+		Object.assign(new Event('storage'), { key })
+
+	beforeEach(() => {
+		Object.assign(window, {
+			addEventListener: target.addEventListener.bind(target),
+			removeEventListener: target.removeEventListener.bind(target),
+		})
+	})
+
+	afterEach(() => {
+		Object.assign(window, {
+			addEventListener: undefined,
+			removeEventListener: undefined,
+		})
+	})
+
+	it('calls back when another tab changes favorites or clears storage', () => {
+		const onChange = jest.fn()
+		const unsubscribe = subscribeToFavoriteChanges(onChange)
+
+		target.dispatchEvent(storageEvent('bbca_favorites'))
+		target.dispatchEvent(storageEvent(null))
+
+		expect(onChange).toHaveBeenCalledTimes(2)
+		unsubscribe()
+	})
+
+	it('ignores changes to other storage keys', () => {
+		const onChange = jest.fn()
+		const unsubscribe = subscribeToFavoriteChanges(onChange)
+
+		target.dispatchEvent(storageEvent('bbca_cache_characters'))
+
+		expect(onChange).not.toHaveBeenCalled()
+		unsubscribe()
+	})
+
+	it('stops calling back after unsubscribing', () => {
+		const onChange = jest.fn()
+		subscribeToFavoriteChanges(onChange)()
+
+		target.dispatchEvent(storageEvent('bbca_favorites'))
+
+		expect(onChange).not.toHaveBeenCalled()
+	})
+
+	it('is a harmless no-op where window has no event listeners', () => {
+		Object.assign(window, { addEventListener: undefined })
+
+		expect(() => subscribeToFavoriteChanges(jest.fn())()).not.toThrow()
 	})
 })

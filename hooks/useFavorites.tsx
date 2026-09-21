@@ -10,6 +10,7 @@ import {
 	FavoriteCategory,
 	loadFavorites,
 	saveFavorites,
+	subscribeToFavoriteChanges,
 } from '../lib/favorites'
 
 interface FavoritesContextValue {
@@ -45,6 +46,14 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
 			setLoading(false)
 		})
 	}, [])
+
+	useEffect(
+		() =>
+			subscribeToFavoriteChanges(() => {
+				loadFavorites().then(setFavorites)
+			}),
+		[],
+	)
 
 	// Only save after the initial load — saving the empty starting list
 	// first would wipe out what's stored before it was ever read.

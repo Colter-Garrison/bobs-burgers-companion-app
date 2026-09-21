@@ -58,3 +58,22 @@ export async function saveFavorites(favorites: Favorite[]): Promise<void> {
 		// visit, they just won't survive a reload.
 	}
 }
+
+// Other open tabs of the site save to the same storage; the browser fires
+// a `storage` event in every tab except the one that wrote. Reloading on
+// it keeps tabs in sync, so one tab can't overwrite another's changes with
+// a stale list. Returns an unsubscribe function; a no-op where there's no
+// window (static rendering, native).
+export function subscribeToFavoriteChanges(onChange: () => void): () => void {
+	if (typeof window === 'undefined' || !window.addEventListener) {
+		return () => {}
+	}
+	const handleStorage = (event: StorageEvent) => {
+		// key is null when another tab cleared all storage.
+		if (event.key === FAVORITES_KEY || event.key === null) {
+			onChange()
+		}
+	}
+	window.addEventListener('storage', handleStorage)
+	return () => window.removeEventListener('storage', handleStorage)
+}

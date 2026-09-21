@@ -103,6 +103,33 @@ describe('useFavorites', () => {
 		expect(result.current.isFavorited('character', 7)).toBe(true)
 	})
 
+	it('picks up changes another tab saved', async () => {
+		const target = new EventTarget()
+		Object.assign(window, {
+			addEventListener: target.addEventListener.bind(target),
+			removeEventListener: target.removeEventListener.bind(target),
+		})
+		const { result, unmount } = await renderLoaded()
+		expect(result.current.isFavorited('burger', 42)).toBe(false)
+
+		// Another tab writes to storage, then the browser notifies this one.
+		await AsyncStorage.setItem('bbca_favorites', JSON.stringify([savedBurger]))
+		await act(async () => {
+			target.dispatchEvent(
+				Object.assign(new Event('storage'), { key: 'bbca_favorites' }),
+			)
+		})
+
+		await waitFor(() =>
+			expect(result.current.isFavorited('burger', 42)).toBe(true),
+		)
+		unmount()
+		Object.assign(window, {
+			addEventListener: undefined,
+			removeEventListener: undefined,
+		})
+	})
+
 	it('throws when used outside a FavoritesProvider', () => {
 		jest.spyOn(console, 'error').mockImplementation(() => {})
 		expect(() => renderHook(() => useFavorites())).toThrow(
