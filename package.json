@@ -61,5 +61,10 @@
     "tailwindcss": "^3.4.19",
     "typescript": "~6.0.3"
   },
-  "private": true
+  "private": true,
+  "overrides": {
+    "eslint-plugin-react-native-a11y": {
+      "eslint": "$eslint"
+    }
+  }
 }
