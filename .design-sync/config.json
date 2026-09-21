@@ -1,0 +1,36 @@
+{
+  "projectId": "9c780837-f24e-45d8-96e1-58369db286cf",
+  "shape": "package",
+  "pkg": "bobs-burgers-components",
+  "globalName": "BobsBurgers",
+  "buildCmd": "node .design-sync/build-lib.mjs",
+  "cssEntry": "dist/styles.css",
+  "provider": {
+    "component": "BobsBurgersProvider"
+  },
+  "componentSrcMap": {
+    "BobsBurgersProvider": null,
+    "ThemeProvider": null
+  },
+  "dtsPropsFor": {
+    "FilterPanel": "categoryFilter?: 'All' | 'Burgers of the Day' | 'Characters' | 'End Credits' | 'Episodes' | 'Pest Control Trucks' | 'Stores Next Door'; onSelectCategory?: (category: 'All' | 'Burgers of the Day' | 'Characters' | 'End Credits' | 'Episodes' | 'Pest Control Trucks' | 'Stores Next Door') => void; showGenderHairFilters?: boolean; genders: Set<'Male' | 'Female'>; hairColors: Set<'Blonde' | 'Brown' | 'Black' | 'Red' | 'Gray' | 'Bald' | 'Other'>; sortDirection: 'asc' | 'desc' | null; onToggleGender: (option: 'Male' | 'Female') => void; onToggleHair: (option: 'Blonde' | 'Brown' | 'Black' | 'Red' | 'Gray' | 'Bald' | 'Other') => void; onToggleSort: () => void; activeCount: number;",
+    "SearchResultCard": "item: { id: string; category: 'Burgers of the Day' | 'Characters' | 'End Credits' | 'Episodes' | 'Pest Control Trucks' | 'Stores Next Door'; label: string; image?: string; itemId: number; favoriteCategory: 'burger' | 'character' | 'end_credit' | 'episode' | 'pest_control_truck' | 'store'; gender?: string; hair?: string; bio?: string }; favorited: boolean; onToggleFavorite: () => void; onPress: () => void;",
+    "CategoryFilterPills": "selected: 'All' | 'Burgers of the Day' | 'Characters' | 'End Credits' | 'Episodes' | 'Pest Control Trucks' | 'Stores Next Door'; onSelect: (category: 'All' | 'Burgers of the Day' | 'Characters' | 'End Credits' | 'Episodes' | 'Pest Control Trucks' | 'Stores Next Door') => void;",
+    "CharacterOfTheDayCard": "/** A character from the Bob's Burgers API; only name and image are rendered. */ character: { id: number; name: string; image: string; occupation?: string; firstEpisode?: string; voicedBy?: string; [field: string]: unknown }; blurb: string;",
+    "DetailLayout": "loading: boolean; /** null = no error */ error: string | null; onRetry: () => void; /** Epoch ms of the offline copy being shown; null = live data. */ cachedAt: number | null; name: string; image?: string; bio: string; fandomUrl?: string;",
+    "OfflineBanner": "/** Epoch ms when the shown copy was saved; null = unknown. */ cachedAt: number | null; onRetry: () => void;",
+    "DrawerContent": "/** The drawer navigator's state: screens in order, and which is current. */ state: { index: number; routes: { key: string; name: string; params?: object }[] }; /** Per-screen options keyed by route key; screens with drawerItemStyle.display 'none' are hidden. */ descriptors: Record<string, { options: { title?: string; drawerLabel?: string; drawerItemStyle?: object; drawerLabelStyle?: object; drawerActiveTintColor?: string; drawerInactiveTintColor?: string } }>; navigation: { dispatch: (action: { type: string }) => void };",
+    "DrawerLink": "href: string; label: string; /** true marks it aria-current=\"page\" */ focused: boolean; color: string; style?: object; labelStyle?: object; onPress?: () => void;",
+    "ThemeToggleButton": "/* no props: reads and toggles the theme from BobsBurgersProvider */",
+    "ColorblindModeButton": "/* no props: reads and sets colorblind mode from BobsBurgersProvider */",
+    "SplashOverlay": "/* no props: covers the screen until the theme is ready (min 2s), then removes itself */"
+  },
+  "overrides": {
+    "ColorblindModeButton": {
+      "cardMode": "single",
+      "primaryStory": "MenuOpen",
+      "viewport": "420x420"
+    }
+  },
+  "readmeHeader": ".design-sync/conventions.md"
+}
